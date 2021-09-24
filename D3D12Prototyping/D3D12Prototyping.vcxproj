@@ -22,6 +22,7 @@
     <!-- - - - -->
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <TargetRuntime>Native</TargetRuntime>
+    <WindowsTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Gaming.Desktop.x64'" Label="Configuration">
@@ -133,17 +134,74 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\funkb\source\repos\D3D12Prototyping\D3D12Prototyping\DirectXTK12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DirectXTK12\AlignedNew.h" />
+    <ClInclude Include="DirectXTK12\Bezier.h" />
+    <ClInclude Include="DirectXTK12\BinaryReader.h" />
+    <ClInclude Include="DirectXTK12\d3dx12.h" />
+    <ClInclude Include="DirectXTK12\DDS.h" />
+    <ClInclude Include="DirectXTK12\DemandCreate.h" />
+    <ClInclude Include="DirectXTK12\EffectCommon.h" />
+    <ClInclude Include="DirectXTK12\Geometry.h" />
+    <ClInclude Include="DirectXTK12\LinearAllocator.h" />
+    <ClInclude Include="DirectXTK12\LoaderHelpers.h" />
+    <ClInclude Include="DirectXTK12\pch.h" />
+    <ClInclude Include="DirectXTK12\PlatformHelpers.h" />
+    <ClInclude Include="DirectXTK12\SDKMesh.h" />
+    <ClInclude Include="DirectXTK12\SharedResourcePool.h" />
+    <ClInclude Include="DirectXTK12\vbo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceResources.cpp" />
+    <ClCompile Include="DirectXTK12\AlphaTestEffect.cpp" />
+    <ClCompile Include="DirectXTK12\BasicEffect.cpp" />
+    <ClCompile Include="DirectXTK12\BasicPostProcess.cpp" />
+    <ClCompile Include="DirectXTK12\BinaryReader.cpp" />
+    <ClCompile Include="DirectXTK12\BufferHelpers.cpp" />
+    <ClCompile Include="DirectXTK12\CommonStates.cpp" />
+    <ClCompile Include="DirectXTK12\DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectXTK12\DebugEffect.cpp" />
+    <ClCompile Include="DirectXTK12\DescriptorHeap.cpp" />
+    <ClCompile Include="DirectXTK12\DirectXHelpers.cpp" />
+    <ClCompile Include="DirectXTK12\DualPostProcess.cpp" />
+    <ClCompile Include="DirectXTK12\DualTextureEffect.cpp" />
+    <ClCompile Include="DirectXTK12\EffectCommon.cpp" />
+    <ClCompile Include="DirectXTK12\EffectFactory.cpp" />
+    <ClCompile Include="DirectXTK12\EffectPipelineStateDescription.cpp" />
+    <ClCompile Include="DirectXTK12\EffectTextureFactory.cpp" />
+    <ClCompile Include="DirectXTK12\EnvironmentMapEffect.cpp" />
+    <ClCompile Include="DirectXTK12\GamePad.cpp" />
+    <ClCompile Include="DirectXTK12\GeometricPrimitive.cpp" />
+    <ClCompile Include="DirectXTK12\Geometry.cpp" />
+    <ClCompile Include="DirectXTK12\GraphicsMemory.cpp" />
+    <ClCompile Include="DirectXTK12\Keyboard.cpp" />
+    <ClCompile Include="DirectXTK12\LinearAllocator.cpp" />
+    <ClCompile Include="DirectXTK12\Model.cpp" />
+    <ClCompile Include="DirectXTK12\ModelLoadSDKMESH.cpp" />
+    <ClCompile Include="DirectXTK12\ModelLoadVBO.cpp" />
+    <ClCompile Include="DirectXTK12\Mouse.cpp" />
+    <ClCompile Include="DirectXTK12\NormalMapEffect.cpp" />
+    <ClCompile Include="DirectXTK12\PBREffect.cpp" />
+    <ClCompile Include="DirectXTK12\PBREffectFactory.cpp" />
+    <ClCompile Include="DirectXTK12\PrimitiveBatch.cpp" />
+    <ClCompile Include="DirectXTK12\ResourceUploadBatch.cpp" />
+    <ClCompile Include="DirectXTK12\ScreenGrab.cpp" />
+    <ClCompile Include="DirectXTK12\SimpleMath.cpp" />
+    <ClCompile Include="DirectXTK12\SkinnedEffect.cpp" />
+    <ClCompile Include="DirectXTK12\SpriteBatch.cpp" />
+    <ClCompile Include="DirectXTK12\SpriteFont.cpp" />
+    <ClCompile Include="DirectXTK12\ToneMapPostProcess.cpp" />
+    <ClCompile Include="DirectXTK12\VertexTypes.cpp" />
+    <ClCompile Include="DirectXTK12\WICTextureLoader.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
