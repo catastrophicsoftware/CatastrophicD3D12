@@ -85,8 +85,7 @@ void Game::Update(DX::StepTimer const& timer)
 // Draws the scene.
 void Game::Render()
 {
-    auto bufferCount = m_deviceResources->GetBackBufferCount();
-    UINT frameIndex = (m_deviceResources->GetCurrentFrameIndex() % bufferCount);
+    UINT fIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
 
     // Don't try to render anything before the first Update.
     if (m_timer.GetFrameCount() == 0)
