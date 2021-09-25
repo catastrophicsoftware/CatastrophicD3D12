@@ -281,8 +281,8 @@ void Game::InitializePipeline()
         VertexPosition vertices[] =
         {
             XMFLOAT3{ 0.0f, 0.25f * aspect_ratio, 0.0f },
-            XMFLOAT3{ 0.25f, -0.25f * aspect_ratio, 0.0f },
-            XMFLOAT3{ -0.25f, -0.25f * aspect_ratio, 0.0f }
+            XMFLOAT3{ 0.5f, -0.25f * aspect_ratio, 0.0f },
+            XMFLOAT3{ -0.5f, -0.25f * aspect_ratio, 0.0f }
         };
 
         UINT vbSize = sizeof(vertices);
