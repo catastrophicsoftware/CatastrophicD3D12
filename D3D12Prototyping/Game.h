@@ -67,7 +67,7 @@ private:
     ID3D12Device* GPU;
 
     // Device resources.
-    std::unique_ptr<DX::DeviceResources>    m_deviceResources;
+    std::unique_ptr<DX::DeviceResources> m_deviceResources;
 
     std::unique_ptr<DirectX::GamePad>  Controller;
     std::unique_ptr<DirectX::Keyboard> Keyboard;
@@ -89,7 +89,6 @@ private:
     enum DescriptorIndex
     {
         ViewProjection,
-        World,
         Count
     };
 

@@ -8,8 +8,6 @@
 #include "VertexTypes.h"
 #include <d3dcompiler.h>
 
-#pragma comment(lib,"D3DCompiler.lib")
-
 extern void ExitGame() noexcept;
 
 using namespace DirectX;
@@ -106,9 +104,8 @@ void Game::Render()
     commandList->SetPipelineState(PSO);
     commandList->SetGraphicsRootSignature(RootSig);
 
-    ID3D12DescriptorHeap* pDescriptorHeap = Descriptors->Heap();
-    commandList->SetDescriptorHeaps(1, &pDescriptorHeap);
-    commandList->SetGraphicsRootDescriptorTable(0, Descriptors->GetFirstGpuHandle());
+    commandList->SetGraphicsRootConstantBufferView(0, CBViewProjection->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootConstantBufferView(1, CBWorld->GetGPUVirtualAddress());
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->IASetVertexBuffers(0, 1, &vbView);
@@ -220,12 +217,10 @@ void Game::InitializeInput()
 
 void Game::InitializePipeline()
 {
-    CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
-    CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[2];
 
-    ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-    ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-    rootParameters[0].InitAsDescriptorTable(2, ranges, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
 
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -319,11 +314,13 @@ void Game::InitializePipeline()
         XMMATRIX View = XMMatrixLookAtLH(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
         XMMATRIX Projection = XMMatrixPerspectiveFovLH(XM_PI / 4, aspect_ratio, 0.1f, 10000.0f);
 
+        View = XMMatrixTranspose(View);
+        Projection = XMMatrixTranspose(Projection);
+
         view_projection vp{};
         vp.view = View;
         vp.projection = Projection;
         
-
         UINT cbSize = 256;
         auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
@@ -334,12 +331,6 @@ void Game::InitializePipeline()
             nullptr,
             IID_PPV_ARGS(&CBViewProjection));
 
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-        cbvDesc.BufferLocation = CBViewProjection->GetGPUVirtualAddress();
-        cbvDesc.SizeInBytes = 256; //minimum constant buffer size.
-
-        GPU->CreateConstantBufferView(&cbvDesc, Descriptors->GetCpuHandle(DescriptorIndex::ViewProjection));
-
         void* GPUMem;
         CD3DX12_RANGE readRange(0, 0);
         CBViewProjection->Map(0, &readRange, &GPUMem);
@@ -347,9 +338,9 @@ void Game::InitializePipeline()
         CBViewProjection->Unmap(0, nullptr);
     }
 
-
     {
         XMMATRIX World = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+        World = XMMatrixTranspose(World);
 
         UINT cbSize = 256; //minimum constant buffer size.
         auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -360,12 +351,6 @@ void Game::InitializePipeline()
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             IID_PPV_ARGS(&CBWorld));
-
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-        cbvDesc.BufferLocation = CBWorld->GetGPUVirtualAddress();
-        cbvDesc.SizeInBytes = 256; //minimum constant buffer size.
-
-        GPU->CreateConstantBufferView(&cbvDesc, Descriptors->GetCpuHandle(DescriptorIndex::World));
 
         void* GPUMem;
         CD3DX12_RANGE readRange(0, 0);
