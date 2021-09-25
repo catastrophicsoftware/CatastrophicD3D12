@@ -6,6 +6,9 @@
 
 #include "DeviceResources.h"
 #include "StepTimer.h"
+#include "GamePad.h"
+#include "Keyboard.h"
+#include "thread_pool.h"
 
 
 // A basic game implementation that creates a D3D12 device and
@@ -45,7 +48,6 @@ public:
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
 private:
-
     void Update(DX::StepTimer const& timer);
     void Render();
 
@@ -57,6 +59,13 @@ private:
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
 
+    std::unique_ptr<DirectX::GamePad>  Controller;
+    std::unique_ptr<DirectX::Keyboard> Keyboard;
+    DirectX::Keyboard::State KeyboardState;
+    DirectX::GamePad::State  GamepadState;
+    void InitializeInput();
+
+    thread_pool BackgroundPool;
     // Rendering loop timer.
     DX::StepTimer                           m_timer;
 };

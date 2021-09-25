@@ -13,6 +13,9 @@
     <Filter Include="DirectXTK\source">
       <UniqueIdentifier>{a8396e7b-1004-4ffc-8abb-07aed321f554}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{685c72c9-043e-471b-8110-85561ccea4ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -70,6 +73,79 @@
     </ClInclude>
     <ClInclude Include="DirectXTK12\vbo.h">
       <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\SpriteFont.h" />
+    <ClInclude Include="DirectXTK12\Audio.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\BufferHelpers.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\CommonStates.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\DDSTextureLoader.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\DescriptorHeap.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\DirectXHelpers.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\EffectPipelineStateDescription.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\Effects.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\GamePad.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\GeometricPrimitive.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\GraphicsMemory.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\Keyboard.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\Model.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\Mouse.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\PostProcess.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\PrimitiveBatch.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\RenderTargetState.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\ResourceUploadBatch.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\ScreenGrab.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\SimpleMath.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\SpriteBatch.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\VertexTypes.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\WICTextureLoader.h">
+      <Filter>DirectXTK\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +274,9 @@
     </ClCompile>
     <ClCompile Include="DirectXTK12\WICTextureLoader.cpp">
       <Filter>DirectXTK\source</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_pool.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -142,23 +142,48 @@
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DirectXTK12\AlignedNew.h" />
+    <ClInclude Include="DirectXTK12\Audio.h" />
     <ClInclude Include="DirectXTK12\Bezier.h" />
     <ClInclude Include="DirectXTK12\BinaryReader.h" />
+    <ClInclude Include="DirectXTK12\BufferHelpers.h" />
+    <ClInclude Include="DirectXTK12\CommonStates.h" />
     <ClInclude Include="DirectXTK12\d3dx12.h" />
     <ClInclude Include="DirectXTK12\DDS.h" />
+    <ClInclude Include="DirectXTK12\DDSTextureLoader.h" />
     <ClInclude Include="DirectXTK12\DemandCreate.h" />
+    <ClInclude Include="DirectXTK12\DescriptorHeap.h" />
+    <ClInclude Include="DirectXTK12\DirectXHelpers.h" />
     <ClInclude Include="DirectXTK12\EffectCommon.h" />
+    <ClInclude Include="DirectXTK12\EffectPipelineStateDescription.h" />
+    <ClInclude Include="DirectXTK12\Effects.h" />
+    <ClInclude Include="DirectXTK12\GamePad.h" />
+    <ClInclude Include="DirectXTK12\GeometricPrimitive.h" />
     <ClInclude Include="DirectXTK12\Geometry.h" />
+    <ClInclude Include="DirectXTK12\GraphicsMemory.h" />
+    <ClInclude Include="DirectXTK12\Keyboard.h" />
     <ClInclude Include="DirectXTK12\LinearAllocator.h" />
     <ClInclude Include="DirectXTK12\LoaderHelpers.h" />
+    <ClInclude Include="DirectXTK12\Model.h" />
+    <ClInclude Include="DirectXTK12\Mouse.h" />
     <ClInclude Include="DirectXTK12\pch.h" />
     <ClInclude Include="DirectXTK12\PlatformHelpers.h" />
+    <ClInclude Include="DirectXTK12\PostProcess.h" />
+    <ClInclude Include="DirectXTK12\PrimitiveBatch.h" />
+    <ClInclude Include="DirectXTK12\RenderTargetState.h" />
+    <ClInclude Include="DirectXTK12\ResourceUploadBatch.h" />
+    <ClInclude Include="DirectXTK12\ScreenGrab.h" />
     <ClInclude Include="DirectXTK12\SDKMesh.h" />
     <ClInclude Include="DirectXTK12\SharedResourcePool.h" />
+    <ClInclude Include="DirectXTK12\SimpleMath.h" />
+    <ClInclude Include="DirectXTK12\SpriteBatch.h" />
+    <ClInclude Include="DirectXTK12\SpriteFont.h" />
     <ClInclude Include="DirectXTK12\vbo.h" />
+    <ClInclude Include="DirectXTK12\VertexTypes.h" />
+    <ClInclude Include="DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeviceResources.cpp" />
@@ -209,6 +234,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Gaming.Desktop.x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="thread_pool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

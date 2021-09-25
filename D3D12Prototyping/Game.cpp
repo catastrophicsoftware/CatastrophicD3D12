@@ -11,7 +11,7 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-Game::Game() noexcept(false)
+Game::Game() noexcept(false) : BackgroundPool()
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
@@ -36,6 +36,8 @@ void Game::Initialize(HWND window, int width, int height)
     m_deviceResources->CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
 
+    InitializeInput();
+
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
     /*
@@ -50,6 +52,7 @@ void Game::Tick()
 {
     m_timer.Tick([&]()
     {
+        GamepadState = Controller->GetState(0);
         Update(m_timer);
     });
 
@@ -108,7 +111,7 @@ void Game::Clear()
     auto dsvDescriptor = m_deviceResources->GetDepthStencilView();
 
     commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
-    commandList->ClearRenderTargetView(rtvDescriptor, Colors::CornflowerBlue, 0, nullptr);
+    commandList->ClearRenderTargetView(rtvDescriptor, Colors::DarkSlateBlue, 0, nullptr);
     commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
     // Set the viewport and scissor rect.
@@ -184,6 +187,12 @@ void Game::CreateDeviceDependentResources()
 void Game::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
+}
+
+void Game::InitializeInput()
+{
+    Controller = std::make_unique<GamePad>();
+    Keyboard = std::make_unique<DirectX::Keyboard>();
 }
 
 void Game::OnDeviceLost()
