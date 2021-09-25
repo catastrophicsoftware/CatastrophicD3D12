@@ -16,6 +16,9 @@
     <Filter Include="Framework">
       <UniqueIdentifier>{685c72c9-043e-471b-8110-85561ccea4ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{aaa53888-82e4-4a1f-8820-bdcc0d8bd577}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -288,5 +291,13 @@
     <CopyFileToFolders Include="SmallLogo.png" />
     <CopyFileToFolders Include="SplashScreen.png" />
     <CopyFileToFolders Include="StoreLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="simple_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="simple_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -53,7 +53,7 @@
 #include <stdexcept>
 #include <system_error>
 
-
+#define LOCK_GUARD(__mutex_obj) std::lock_guard<std::mutex>(__mutex_obj);
 
 // Off by default warnings
 #pragma warning(disable : 4619 4061 4265 4355 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4987 5026 5027 5031 5032 5039 5045 5219 26812)
