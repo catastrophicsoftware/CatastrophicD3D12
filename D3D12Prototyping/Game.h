@@ -10,6 +10,8 @@
 #include "Keyboard.h"
 #include "thread_pool.h"
 #include "DescriptorHeap.h"
+#include "LinearConstantBuffer.h"
+#include "DirectXHelpers.h"
 
 using namespace DirectX;
 
@@ -75,6 +77,22 @@ private:
     DirectX::GamePad::State  GamepadState;
     void InitializeInput();
 
+    ID3D12Heap* DynamicHeap;
+    ID3D12Heap* StaticHeap;
+    UINT64 DynamicHeapIndex;
+    inline void AdvanceDynamicHeap(uint64 lastBufferSize)
+    {
+        if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+        {
+            DynamicHeapIndex += lastBufferSize; //add last buffer size
+            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+        }
+        //last buffer placement size is not larger than single page of gpu memory
+        //just align forward
+        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex+1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    }
+    void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB);
+
     ID3D12RootSignature* RootSig;
     ID3DBlob* vs;
     ID3DBlob* ps;
@@ -82,9 +100,13 @@ private:
     ID3D12Resource* VertexBuffer;
     ID3D12Resource* CBViewProjection;
     ID3D12Resource* CBWorld;
+    ID3D12Resource* CBMaterial;
+    void* pCBMaterialGPUMemory;
     D3D12_VERTEX_BUFFER_VIEW vbView;
-    void InitializePipeline();
+    D3D12_GPU_VIRTUAL_ADDRESS cbMaterialMagenta;
 
+    LinearConstantBuffer* linearBuffer;
+    void InitializePipeline();
 
     enum DescriptorIndex
     {

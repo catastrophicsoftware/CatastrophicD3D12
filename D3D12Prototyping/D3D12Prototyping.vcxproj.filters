@@ -150,6 +150,14 @@
     <ClInclude Include="thread_pool.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="GPUCommandQueue.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearConstantBuffer.h" />
+    <ClInclude Include="GPUCommandAllocator.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUFence.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -281,6 +289,14 @@
     <ClCompile Include="thread_pool.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="GPUCommandQueue.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearConstantBuffer.cpp" />
+    <ClCompile Include="GPUCommandAllocator.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUFence.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

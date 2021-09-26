@@ -19,6 +19,7 @@ Game::Game() noexcept(false) : BackgroundPool()
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
+    DynamicHeapIndex = 0;
 }
 
 Game::~Game()
@@ -44,6 +45,7 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeInput();
 
     InitializeDescriptorHeap();
+    InitializeHeaps(64, 64);
     InitializePipeline();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -105,6 +107,7 @@ void Game::Render()
 
     commandList->SetGraphicsRootConstantBufferView(0, CBViewProjection->GetGPUVirtualAddress());
     commandList->SetGraphicsRootConstantBufferView(1, CBWorld->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootConstantBufferView(2, cbMaterialMagenta);
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->IASetVertexBuffers(0, 1, &vbView);
@@ -214,19 +217,44 @@ void Game::InitializeInput()
     Keyboard = std::make_unique<DirectX::Keyboard>();
 }
 
+void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB)
+{
+    UINT64 dynamicHeapSize = (1024 * 1024) * dynamicHeapSizeMB;
+    CD3DX12_HEAP_DESC dynamic_heap_desc = CD3DX12_HEAP_DESC(dynamicHeapSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT,D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+
+    if (FAILED(GPU->CreateHeap(&dynamic_heap_desc, IID_PPV_ARGS(&DynamicHeap))))
+    {
+        throw new std::runtime_error("failed to create dynamic upload heap!");
+    }
+
+    UINT staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
+    CD3DX12_HEAP_DESC static_heap_desc = CD3DX12_HEAP_DESC(staticHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+
+    if (FAILED(GPU->CreateHeap(&static_heap_desc, IID_PPV_ARGS(&StaticHeap))))
+    {
+        throw new std::runtime_error("failed to create static heap!");
+    }
+}
+
 void Game::InitializePipeline()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+
+    linearBuffer = new LinearConstantBuffer(GPU, 8, DynamicHeap, DynamicHeapIndex);
+    AdvanceDynamicHeap((1024 * 1024) * 8);
+
+    XMFLOAT4 magenta = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+    cbMaterialMagenta = linearBuffer->Write(&magenta, sizeof(XMFLOAT4));
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
     rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[2].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
 
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
@@ -337,6 +365,7 @@ void Game::InitializePipeline()
         CBViewProjection->Unmap(0, nullptr);
     }
 
+
     {
         XMMATRIX World = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
         World = XMMatrixTranspose(World);
@@ -356,6 +385,21 @@ void Game::InitializePipeline()
         CBWorld->Map(0, &readRange, &GPUMem);
         memcpy(GPUMem, &World, sizeof(XMMATRIX));
         CBWorld->Unmap(0, nullptr);
+    }
+
+
+    {
+        UINT cbSize = (256 * 3); //3 float4s, inneficient
+        auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize, D3D12_RESOURCE_FLAG_NONE);
+        GPU->CreatePlacedResource(DynamicHeap, DynamicHeapIndex, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&CBMaterial));
+        DynamicHeapIndex = AlignUp(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT); //update dynamic heap index for next buffer placement
+        
+
+        CD3DX12_RANGE readRange(0, 0);
+        CBMaterial->Map(0, &readRange, &pCBMaterialGPUMemory);
+
+        XMFLOAT4 blue = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
+        memcpy(pCBMaterialGPUMemory, &blue, sizeof(XMFLOAT4));
     }
 }
 

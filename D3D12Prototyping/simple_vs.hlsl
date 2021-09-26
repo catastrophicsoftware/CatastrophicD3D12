@@ -9,12 +9,22 @@ cbuffer CBDynamic : register(b1)
 	matrix world;
 }
 
-
-float4 main(float4 pos : SV_Position) : SV_POSITION
+struct VertexInput
 {
-	pos = mul(pos,world);
-	pos = mul(pos, view);
-	pos = mul(pos, projection);
+	float4 position : SV_Position;
+};
 
-	return pos;
+struct VertexOutput
+{
+	float4 position : SV_POSITION;
+};
+
+VertexOutput main(VertexInput input) : SV_POSITION
+{
+	VertexOutput output;
+	output.position = mul(input.position, world);
+	output.position = mul(output.position, view);
+	output.position = mul(output.position, projection);
+
+	return output;
 }
