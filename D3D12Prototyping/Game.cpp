@@ -14,7 +14,6 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-
 Game::Game() noexcept(false) : BackgroundPool()
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
@@ -243,8 +242,8 @@ void Game::InitializePipeline()
     linearBuffer = new LinearConstantBuffer(GPU, 8, DynamicHeap, DynamicHeapIndex);
     AdvanceDynamicHeap((1024 * 1024) * 8);
 
-    XMFLOAT4 magenta = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
-    cbMaterialMagenta = linearBuffer->Write(&magenta, sizeof(XMFLOAT4));
+    XMFLOAT4 magenta = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+    cbMaterialMagenta = linearBuffer->Write(&magenta, sizeof(magenta));
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
     rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);

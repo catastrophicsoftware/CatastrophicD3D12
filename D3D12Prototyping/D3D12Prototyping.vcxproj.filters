@@ -157,7 +157,9 @@
     <ClInclude Include="GPUCommandAllocator.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="GPUFence.h" />
+    <ClInclude Include="GPUFence.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -296,7 +298,9 @@
     <ClCompile Include="GPUCommandAllocator.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="GPUFence.cpp" />
+    <ClCompile Include="GPUFence.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />
