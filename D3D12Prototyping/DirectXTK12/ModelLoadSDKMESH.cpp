@@ -484,7 +484,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         throw std::runtime_error("End of file");
     const uint8_t* bufferData = meshData + bufferDataOffset;
 
-    // Create vertex buffers
+    // Load vertex buffers
     std::vector<std::shared_ptr<std::vector<D3D12_INPUT_ELEMENT_DESC>>> vbDecls;
     vbDecls.resize(header->NumVertexBuffers);
 
@@ -557,7 +557,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             throw std::runtime_error("Invalid index buffer type found");
     }
 
-    // Create meshes
+    // Load meshes
     std::vector<ModelMaterialInfo> materials;
     materials.resize(header->NumMaterials);
 
@@ -606,7 +606,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         mesh->boundingBox.Extents = mh.BoundingBoxExtents;
         BoundingSphere::CreateFromBoundingBox(mesh->boundingSphere, mesh->boundingBox);
 
-        // Create subsets
+        // Load subsets
         for (UINT j = 0; j < mh.NumSubsets; ++j)
         {
             auto sIndex = subsets[j];

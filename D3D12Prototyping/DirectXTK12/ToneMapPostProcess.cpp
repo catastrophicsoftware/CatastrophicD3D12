@@ -306,7 +306,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D12Device* device, const RenderTargetStat
     if (func > TransferFunction_Max)
         throw std::invalid_argument("Transfer function not defined");
 
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
@@ -365,7 +365,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D12Device* device, const RenderTargetStat
     assert(shaderIndex >= 0 && shaderIndex < PixelShaderCount);
     _Analysis_assume_(shaderIndex >= 0 && shaderIndex < PixelShaderCount);
 
-    // Create pipeline state.
+    // Load pipeline state.
     EffectPipelineStateDescription psd(nullptr,
         CommonStates::Opaque,
         CommonStates::DepthNone,

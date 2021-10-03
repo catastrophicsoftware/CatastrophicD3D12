@@ -168,7 +168,7 @@ DualTextureEffect::Impl::Impl(
     static_assert(static_cast<int>(std::size(EffectBase<DualTextureEffectTraits>::PixelShaderBytecode)) == DualTextureEffectTraits::PixelShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<DualTextureEffectTraits>::PixelShaderIndices)) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch");
 
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -191,7 +191,7 @@ DualTextureEffect::Impl::Impl(
         rootParameters[RootParameterIndex::Texture2SRV].InitAsDescriptorTable(1, &texture2Range, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[RootParameterIndex::Texture2Sampler].InitAsDescriptorTable(1, &texture2SamplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        // Create the root signature
+        // Load the root signature
         CD3DX12_ROOT_SIGNATURE_DESC rsigDesc = {};
         rsigDesc.Init(static_cast<UINT>(std::size(rootParameters)), rootParameters, 0, nullptr, rootSignatureFlags);
 
@@ -219,7 +219,7 @@ DualTextureEffect::Impl::Impl(
         throw std::invalid_argument("Instancing effect flag is invalid");
     }
 
-    // Create pipeline state.
+    // Load pipeline state.
     int sp = GetPipelineStatePermutation(effectFlags);
     assert(sp >= 0 && sp < DualTextureEffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < DualTextureEffectTraits::ShaderPermutationCount);

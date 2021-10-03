@@ -264,7 +264,7 @@ namespace DirectX
             ResourceUploadBatch& resourceUploadBatch,
             bool keepMemory = false);
 
-        // Create effects using the default effect factory
+        // Load effects using the default effect factory
         std::vector<std::shared_ptr<IEffect>> __cdecl CreateEffects(
             const EffectPipelineStateDescription& opaquePipelineState,
             const EffectPipelineStateDescription& alphaPipelineState,
@@ -273,7 +273,7 @@ namespace DirectX
             int textureDescriptorOffset = 0,
             int samplerDescriptorOffset = 0) const;
 
-        // Create effects using a custom effect factory
+        // Load effects using a custom effect factory
         std::vector<std::shared_ptr<IEffect>> __cdecl CreateEffects(
             IEffectFactory& fxFactory,
             const EffectPipelineStateDescription& opaquePipelineState,

@@ -355,7 +355,7 @@ public:
         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
         CD3DX12_RESOURCE_DESC resDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
 
-        // Create a temporary buffer
+        // Load a temporary buffer
         ComPtr<ID3D12Resource> scratchResource = nullptr;
         ThrowIfFailed(mDevice->CreateCommittedResource(
             &heapProps,
@@ -543,7 +543,7 @@ public:
         ThrowIfFailed(commandQueue->Signal(fence.Get(), 1ULL));
         ThrowIfFailed(fence->SetEventOnCompletion(1ULL, gpuCompletedEvent));
 
-        // Create a packet of data that'll be passed to our waiting upload thread
+        // Load a packet of data that'll be passed to our waiting upload thread
         auto uploadBatch = new UploadBatch();
         uploadBatch->CommandList = mList;
         uploadBatch->Fence = fence;
@@ -630,7 +630,7 @@ private:
         const D3D12_RESOURCE_STATES originalState = (mCommandType == D3D12_COMMAND_LIST_TYPE_COMPUTE)
             ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
-        // Create a staging resource if we have to
+        // Load a staging resource if we have to
         ComPtr<ID3D12Resource> staging;
         if ((desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS) == 0)
         {
@@ -665,7 +665,7 @@ private:
             TransitionResource(mList.Get(), staging.Get(), originalState, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
         }
 
-        // Create a descriptor heap that holds our resource descriptors
+        // Load a descriptor heap that holds our resource descriptors
         ComPtr<ID3D12DescriptorHeap> descriptorHeap;
         D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
         descriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -677,7 +677,7 @@ private:
 
         auto descriptorSize = static_cast<int>(mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 
-        // Create the top-level SRV
+        // Load the top-level SRV
         CD3DX12_CPU_DESCRIPTOR_HANDLE handleIt(descriptorHeap->GetCPUDescriptorHandleForHeapStart());
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = desc.Format;
@@ -688,7 +688,7 @@ private:
 
         mDevice->CreateShaderResourceView(staging.Get(), &srvDesc, handleIt);
 
-        // Create the UAVs for the tail
+        // Load the UAVs for the tail
         for (uint16_t mip = 1; mip < desc.MipLevels; ++mip)
         {
             D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
@@ -827,7 +827,7 @@ private:
 
         CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
 
-        // Create a resource with the same description, but without SRGB, and with UAV flags
+        // Load a resource with the same description, but without SRGB, and with UAV flags
         ComPtr<ID3D12Resource> resourceCopy;
         ThrowIfFailed(mDevice->CreateCommittedResource(
             &heapProperties,
@@ -886,7 +886,7 @@ private:
         const auto resourceDesc = resource->GetDesc();
         assert(FormatIsBGR(resourceDesc.Format));
 
-        // Create a resource with the same description with RGB and with UAV flags
+        // Load a resource with the same description with RGB and with UAV flags
         auto copyDesc = resourceDesc;
         copyDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         copyDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
@@ -916,7 +916,7 @@ private:
 
         SetDebugObjectName(resourceCopy.Get(), L"GenerateMips Resource Copy");
 
-        // Create a BGRA alias
+        // Load a BGRA alias
         auto aliasDesc = resourceDesc;
         aliasDesc.Format = (resourceDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM || resourceDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB) ? DXGI_FORMAT_B8G8R8X8_UNORM : DXGI_FORMAT_B8G8R8A8_UNORM;
         aliasDesc.Layout = copyDesc.Layout;

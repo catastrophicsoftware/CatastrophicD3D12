@@ -410,7 +410,7 @@ void Model::LoadStaticBuffers(
 }
 
 
-// Create effects for each mesh piece
+// Load effects for each mesh piece
 std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     IEffectFactory& fxFactory,
     const EffectPipelineStateDescription& opaquePipelineState,
@@ -439,7 +439,7 @@ std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     if (partCount == 0)
         return effects;
 
-    // Create an array of effects for each part. We need to have an effect per part because the part's vertex layout
+    // Load an array of effects for each part. We need to have an effect per part because the part's vertex layout
     // combines with the material spec to create a unique effect. We rely on the EffectFactory to de-duplicate if it
     // wants to.
     effects.resize(partCount);
@@ -504,7 +504,7 @@ std::shared_ptr<IEffect> Model::CreateEffectForMeshPart(
     return fxFactory.CreateEffect(m, opaquePipelineState, alphaPipelineState, il, textureDescriptorOffset, samplerDescriptorOffset);
 }
 
-// Create effects for each mesh piece with the default factory
+// Load effects for each mesh piece with the default factory
 _Use_decl_annotations_
 std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     const EffectPipelineStateDescription& opaquePipelineState,

@@ -10,14 +10,14 @@ Mesh::~Mesh()
 {
 }
 
-uint32 Mesh::NumVertices() const
+uint32 Mesh::VertexCount() const
 {
-	return _NumVertices;
+	return NumVertices;
 }
 
-uint32 Mesh::NumIndices() const
+uint32 Mesh::IndexCount() const
 {
-	return _NumIndices;
+	return NumIndices;
 }
 
 D3D12_PRIMITIVE_TOPOLOGY Mesh::Topology() const
@@ -28,7 +28,7 @@ D3D12_PRIMITIVE_TOPOLOGY Mesh::Topology() const
 
 
 
-HRESULT Mesh::Create(std::string MeshFile)
+HRESULT Mesh::Load(std::string MeshFile)
 {
 	Assimp::Importer Loader;
 
@@ -45,8 +45,8 @@ HRESULT Mesh::Create(std::string MeshFile)
 
 		IndexFormat = DXGI_FORMAT_R32_UINT;
 
-		_NumIndices = Indices.size();
-		_NumVertices = Vertices.size();
+		NumIndices = Indices.size();
+		NumVertices = Vertices.size();
 		VertexStride = sizeof(VertexPositionNormalTexture);
 		
 		topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -55,6 +55,11 @@ HRESULT Mesh::Create(std::string MeshFile)
 	}
 
 	return E_NOTIMPL;
+}
+
+void Mesh::SetGPUAddress(D3D12_GPU_VIRTUAL_ADDRESS gpuAddr)
+{
+	gpuAddress = gpuAddr;
 }
 
 

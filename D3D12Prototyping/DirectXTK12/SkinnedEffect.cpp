@@ -201,7 +201,7 @@ SkinnedEffect::Impl::Impl(
         constants.bones[i][2] = g_XMIdentityR2;
     }
 
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -238,7 +238,7 @@ SkinnedEffect::Impl::Impl(
         throw std::invalid_argument("Instancing effect flag is invalid");
     }
 
-    // Create pipeline state.
+    // Load pipeline state.
     int sp = GetPipelineStatePermutation(effectFlags);
     assert(sp >= 0 && sp < SkinnedEffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < SkinnedEffectTraits::ShaderPermutationCount);

@@ -38,7 +38,7 @@ namespace DirectX
 
             if (!result)
             {
-                // Create the new object.
+                // Load the new object.
                 ThrowIfFailed(
                     createFunc(&result)
                 );

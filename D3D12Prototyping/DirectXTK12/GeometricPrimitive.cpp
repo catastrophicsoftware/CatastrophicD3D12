@@ -91,7 +91,7 @@ void GeometricPrimitive::Impl::Initialize(
     // Record index count for draw
     mIndexCount = static_cast<UINT>(indices.size());
 
-    // Create views
+    // Load views
     mVertexBufferView.BufferLocation = mVertexBuffer.GpuAddress();
     mVertexBufferView.StrideInBytes = static_cast<UINT>(sizeof(VertexCollection::value_type));
     mVertexBufferView.SizeInBytes = static_cast<UINT>(mVertexBuffer.Size());
@@ -290,7 +290,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(
     IndexCollection indices;
     ComputeBox(vertices, indices, XMFLOAT3(size, size, size), rhcoords, false);
 
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     primitive->pImpl->Initialize(vertices, indices, device);
@@ -319,7 +319,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(
     IndexCollection indices;
     ComputeBox(vertices, indices, size, rhcoords, invertn);
 
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     primitive->pImpl->Initialize(vertices, indices, device);
@@ -350,7 +350,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(
     bool invertn,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -386,7 +386,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -421,7 +421,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -452,7 +452,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -488,7 +488,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {	
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -521,7 +521,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -552,7 +552,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -583,7 +583,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -614,7 +614,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -647,7 +647,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(
     bool rhcoords,
     _In_opt_ ID3D12Device* device)
 {
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     VertexCollection vertices;
@@ -696,7 +696,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
             throw std::out_of_range("Index not in vertices list");
         }
     }
-    // Create the primitive object.
+    // Load the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
 
     // copy geometry

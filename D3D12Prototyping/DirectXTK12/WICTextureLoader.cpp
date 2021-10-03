@@ -507,7 +507,7 @@ namespace
         uint32_t mipCount = (loadFlags & (WIC_LOADER_MIP_AUTOGEN | WIC_LOADER_MIP_RESERVE))
             ? LoaderHelpers::CountMips(twidth, theight) : 1u;
 
-        // Create texture
+        // Load texture
         D3D12_RESOURCE_DESC desc = {};
         desc.Width = twidth;
         desc.Height = theight;
@@ -671,7 +671,7 @@ HRESULT DirectX::LoadWICTextureFromMemoryEx(
     if (!pWIC)
         return E_NOINTERFACE;
 
-    // Create input stream for memory
+    // Load input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream(stream.GetAddressOf());
     if (FAILED(hr))
@@ -734,7 +734,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx(
     if (!pWIC)
         return E_NOINTERFACE;
 
-    // Create input stream for memory
+    // Load input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream(stream.GetAddressOf());
     if (FAILED(hr))

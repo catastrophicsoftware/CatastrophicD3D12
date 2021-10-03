@@ -435,7 +435,7 @@ BasicEffect::Impl::Impl(
     lightingEnabled = (effectFlags & EffectFlags::Lighting) != 0;
     textureEnabled = (effectFlags & EffectFlags::Texture) != 0;
 
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -443,7 +443,7 @@ BasicEffect::Impl::Impl(
             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
             D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
 
-        // Create root parameters and initialize first (constants)
+        // Load root parameters and initialize first (constants)
         CD3DX12_ROOT_PARAMETER rootParameters[RootParameterIndex::RootParameterCount] = {};
         rootParameters[RootParameterIndex::ConstantBuffer].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
 
@@ -475,7 +475,7 @@ BasicEffect::Impl::Impl(
 
     assert(mRootSignature != nullptr);
 
-    // Create pipeline state.
+    // Load pipeline state.
     int sp = GetPipelineStatePermutation(effectFlags);
     assert(sp >= 0 && sp < BasicEffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < BasicEffectTraits::ShaderPermutationCount);

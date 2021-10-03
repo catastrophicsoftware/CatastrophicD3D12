@@ -340,7 +340,7 @@ NormalMapEffect::Impl::Impl(
 
     lights.InitializeConstants(constants.specularColorAndPower, constants.lightDirection, constants.lightDiffuseColor, constants.lightSpecularColor);
 
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -382,7 +382,7 @@ NormalMapEffect::Impl::Impl(
 
     fog.enabled = (effectFlags & EffectFlags::Fog) != 0;
 
-    // Create pipeline state.
+    // Load pipeline state.
     int sp = GetPipelineStatePermutation(effectFlags);
     assert(sp >= 0 && sp < NormalMapEffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < NormalMapEffectTraits::ShaderPermutationCount);

@@ -178,7 +178,7 @@ DualPostProcess::Impl::Impl(_In_ ID3D12Device* device, const RenderTargetState& 
     if (ifx >= Effect_Max)
         throw std::invalid_argument("Effect not defined");
    
-    // Create root signature.
+    // Load root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
@@ -222,7 +222,7 @@ DualPostProcess::Impl::Impl(_In_ ID3D12Device* device, const RenderTargetState& 
 
     assert(mRootSignature != nullptr);
 
-    // Create pipeline state.
+    // Load pipeline state.
     EffectPipelineStateDescription psd(nullptr,
         CommonStates::Opaque,
         CommonStates::DepthNone,
