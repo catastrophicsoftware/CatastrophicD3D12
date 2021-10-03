@@ -121,7 +121,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(Console_Libs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;$(Console_Libs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\funkb\source\repos\D3D12Prototyping\Dependencies\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -135,13 +136,15 @@
       <PreprocessorDefinitions>_DEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\funkb\source\repos\D3D12Prototyping\D3D12Prototyping\DirectXTK12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\funkb\source\repos\D3D12Prototyping\Dependencies;C:\Users\funkb\source\repos\D3D12Prototyping\D3D12Prototyping\DirectXTK12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <FxCompile>
       <HeaderFileOutput>compiled_shaders\%(Filename).h</HeaderFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Camera3D.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DirectXTK12\AlignedNew.h" />
@@ -188,11 +191,14 @@
     <ClInclude Include="GPUCommandQueue.h" />
     <ClInclude Include="GPUFence.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="DirectXTK12\AlphaTestEffect.cpp" />
     <ClCompile Include="DirectXTK12\BasicEffect.cpp" />
@@ -240,6 +246,7 @@
     <ClCompile Include="GPUFence.cpp" />
     <ClCompile Include="LinearConstantBuffer.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Gaming.Desktop.x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Gaming.Desktop.x64'">Create</PrecompiledHeader>

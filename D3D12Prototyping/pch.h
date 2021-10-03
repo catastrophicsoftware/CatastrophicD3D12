@@ -336,3 +336,4 @@ namespace DX
 }
 
 typedef UINT64 uint64;
+typedef unsigned int uint32;

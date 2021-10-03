@@ -160,6 +160,15 @@
     <ClInclude Include="GPUFence.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera3D.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -299,6 +308,15 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="GPUFence.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera3D.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
