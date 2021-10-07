@@ -38,7 +38,7 @@ namespace DirectX
 
             if (!result)
             {
-                // Load the new object.
+                // LoadAssimp the new object.
                 ThrowIfFailed(
                     createFunc(&result)
                 );

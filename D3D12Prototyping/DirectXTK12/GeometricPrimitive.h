@@ -62,7 +62,7 @@ namespace DirectX
         static void __cdecl CreateIcosahedron(std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
         static void __cdecl CreateTeapot(std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, size_t tessellation = 8, bool rhcoords = true);
 
-        // Load VB/IB resources for static geometry.
+        // LoadAssimp VB/IB resources for static geometry.
         void __cdecl LoadStaticBuffers(
             _In_ ID3D12Device* device,
             ResourceUploadBatch& resourceUploadBatch);

@@ -8,6 +8,7 @@
 #include <assimp\postprocess.h>
 #include <string.h>
 #include <vector>
+#include "tinyobj_loader_c.h"
 
 using namespace DirectX;
 
@@ -17,13 +18,13 @@ public:
 	Mesh();
 	~Mesh();
 
+	void Load(std::string meshFile);
+
+
 	uint32 VertexCount() const;
 	uint32 IndexCount() const;
 	D3D12_PRIMITIVE_TOPOLOGY Topology() const;
-
-	HRESULT Load(std::string MeshFile);
-
-	void SetGPUAddress(D3D12_GPU_VIRTUAL_ADDRESS gpuAddr);
+	void CreateBufferViews(D3D12_GPU_VIRTUAL_ADDRESS vbAddr, D3D12_GPU_VIRTUAL_ADDRESS ibAddr);
 private:
 	uint32 NumVertices;
 	uint32 NumIndices;
@@ -32,10 +33,11 @@ private:
 	D3D12_PRIMITIVE_TOPOLOGY topology;
 	DXGI_FORMAT IndexFormat;
 
-	D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView;
 
 	std::vector<VertexPositionNormalTexture> Vertices;
 	std::vector<uint32> Indices;
 
-	void ProcessAssimpMeshNode(aiNode* pNode, const aiScene* pScene);
+	void processNode(aiNode* node, const aiScene* scene);
 };

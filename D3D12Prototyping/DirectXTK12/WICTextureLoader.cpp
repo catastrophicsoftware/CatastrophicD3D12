@@ -414,7 +414,7 @@ namespace
         if (!decodedData)
             return E_OUTOFMEMORY;
 
-        // Load image data
+        // LoadAssimp image data
         if (memcmp(&convertGUID, &pixelFormat, sizeof(GUID)) == 0
             && twidth == width
             && theight == height)
@@ -507,7 +507,7 @@ namespace
         uint32_t mipCount = (loadFlags & (WIC_LOADER_MIP_AUTOGEN | WIC_LOADER_MIP_RESERVE))
             ? LoaderHelpers::CountMips(twidth, theight) : 1u;
 
-        // Load texture
+        // LoadAssimp texture
         D3D12_RESOURCE_DESC desc = {};
         desc.Width = twidth;
         desc.Height = theight;
@@ -671,7 +671,7 @@ HRESULT DirectX::LoadWICTextureFromMemoryEx(
     if (!pWIC)
         return E_NOINTERFACE;
 
-    // Load input stream for memory
+    // LoadAssimp input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream(stream.GetAddressOf());
     if (FAILED(hr))
@@ -734,7 +734,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx(
     if (!pWIC)
         return E_NOINTERFACE;
 
-    // Load input stream for memory
+    // LoadAssimp input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream(stream.GetAddressOf());
     if (FAILED(hr))

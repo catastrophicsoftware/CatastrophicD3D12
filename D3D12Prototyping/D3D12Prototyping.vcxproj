@@ -195,6 +195,7 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="tinyobj_loader_c.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp" />
@@ -253,6 +254,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="thread_pool.cpp" />
+    <ClCompile Include="tinyobj_loader_c.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

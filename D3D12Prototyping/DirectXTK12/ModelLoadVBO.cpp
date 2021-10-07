@@ -98,11 +98,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
         throw std::runtime_error("End of file");
     auto indices = reinterpret_cast<const uint16_t*>(meshData + sizeof(VBO::header_t) + vertSize);
 
-    // Load vertex buffer
+    // LoadAssimp vertex buffer
     auto vb = GraphicsMemory::Get(device).Allocate(vertSize);
     memcpy(vb.Memory(), verts, vertSize);
 
-    // Load index buffer
+    // LoadAssimp index buffer
     auto ib = GraphicsMemory::Get(device).Allocate(indexSize);
     memcpy(ib.Memory(), indices, indexSize);
 

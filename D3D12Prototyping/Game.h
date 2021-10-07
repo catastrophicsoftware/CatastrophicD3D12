@@ -12,6 +12,7 @@
 #include "DescriptorHeap.h"
 #include "LinearConstantBuffer.h"
 #include "DirectXHelpers.h"
+#include "Mesh.h"
 
 using namespace DirectX;
 
@@ -104,6 +105,9 @@ private:
     void* pCBMaterialGPUMemory;
     D3D12_VERTEX_BUFFER_VIEW vbView;
     D3D12_GPU_VIRTUAL_ADDRESS cbMaterialMagenta;
+
+    Mesh* testMesh;
+
 
     LinearConstantBuffer* linearBuffer;
     void InitializePipeline();

@@ -159,7 +159,7 @@ SpriteFont::Impl::Impl(
         textureFormat = LoaderHelpers::MakeSRGB(textureFormat);
     }
 
-    // Load the D3D texture.
+    // LoadAssimp the D3D texture.
     CreateTextureResource(
         device,
         upload,
@@ -168,7 +168,7 @@ SpriteFont::Impl::Impl(
         textureStride, textureRows,
         textureData);
 
-    // Load the shader resource view
+    // LoadAssimp the shader resource view
     CreateShaderResourceView(
         device, textureResource.Get(),
         cpuDesc, false);

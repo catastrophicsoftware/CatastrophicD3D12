@@ -229,7 +229,7 @@ Model::~Model()
 }
 
 
-// Load texture resources
+// LoadAssimp texture resources
 int Model::LoadTextures(IEffectTextureFactory& texFactory, int destinationDescriptorOffset) const
 {
     for (size_t i = 0; i < textureNames.size(); ++i)
@@ -241,7 +241,7 @@ int Model::LoadTextures(IEffectTextureFactory& texFactory, int destinationDescri
 }
 
 
-// Load texture resources (helper function)
+// LoadAssimp texture resources (helper function)
 _Use_decl_annotations_
 std::unique_ptr<EffectTextureFactory> Model::LoadTextures(
     ID3D12Device* device,
@@ -268,7 +268,7 @@ std::unique_ptr<EffectTextureFactory> Model::LoadTextures(
 }
 
 
-// Load VB/IB resources for static geometry
+// LoadAssimp VB/IB resources for static geometry
 _Use_decl_annotations_
 void Model::LoadStaticBuffers(
     ID3D12Device* device,
@@ -410,7 +410,7 @@ void Model::LoadStaticBuffers(
 }
 
 
-// Load effects for each mesh piece
+// LoadAssimp effects for each mesh piece
 std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     IEffectFactory& fxFactory,
     const EffectPipelineStateDescription& opaquePipelineState,
@@ -439,7 +439,7 @@ std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     if (partCount == 0)
         return effects;
 
-    // Load an array of effects for each part. We need to have an effect per part because the part's vertex layout
+    // LoadAssimp an array of effects for each part. We need to have an effect per part because the part's vertex layout
     // combines with the material spec to create a unique effect. We rely on the EffectFactory to de-duplicate if it
     // wants to.
     effects.resize(partCount);
@@ -504,7 +504,7 @@ std::shared_ptr<IEffect> Model::CreateEffectForMeshPart(
     return fxFactory.CreateEffect(m, opaquePipelineState, alphaPipelineState, il, textureDescriptorOffset, samplerDescriptorOffset);
 }
 
-// Load effects for each mesh piece with the default factory
+// LoadAssimp effects for each mesh piece with the default factory
 _Use_decl_annotations_
 std::vector<std::shared_ptr<IEffect>> Model::CreateEffects(
     const EffectPipelineStateDescription& opaquePipelineState,

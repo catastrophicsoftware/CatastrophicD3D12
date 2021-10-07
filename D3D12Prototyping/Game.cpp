@@ -7,6 +7,7 @@
 
 #include "VertexTypes.h"
 #include <d3dcompiler.h>
+#include <fstream>
 
 extern void ExitGame() noexcept;
 
@@ -46,6 +47,8 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeDescriptorHeap();
     InitializeHeaps(64, 64);
     InitializePipeline();
+
+    std::string baseDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:

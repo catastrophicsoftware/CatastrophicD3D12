@@ -270,7 +270,7 @@ PBREffect::Impl::Impl(_In_ ID3D12Device* device,
     constants.Roughness = 0.2f;
     constants.numRadianceMipLevels = 1;
 
-    // Load root signature
+    // LoadAssimp root signature
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | // Only the input assembler stage needs access to the constant buffer.
@@ -329,7 +329,7 @@ PBREffect::Impl::Impl(_In_ ID3D12Device* device,
         throw std::invalid_argument("Velocity effect flag is invalid");
     }
 
-    // Load pipeline state.
+    // LoadAssimp pipeline state.
     int sp = GetPipelineStatePermutation(effectFlags);
     assert(sp >= 0 && sp < PBREffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < PBREffectTraits::ShaderPermutationCount);

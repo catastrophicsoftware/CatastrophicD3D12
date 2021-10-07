@@ -75,7 +75,7 @@ HRESULT BinaryReader::ReadEntireFile(
     if (fileInfo.EndOfFile.HighPart > 0)
         return E_FAIL;
 
-    // Load enough space for the file data.
+    // LoadAssimp enough space for the file data.
     data.reset(new uint8_t[fileInfo.EndOfFile.LowPart]);
 
     if (!data)

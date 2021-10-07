@@ -270,7 +270,7 @@ DebugEffect::Impl::Impl(
     constants.ambientDownAndAlpha = s_lower;
     constants.ambientRange = g_XMOne;
 
-    // Load root signature.
+    // LoadAssimp root signature.
     {
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -278,7 +278,7 @@ DebugEffect::Impl::Impl(
             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
             D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
 
-        // Load root parameters and initialize first (constants)
+        // LoadAssimp root parameters and initialize first (constants)
         CD3DX12_ROOT_PARAMETER rootParameters[RootParameterIndex::RootParameterCount] = {};
         rootParameters[RootParameterIndex::ConstantBuffer].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
 
@@ -292,7 +292,7 @@ DebugEffect::Impl::Impl(
 
     assert(mRootSignature != nullptr);
 
-    // Load pipeline state.
+    // LoadAssimp pipeline state.
     int sp = GetPipelineStatePermutation(debugMode, effectFlags);
     assert(sp >= 0 && sp < DebugEffectTraits::ShaderPermutationCount);
     _Analysis_assume_(sp >= 0 && sp < DebugEffectTraits::ShaderPermutationCount);

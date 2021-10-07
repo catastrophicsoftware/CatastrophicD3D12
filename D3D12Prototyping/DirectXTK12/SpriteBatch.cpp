@@ -307,7 +307,7 @@ void SpriteBatch::Impl::DeviceResources::CreateIndexBuffer(_In_ ID3D12Device* de
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(short) * MaxBatchSize * IndicesPerSprite);
 
-    // Load the constant buffer.
+    // LoadAssimp the constant buffer.
     ThrowIfFailed(device->CreateCommittedResource(
         &heapProps,
         D3D12_HEAP_FLAG_NONE,
@@ -330,7 +330,7 @@ void SpriteBatch::Impl::DeviceResources::CreateIndexBuffer(_In_ ID3D12Device* de
     upload.Transition(indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     SetDebugObjectName(indexBuffer.Get(), L"DirectXTK:SpriteBatch Index Buffer");
 
-    // Load the index buffer view
+    // LoadAssimp the index buffer view
     indexBufferView.BufferLocation = indexBuffer->GetGPUVirtualAddress();
     indexBufferView.Format = DXGI_FORMAT_R16_UINT;
     indexBufferView.SizeInBytes = static_cast<UINT>(bufferDesc.Width);
@@ -865,7 +865,7 @@ void SpriteBatch::Impl::RenderBatch(D3D12_GPU_DESCRIPTOR_HANDLE texture, XMVECTO
 _Use_decl_annotations_
 void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite, VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize) noexcept
 {
-    // Load sprite parameters into SIMD registers.
+    // LoadAssimp sprite parameters into SIMD registers.
     XMVECTOR source = XMLoadFloat4A(&sprite->source);
     XMVECTOR destination = XMLoadFloat4A(&sprite->destination);
     XMVECTOR color = XMLoadFloat4A(&sprite->color);

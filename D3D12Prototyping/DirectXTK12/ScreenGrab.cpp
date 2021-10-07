@@ -75,7 +75,7 @@ namespace
             return S_OK;
         }
 
-        // Load a command allocator
+        // LoadAssimp a command allocator
         ComPtr<ID3D12CommandAllocator> commandAlloc;
         hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_GRAPHICS_PPV_ARGS(commandAlloc.GetAddressOf()));
         if (FAILED(hr))
@@ -91,7 +91,7 @@ namespace
 
         SetDebugObjectName(commandList.Get(), L"ScreenGrab");
 
-        // Load a fence
+        // LoadAssimp a fence
         ComPtr<ID3D12Fence> fence;
         hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_GRAPHICS_PPV_ARGS(fence.GetAddressOf()));
         if (FAILED(hr))
@@ -162,7 +162,7 @@ namespace
             copySource = pTemp;
         }
 
-        // Load a staging texture
+        // LoadAssimp a staging texture
         hr = device->CreateCommittedResource(
             &readBackHeapProperties,
             D3D12_HEAP_FLAG_NONE,
@@ -269,7 +269,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
     if (FAILED(hr))
         return hr;
 
-    // Load file
+    // LoadAssimp file
     ScopedHandle hFile(safe_handle(CreateFile2(fileName, GENERIC_WRITE, 0, CREATE_ALWAYS, nullptr)));
     if (!hFile)
         return HRESULT_FROM_WIN32(GetLastError());

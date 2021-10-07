@@ -248,23 +248,23 @@ namespace DirectX
             DrawAlpha(commandList, std::forward<TForwardArgs>(args)...);
         }
 
-        // Load texture resources into an existing Effect Texture Factory
+        // LoadAssimp texture resources into an existing Effect Texture Factory
         int __cdecl LoadTextures(IEffectTextureFactory& texFactory, int destinationDescriptorOffset = 0) const;
 
-        // Load texture resources into a new Effect Texture Factory
+        // LoadAssimp texture resources into a new Effect Texture Factory
         std::unique_ptr<EffectTextureFactory> __cdecl LoadTextures(
             _In_ ID3D12Device* device,
             ResourceUploadBatch& resourceUploadBatch,
             _In_opt_z_ const wchar_t* texturesPath = nullptr,
             D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE) const;
 
-        // Load VB/IB resources for static geometry
+        // LoadAssimp VB/IB resources for static geometry
         void __cdecl LoadStaticBuffers(
             _In_ ID3D12Device* device,
             ResourceUploadBatch& resourceUploadBatch,
             bool keepMemory = false);
 
-        // Load effects using the default effect factory
+        // LoadAssimp effects using the default effect factory
         std::vector<std::shared_ptr<IEffect>> __cdecl CreateEffects(
             const EffectPipelineStateDescription& opaquePipelineState,
             const EffectPipelineStateDescription& alphaPipelineState,
@@ -273,7 +273,7 @@ namespace DirectX
             int textureDescriptorOffset = 0,
             int samplerDescriptorOffset = 0) const;
 
-        // Load effects using a custom effect factory
+        // LoadAssimp effects using a custom effect factory
         std::vector<std::shared_ptr<IEffect>> __cdecl CreateEffects(
             IEffectFactory& fxFactory,
             const EffectPipelineStateDescription& opaquePipelineState,

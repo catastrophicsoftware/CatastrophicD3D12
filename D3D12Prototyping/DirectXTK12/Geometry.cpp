@@ -97,7 +97,7 @@ void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, c
     XMVECTOR tsize = XMLoadFloat3(&size);
     tsize = XMVectorDivide(tsize, g_XMTwo);
 
-    // Load each face in turn.
+    // LoadAssimp each face in turn.
     for (int i = 0; i < FaceCount; i++)
     {
         XMVECTOR normal = faceNormals[i];
@@ -157,7 +157,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
 
     float radius = diameter / 2;
 
-    // Load rings of vertices at progressively higher latitudes.
+    // LoadAssimp rings of vertices at progressively higher latitudes.
     for (size_t i = 0; i <= verticalSegments; i++)
     {
         float v = 1 - float(i) / float(verticalSegments);
@@ -167,7 +167,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
 
         XMScalarSinCos(&dy, &dxz, latitude);
 
-        // Load a single ring of vertices at this latitude.
+        // LoadAssimp a single ring of vertices at this latitude.
         for (size_t j = 0; j <= horizontalSegments; j++)
         {
             float u = float(j) / float(horizontalSegments);
@@ -568,7 +568,7 @@ namespace
     // Helper creates a triangle fan to close the end of a cylinder / cone
     void CreateCylinderCap(VertexCollection& vertices, IndexCollection& indices, size_t tessellation, float height, float radius, bool isTop)
     {
-        // Load cap indices.
+        // LoadAssimp cap indices.
         for (size_t i = 0; i < tessellation - 2; i++)
         {
             size_t i1 = (i + 1) % tessellation;
@@ -595,7 +595,7 @@ namespace
             textureScale = XMVectorMultiply(textureScale, g_XMNegateX);
         }
 
-        // Load cap vertices.
+        // LoadAssimp cap vertices.
         for (size_t i = 0; i < tessellation; i++)
         {
             XMVECTOR circleVector = GetCircleVector(i, tessellation);
@@ -624,7 +624,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
     float radius = diameter / 2;
     size_t stride = tessellation + 1;
 
-    // Load a ring of triangles around the outside of the cylinder.
+    // LoadAssimp a ring of triangles around the outside of the cylinder.
     for (size_t i = 0; i <= tessellation; i++)
     {
         XMVECTOR normal = GetCircleVector(i, tessellation);
@@ -647,7 +647,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
         index_push_back(indices, (i * 2 + 3) % (stride * 2));
     }
 
-    // Load flat triangle fan caps to seal the top and bottom.
+    // LoadAssimp flat triangle fan caps to seal the top and bottom.
     CreateCylinderCap(vertices, indices, tessellation, height, radius, true);
     CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
@@ -673,7 +673,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
     float radius = diameter / 2;
     size_t stride = tessellation + 1;
 
-    // Load a ring of triangles around the outside of the cone.
+    // LoadAssimp a ring of triangles around the outside of the cone.
     for (size_t i = 0; i <= tessellation; i++)
     {
         XMVECTOR circlevec = GetCircleVector(i, tessellation);
@@ -700,7 +700,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
         index_push_back(indices, (i * 2 + 1) % (stride * 2));
     }
 
-    // Load flat triangle fan caps to seal the bottom.
+    // LoadAssimp flat triangle fan caps to seal the bottom.
     CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
     // Build RH above
@@ -729,7 +729,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
 
         float outerAngle = float(i) * XM_2PI / float(tessellation) - XM_PIDIV2;
 
-        // Load a transform matrix that will align geometry to
+        // LoadAssimp a transform matrix that will align geometry to
         // slice perpendicularly though the current ring position.
         XMMATRIX transform = XMMatrixTranslation(diameter / 2, 0, 0) * XMMatrixRotationY(outerAngle);
 
@@ -743,7 +743,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
 
             XMScalarSinCos(&dy, &dx, innerAngle);
 
-            // Load a vertex.
+            // LoadAssimp a vertex.
             XMVECTOR normal = XMVectorSet(dx, dy, 0, 0);
             XMVECTOR position = XMVectorScale(normal, thickness / 2);
             XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
@@ -1137,14 +1137,14 @@ namespace
             controlPoints[i] = XMVectorMultiply(TeapotControlPoints[patch.indices[i]], scale);
         }
 
-        // Load the index data.
+        // LoadAssimp the index data.
         size_t vbase = vertices.size();
         Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
                                    {
                                        index_push_back(indices, vbase + index);
                                    });
 
-                                   // Load the vertex data.
+                                   // LoadAssimp the vertex data.
         Bezier::CreatePatchVertices(controlPoints, tessellation, isMirrored, [&](FXMVECTOR position, FXMVECTOR normal, FXMVECTOR textureCoordinate)
                                     {
                                         vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));

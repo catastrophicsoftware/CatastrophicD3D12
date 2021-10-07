@@ -63,7 +63,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         if (!RegisterClassExW(&wcex))
             return 1;
 
-        // Load window
+        // LoadAssimp window
         int w, h;
         g_game->GetDefaultSize(w, h);
 

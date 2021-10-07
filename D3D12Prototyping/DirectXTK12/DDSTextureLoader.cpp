@@ -488,7 +488,7 @@ namespace
             *outIsCubeMap = isCubeMap;
         }
 
-        // Load the texture
+        // LoadAssimp the texture
         size_t numberOfResources = (resDim == D3D12_RESOURCE_DIMENSION_TEXTURE3D)
             ? 1 : arraySize;
         numberOfResources *= mipCount;

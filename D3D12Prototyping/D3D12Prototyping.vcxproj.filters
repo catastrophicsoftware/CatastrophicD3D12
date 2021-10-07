@@ -169,6 +169,9 @@
     <ClInclude Include="Mesh.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="tinyobj_loader_c.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -317,6 +320,9 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyobj_loader_c.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>

@@ -324,7 +324,7 @@ private:
     // ========================
 
     /**
-     * @brief Load the threads in the pool and assign a worker to each thread.
+     * @brief LoadAssimp the threads in the pool and assign a worker to each thread.
      */
     void create_threads()
     {
