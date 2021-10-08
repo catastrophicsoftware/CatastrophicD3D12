@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GPUDescriptorHeap.h"
+#include "Exceptions.h"
 
 GPUDescriptorHeap::GPUDescriptorHeap(ID3D12Device* pGPU, uint64 descriptorCount, D3D12_DESCRIPTOR_HEAP_TYPE heapType, bool shaderVisible)
 {
@@ -7,6 +8,7 @@ GPUDescriptorHeap::GPUDescriptorHeap(ID3D12Device* pGPU, uint64 descriptorCount,
 	count = descriptorCount;
 	this->heapType = heapType;
 	this->shaderVisible = shaderVisible;
+	index = 0;
 
 	D3D12_DESCRIPTOR_HEAP_DESC desc{};
 	desc.Type = heapType;
@@ -22,6 +24,12 @@ GPUDescriptorHeap::GPUDescriptorHeap(ID3D12Device* pGPU, uint64 descriptorCount,
 		incrementSize = GPU->GetDescriptorHandleIncrementSize(heapType);
 		cpuHeapStart = DescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 		gpuHeapStart = DescriptorHeap->GetGPUDescriptorHandleForHeapStart();
+
+		for (int i = 0; i < count; ++i)
+		{
+			auto unusedDescriptorHandle = GetDescriptor(i);
+			UnusedHandles.push(unusedDescriptorHandle);
+		}
 	}
 }
 
@@ -35,6 +43,19 @@ GPUDescriptorHandle GPUDescriptorHeap::GetDescriptor(uint32 index)
 	assert(index <= count);
 
 	return GPUDescriptorHandle(this, index);
+}
+
+GPUDescriptorHandle GPUDescriptorHeap::GetUnusedDescriptor()
+{
+	if (!UnusedHandles.empty())
+	{
+		GPUDescriptorHandle unusedHandle = UnusedHandles.front();
+		UnusedHandles.pop();
+		index++;
+		return unusedHandle;
+	}
+	else
+		throw DescriptorPoolFullException("descriptor pool has no unused descriptors!");
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::GetCPUHandle(uint32 index)
@@ -75,6 +96,16 @@ D3D12_GPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::FirstGPUHandle() const
 uint64 GPUDescriptorHeap::Count() const
 {
 	return count;
+}
+
+uint32 GPUDescriptorHeap::UsedDescriptors() const
+{
+	return index;
+}
+
+bool GPUDescriptorHeap::IsFull() const
+{
+	return (index >= (count-1));
 }
 
 void GPUDescriptorHeap::Destroy()

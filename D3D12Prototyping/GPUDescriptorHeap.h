@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include <queue>
 
 class GPUDescriptorHeap;
 
@@ -23,6 +24,7 @@ public:
 	~GPUDescriptorHeap();
 
 	GPUDescriptorHandle GetDescriptor(uint32 index);
+	GPUDescriptorHandle GetUnusedDescriptor();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(uint32 index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32 index);
@@ -31,7 +33,8 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE FirstGPUHandle() const;
 
 	uint64 Count() const;
-
+	uint32 UsedDescriptors() const;
+	bool IsFull() const;
 	void Destroy();
 private:
 	ID3D12Device* GPU;
@@ -45,4 +48,9 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapStart;
 
 	uint32 incrementSize;
+	uint32 index;
+
+	//std::vector<GPUDescriptorHandle> UnusedHandles;
+	//std::vector<GPUDescriptorHandle> UsedHandles;
+	std::queue<GPUDescriptorHandle> UnusedHandles;
 };
