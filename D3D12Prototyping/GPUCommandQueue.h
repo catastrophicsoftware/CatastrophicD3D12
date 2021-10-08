@@ -25,7 +25,7 @@ public:
     ID3D12Fence* GetFence() { return mFence; }
 
     uint64 ExecuteCommandList(ID3D12CommandList* List);
-    InflightCommandBuffer ExecuteAndGetInflightHandle(ID3D12CommandList* List);
+    InflightCommandList ExecuteAndGetInflightHandle(ID3D12CommandList* List);
 
     void Destroy();
 private:

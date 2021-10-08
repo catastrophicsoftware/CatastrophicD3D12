@@ -3,14 +3,14 @@
 
 class Direct3DQueue;
 
-struct InflightCommandBuffer
+struct InflightCommandList
 {
 	ID3D12CommandList* CMD;
 	Direct3DQueue* pGPUQueue;
 	uint64 fenceValue;
 
-	InflightCommandBuffer();
-	InflightCommandBuffer(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue);
+	InflightCommandList();
+	InflightCommandList(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue);
 
 	void CPUWait();
 	bool IsComplete() const;

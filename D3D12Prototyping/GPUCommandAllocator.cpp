@@ -46,24 +46,24 @@ void GPUCommandAllocator::Destroy()
     listsAllocated = 0;
 }
 
-InflightCommandBuffer::InflightCommandBuffer()
+InflightCommandList::InflightCommandList()
 {
 }
 
-InflightCommandBuffer::InflightCommandBuffer(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue)
+InflightCommandList::InflightCommandList(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue)
 {
     CMD = pCMDList;
     this->pGPUQueue = pGPUQueue;
     this->fenceValue = fenceValue;
 }
 
-void InflightCommandBuffer::CPUWait()
+void InflightCommandList::CPUWait()
 {
     //block current thread until gpu execution is complete
     pGPUQueue->WaitForFenceCPUBlocking(fenceValue);
 }
 
-bool InflightCommandBuffer::IsComplete() const
+bool InflightCommandList::IsComplete() const
 {
     return pGPUQueue->GetLastCompletedFence() >= fenceValue;
 }
