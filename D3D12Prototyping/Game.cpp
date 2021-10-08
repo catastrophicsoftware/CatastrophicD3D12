@@ -231,7 +231,7 @@ void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, ui
         throw new std::runtime_error("failed to create dynamic upload heap!");
     }
 
-    UINT staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
+    UINT64 staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
     CD3DX12_HEAP_DESC static_heap_desc = CD3DX12_HEAP_DESC(staticHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
 
     if (FAILED(GPU->CreateHeap(&static_heap_desc, IID_PPV_ARGS(&StaticHeap))))
@@ -239,7 +239,7 @@ void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, ui
         throw new std::runtime_error("failed to create static heap!");
     }
 
-    UINT textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
+    UINT64 textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
     CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
 
     if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))
