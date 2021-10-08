@@ -52,6 +52,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeHeaps(128, 128, 128);
     InitializeCopyEngine();
+    InitializeDescriptorHeap();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -236,6 +237,11 @@ void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, ui
     {
         throw new std::runtime_error("failed to create texture heap!");
     }
+}
+
+void Game::InitializeDescriptorHeap()
+{
+    SRVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 ID3D12GraphicsCommandList* Game::GetCopyCommandList()

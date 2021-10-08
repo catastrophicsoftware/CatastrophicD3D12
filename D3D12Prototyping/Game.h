@@ -9,7 +9,7 @@
 #include "GamePad.h"
 #include "Keyboard.h"
 #include "thread_pool.h"
-#include "DescriptorHeap.h"
+#include "GPUDescriptorHeap.h"
 #include "LinearConstantBuffer.h"
 #include "DirectXHelpers.h"
 #include "Mesh.h"
@@ -100,6 +100,7 @@ private:
 
     //------------------------------------------------------------------------------------------------------------------
     //gpu memory management
+    //todo: replace with proper gpu memory manager
     ID3D12Heap* DynamicHeap;
     ID3D12Heap* StaticHeap;
     ID3D12Heap* TextureHeap;
@@ -146,6 +147,8 @@ private:
     void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
     //------------------------------------------------------------------------------------------------------------------
     StaticGeometryBuffer* GeoBuffer;
+    GPUDescriptorHeap* SRVHeap;
+    void InitializeDescriptorHeap();
 
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
