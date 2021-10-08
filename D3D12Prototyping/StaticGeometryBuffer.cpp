@@ -93,39 +93,45 @@ ID3D12Resource* StaticGeometryBuffer::GetIndexBuffer() const
 
 void StaticGeometryBuffer::Commit()
 {
-	auto copyCMD = CopyCmdAlloc->GetCommandList();
+	if (!locked)
+	{
+		auto copyCMD = CopyCmdAlloc->GetCommandList();
 
-	copyCMD->CopyBufferRegion(StaticVertexBuffer, 0, StagingVertexBuffer, 0, vertexIndex); //copy vertex data
-	copyCMD->CopyBufferRegion(StaticIndexBuffer, 0, StagingIndexBuffer, 0, sizeof(uint32) * indexIndex);
+		copyCMD->CopyBufferRegion(StaticVertexBuffer, 0, StagingVertexBuffer, 0, vertexIndex); //copy vertex data
+		copyCMD->CopyBufferRegion(StaticIndexBuffer, 0, StagingIndexBuffer, 0, sizeof(uint32) * indexIndex);
 
-	auto workVal = CopyQueue->ExecuteCommandList(copyCMD);
-	CopyQueue->WaitForFenceCPUBlocking(workVal);
+		auto workVal = CopyQueue->ExecuteCommandList(copyCMD);
+		CopyQueue->WaitForFenceCPUBlocking(workVal);
 
-	auto transitionCMD = DctCmdAlloc->GetCommandList();
-	CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticVertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, 0);
-	CD3DX12_RESOURCE_BARRIER ibBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticIndexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER, 0);
-	CD3DX12_RESOURCE_BARRIER barriers[2] = { vbBarrier,ibBarrier };
+		auto transitionCMD = DctCmdAlloc->GetCommandList();
+		CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticVertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, 0);
+		CD3DX12_RESOURCE_BARRIER ibBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticIndexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER, 0);
+		CD3DX12_RESOURCE_BARRIER barriers[2] = { vbBarrier,ibBarrier };
 
-	transitionCMD->ResourceBarrier(2, barriers);
-	workVal = GraphicsQueue->ExecuteCommandList(transitionCMD);
-	GraphicsQueue->WaitForFenceCPUBlocking(workVal);
-	locked = true;
+		transitionCMD->ResourceBarrier(2, barriers);
+		workVal = GraphicsQueue->ExecuteCommandList(transitionCMD);
+		GraphicsQueue->WaitForFenceCPUBlocking(workVal);
+		locked = true;
+	}
 }
 
 void StaticGeometryBuffer::Reset()
 {
-	vertexIndex = 0;
-	indexIndex  = 0;
+	if (locked)
+	{
+		vertexIndex = 0;
+		indexIndex = 0;
 
-	CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticVertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST, 0);
-	CD3DX12_RESOURCE_BARRIER ibBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticIndexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST, 0);
-	CD3DX12_RESOURCE_BARRIER barriers[2] = { vbBarrier,ibBarrier };
+		CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticVertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST, 0);
+		CD3DX12_RESOURCE_BARRIER ibBarrier = CD3DX12_RESOURCE_BARRIER::Transition(StaticIndexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST, 0);
+		CD3DX12_RESOURCE_BARRIER barriers[2] = { vbBarrier,ibBarrier };
 
-	auto transitionCMD = DctCmdAlloc->GetCommandList();
-	transitionCMD->ResourceBarrier(2, barriers); //transition buffers to copy destination optimized
+		auto transitionCMD = DctCmdAlloc->GetCommandList();
+		transitionCMD->ResourceBarrier(2, barriers); //transition buffers to copy destination optimized
 
-	auto workVal = GraphicsQueue->ExecuteCommandList(transitionCMD);
-	GraphicsQueue->WaitForFenceCPUBlocking(workVal); //wait for transition to complete
-	locked = false;
-	//resource is now ready for data to be written into staging buffers and re-comitted to dedicated gpu memory
+		auto workVal = GraphicsQueue->ExecuteCommandList(transitionCMD);
+		GraphicsQueue->WaitForFenceCPUBlocking(workVal); //wait for transition to complete
+		locked = false;
+		//resource is now ready for data to be written into staging buffers and re-comitted to dedicated gpu memory
+	}
 }
