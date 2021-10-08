@@ -192,6 +192,7 @@
     <ClInclude Include="GPUFence.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="StaticGeometryBuffer.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Texture2D.h" />
@@ -254,6 +255,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Gaming.Desktop.x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StaticGeometryBuffer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="tinyobj_loader_c.cpp" />

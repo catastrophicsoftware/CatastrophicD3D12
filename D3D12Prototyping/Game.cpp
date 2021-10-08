@@ -51,17 +51,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     std::string baseDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
 
-    Test = new Texture2D(m_deviceResources->GetD3DDevice());
-    Test->Create(256, 256, DXGI_FORMAT_R8G8B8A8_UNORM);
-
-    uint32* pixels = new uint32[256 * 256];
-    for (int i = 0; i < (256 * 256); ++i)
-        pixels[i] = 0x00FF00FF; //red
-
-    auto copyCMD = GetCopyCommandList();
-    Test->Update(copyCMD, pixels);
-    auto val = CopyQueue->ExecuteCommandList(copyCMD);
-    CopyQueue->WaitForFenceCPUBlocking(val); //wait for copy work to complete
+    GeoBuffer = new StaticGeometryBuffer(GPU, CopyQueue);
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -347,6 +337,9 @@ void Game::InitializePipeline()
     {
         float aspect_ratio = m_deviceResources->GetScreenViewport().Width / m_deviceResources->GetScreenViewport().Height;
 
+        GeoBuffer = new StaticGeometryBuffer(GPU, CopyQueue);
+        GeoBuffer->Create((1024 * 1024) * 64); //64MB static geometry buffer
+
         VertexPosition vertices[] =
         {
             XMFLOAT3{ 0.0f, 0.25f * aspect_ratio, 0.0f },
@@ -355,23 +348,11 @@ void Game::InitializePipeline()
         };
 
         UINT vbSize = sizeof(vertices);
+        auto vbMem = GeoBuffer->WriteVertices(&vertices, sizeof(XMFLOAT3), 3);
 
-        auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vbSize);
-        GPU->CreateCommittedResource(&heapProperties,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&VertexBuffer));
+        GeoBuffer->Commit();
 
-        void* GPUMem;
-        CD3DX12_RANGE readRange(0, 0);
-        VertexBuffer->Map(0, &readRange, &GPUMem);
-        memcpy(GPUMem, vertices, sizeof(vertices));
-        VertexBuffer->Unmap(0, nullptr);
-
-        vbView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
+        vbView.BufferLocation = vbMem;
         vbView.SizeInBytes = vbSize;
         vbView.StrideInBytes = sizeof(VertexPosition);
     }

@@ -16,6 +16,7 @@
 #include "GPUCommandAllocator.h"
 #include "GPUCommandQueue.h"
 #include "Texture2D.h"
+#include "StaticGeometryBuffer.h"
 
 using namespace DirectX;
 
@@ -135,6 +136,7 @@ private:
     //------------------------------------------------------------------------------------------
     Texture2D* Test;
 
+    StaticGeometryBuffer* GeoBuffer;
 
     ID3D12RootSignature* RootSig;
     ID3DBlob* vs;
@@ -150,14 +152,14 @@ private:
 
     Mesh* testMesh;
 
-    //----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     //copy engine
     Direct3DQueue* CopyQueue;
     GPUCommandAllocator* CopyCommandAllocator; //current limitation: only one thread can be creating copy commands
     ID3D12GraphicsCommandList* GetCopyCommandList();
     void InitializeCopyEngine();
     std::mutex copyEngineLock;
-    //----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
 
     LinearConstantBuffer* linearBuffer;
     void InitializePipeline();
