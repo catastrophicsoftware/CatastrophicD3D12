@@ -180,6 +180,9 @@
     <ClInclude Include="StaticGeometryBuffer.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="GPUDescriptorHeap.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -339,6 +342,9 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="StaticGeometryBuffer.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUDescriptorHeap.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>

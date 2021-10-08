@@ -189,6 +189,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GPUCommandAllocator.h" />
     <ClInclude Include="GPUCommandQueue.h" />
+    <ClInclude Include="GPUDescriptorHeap.h" />
     <ClInclude Include="GPUFence.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
@@ -246,6 +247,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GPUCommandAllocator.cpp" />
     <ClCompile Include="GPUCommandQueue.cpp" />
+    <ClCompile Include="GPUDescriptorHeap.cpp" />
     <ClCompile Include="GPUFence.cpp" />
     <ClCompile Include="LinearConstantBuffer.cpp" />
     <ClCompile Include="Main.cpp" />

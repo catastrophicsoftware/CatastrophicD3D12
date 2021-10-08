@@ -18,13 +18,25 @@
 #include "Texture2D.h"
 #include "StaticGeometryBuffer.h"
 
-using namespace DirectX;
-
-struct view_projection
+struct GPUHeapAllocation
 {
-    XMMATRIX view;
-    XMMATRIX projection;
+    ID3D12Heap* pHeap;
+    uint64      offset;
+    uint64      size;
+
+    GPUHeapAllocation()
+    {
+
+    }
+    GPUHeapAllocation(ID3D12Heap* pHeap, uint64 offset, uint64 size)
+    {
+        this->pHeap = pHeap;
+        this->offset = offset;
+        this->size = size;
+    }
 };
+
+using namespace DirectX;
 
 // A basic game implementation that creates a D3D12 device and
 // provides a game loop.
@@ -86,7 +98,7 @@ private:
     //
 
 
-    //------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     //gpu memory management
     ID3D12Heap* DynamicHeap;
     ID3D12Heap* StaticHeap;
@@ -132,22 +144,8 @@ private:
     }
     
     void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
-
-    //-----------------------------------------------------------------------------------------
-
+    //------------------------------------------------------------------------------------------------------------------
     StaticGeometryBuffer* GeoBuffer;
-
-    ID3D12RootSignature* RootSig;
-    ID3DBlob* vs;
-    ID3DBlob* ps;
-    ID3D12PipelineState* PSO;
-    ID3D12Resource* VertexBuffer;
-    ID3D12Resource* CBViewProjection;
-    ID3D12Resource* CBWorld;
-    ID3D12Resource* CBMaterial;
-    void* pCBMaterialGPUMemory;
-    D3D12_VERTEX_BUFFER_VIEW vbView;
-    D3D12_GPU_VIRTUAL_ADDRESS cbMaterialMagenta;
 
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
@@ -158,10 +156,8 @@ private:
     std::mutex copyEngineLock;
     //------------------------------------------------------------------------------------------------------------------
 
-    LinearConstantBuffer* linearBuffer;
-    void InitializePipeline();
-
     thread_pool BackgroundPool;
+
     // Rendering loop timer.
     DX::StepTimer m_timer;
 };

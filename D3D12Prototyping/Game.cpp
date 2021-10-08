@@ -52,7 +52,6 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeHeaps(128, 128, 128);
     InitializeCopyEngine();
-    InitializePipeline();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -105,16 +104,7 @@ void Game::Render()
     auto commandList = m_deviceResources->GetCommandList();
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render"); // See pch.h for info
     //-----------------------------------------------------------------------------------------
-    commandList->SetPipelineState(PSO);
-    commandList->SetGraphicsRootSignature(RootSig);
 
-    commandList->SetGraphicsRootConstantBufferView(0, CBViewProjection->GetGPUVirtualAddress());
-    commandList->SetGraphicsRootConstantBufferView(1, CBWorld->GetGPUVirtualAddress());
-    commandList->SetGraphicsRootConstantBufferView(2, cbMaterialMagenta);
-
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 1, &vbView);
-    commandList->DrawInstanced(3, 1, 0, 0);
 
     //------------------------------------------------------------------------------------------
     PIXEndEvent(commandList);
@@ -259,164 +249,6 @@ void Game::InitializeCopyEngine()
 {
     CopyQueue = new Direct3DQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
     CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
-}
-
-void Game::InitializePipeline()
-{
-    CD3DX12_ROOT_PARAMETER1 rootParameters[3];
-
-    linearBuffer = new LinearConstantBuffer(GPU, 8, DynamicHeap, DynamicHeapIndex);
-    AdvanceDynamicHeap((1024 * 1024) * 8);
-
-    XMFLOAT4 magenta = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-    cbMaterialMagenta = linearBuffer->Write(&magenta, sizeof(magenta));
-
-    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
-    rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
-    rootParameters[2].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
-
-    D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-
-
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
-
-    ComPtr<ID3DBlob> signature;
-    ComPtr<ID3DBlob> error;
-    D3DX12SerializeVersionedRootSignature(&rootSignatureDesc,D3D_ROOT_SIGNATURE_VERSION_1_1, &signature, &error);
-    GPU->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&RootSig));
-
-
-    {
-        CD3DX12_SHADER_BYTECODE vsBytecode;
-        CD3DX12_SHADER_BYTECODE psBytecode;
-
-        {
-#include "compiled_shaders\simple_vs.h"
-            vsBytecode = CD3DX12_SHADER_BYTECODE(g_main, ARRAYSIZE(g_main));
-        }
-
-        {
-#include "compiled_shaders\simple_ps.h"
-            psBytecode = CD3DX12_SHADER_BYTECODE(g_main, ARRAYSIZE(g_main));
-        }
-
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
-
-        psoDesc.InputLayout = VertexPosition::InputLayout;
-        psoDesc.pRootSignature = RootSig;
-
-        psoDesc.VS = vsBytecode;
-        psoDesc.PS = psBytecode;
-        psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        psoDesc.DepthStencilState.DepthEnable = FALSE;
-        psoDesc.DepthStencilState.StencilEnable = FALSE;
-        psoDesc.SampleMask = UINT_MAX;
-        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        psoDesc.NumRenderTargets = 1;
-        psoDesc.RTVFormats[0] = m_deviceResources->GetBackBufferFormat();
-        psoDesc.SampleDesc.Count = 1;
-
-        if (FAILED(GPU->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&PSO))))
-        {
-            throw std::runtime_error("failed to create pipeline state object!");
-        }
-    }
-
-    {
-        float aspect_ratio = m_deviceResources->GetScreenViewport().Width / m_deviceResources->GetScreenViewport().Height;
-
-        GeoBuffer = new StaticGeometryBuffer(GPU, CopyQueue);
-        GeoBuffer->Create(64); //64MB static geometry buffer
-
-        VertexPosition vertices[] =
-        {
-            XMFLOAT3{ 0.0f, 0.25f * aspect_ratio, 0.0f },
-            XMFLOAT3{ 0.5f, -0.25f * aspect_ratio, 0.0f },
-            XMFLOAT3{ -0.5f, -0.25f * aspect_ratio, 0.0f }
-        };
-
-        UINT vbSize = sizeof(vertices);
-        auto vbMem = GeoBuffer->WriteVertices(&vertices, sizeof(XMFLOAT3), 3);
-
-        GeoBuffer->Commit();
-
-        vbView.BufferLocation = vbMem;
-        vbView.SizeInBytes = vbSize;
-        vbView.StrideInBytes = sizeof(VertexPosition);
-    }
-
-
-    {
-        float aspect_ratio = m_deviceResources->GetScreenViewport().Width / m_deviceResources->GetScreenViewport().Height;
-        XMMATRIX View = XMMatrixLookAtLH(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
-        XMMATRIX Projection = XMMatrixPerspectiveFovLH(XM_PI / 4, aspect_ratio, 0.1f, 10000.0f);
-
-        View = XMMatrixTranspose(View);
-        Projection = XMMatrixTranspose(Projection);
-
-        view_projection vp{};
-        vp.view = View;
-        vp.projection = Projection;
-        
-        UINT cbSize = 256;
-        auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-        GPU->CreateCommittedResource(&heapProperties,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&CBViewProjection));
-
-        void* GPUMem;
-        CD3DX12_RANGE readRange(0, 0);
-        CBViewProjection->Map(0, &readRange, &GPUMem);
-        memcpy(GPUMem, &vp, sizeof(view_projection));
-        CBViewProjection->Unmap(0, nullptr);
-    }
-
-
-    {
-        XMMATRIX World = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-        World = XMMatrixTranspose(World);
-
-        UINT cbSize = 256; //minimum constant buffer size.
-        auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-        GPU->CreateCommittedResource(&heapProperties,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&CBWorld));
-
-        void* GPUMem;
-        CD3DX12_RANGE readRange(0, 0);
-        CBWorld->Map(0, &readRange, &GPUMem);
-        memcpy(GPUMem, &World, sizeof(XMMATRIX));
-        CBWorld->Unmap(0, nullptr);
-    }
-
-
-    {
-        UINT cbSize = (256 * 3); //3 float4s, inneficient
-        auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize, D3D12_RESOURCE_FLAG_NONE);
-        GPU->CreatePlacedResource(DynamicHeap, DynamicHeapIndex, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&CBMaterial));
-        DynamicHeapIndex = AlignUp(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT); //update dynamic heap index for next buffer placement
-        
-
-        CD3DX12_RANGE readRange(0, 0);
-        CBMaterial->Map(0, &readRange, &pCBMaterialGPUMemory);
-
-        XMFLOAT4 blue = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
-        memcpy(pCBMaterialGPUMemory, &blue, sizeof(XMFLOAT4));
-    }
 }
 
 void Game::OnDeviceLost()
