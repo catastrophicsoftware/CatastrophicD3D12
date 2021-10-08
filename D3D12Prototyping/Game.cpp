@@ -228,32 +228,28 @@ void Game::InitializeGPUMemory()
     }
 }
 
-//void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB)
-//{
-//    UINT64 dynamicHeapSize = (1024 * 1024) * dynamicHeapSizeMB;
-//    CD3DX12_HEAP_DESC dynamic_heap_desc = CD3DX12_HEAP_DESC(dynamicHeapSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT,D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
-//
-//    if (FAILED(GPU->CreateHeap(&dynamic_heap_desc, IID_PPV_ARGS(&DynamicHeap))))
-//    {
-//        throw new std::runtime_error("failed to create dynamic upload heap!");
-//    }
-//
-//    UINT64 staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
-//    CD3DX12_HEAP_DESC static_heap_desc = CD3DX12_HEAP_DESC(staticHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
-//
-//    if (FAILED(GPU->CreateHeap(&static_heap_desc, IID_PPV_ARGS(&StaticHeap))))
-//    {
-//        throw new std::runtime_error("failed to create static heap!");
-//    }
-//
-//    UINT64 textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
-//    CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
-//
-//    if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))
-//    {
-//        throw new std::runtime_error("failed to create texture heap!");
-//    }
-//}
+ID3D12Resource* Game::CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool cpuWritable)
+{
+    D3D12MA::ALLOCATION_DESC allocDesc{};
+    allocDesc.HeapType = cpuWritable ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT;
+    allocDesc.Flags = D3D12MA::ALLOCATION_FLAGS::ALLOCATION_FLAG_NONE;
+    
+    ID3D12Resource* pNewResource = nullptr;
+
+    D3D12_RESOURCE_STATES initialState = cpuWritable ? D3D12_RESOURCE_STATE_GENERIC_READ : D3D12_RESOURCE_STATE_COPY_DEST;
+    //generic-read for upload heap, otherwise copy_dest state for pending copy upload
+
+    if (FAILED(GPUMemory->CreateResource(&allocDesc,
+        resourceDesc,
+        initialState,
+        nullptr,
+        nullptr,
+        IID_PPV_ARGS(&pNewResource))))
+    {
+        throw std::runtime_error("failed to create resource!");
+    }
+}
+
 
 void Game::InitializeDescriptorHeap()
 {
