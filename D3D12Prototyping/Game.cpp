@@ -46,9 +46,22 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeDescriptorHeap();
     InitializeHeaps(64, 64);
+    InitializeCopyEngine();
     InitializePipeline();
 
     std::string baseDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
+
+    Test = new Texture2D(m_deviceResources->GetD3DDevice());
+    Test->Create(256, 256, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+    uint32* pixels = new uint32[256 * 256];
+    for (int i = 0; i < (256 * 256); ++i)
+        pixels[i] = 0x00FF00FF; //red
+
+    auto copyCMD = GetCopyCommandList();
+    Test->Update(copyCMD, pixels);
+    auto val = CopyQueue->ExecuteCommandList(copyCMD);
+    CopyQueue->WaitForFenceCPUBlocking(val); //wait for copy work to complete
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -195,6 +208,11 @@ void Game::GetDefaultSize(int& width, int& height) const noexcept
     width = 1280;
     height = 720;
 }
+
+std::mutex& Game::GetCopyEngineLock()
+{
+    return copyEngineLock;
+}
 #pragma endregion
 
 #pragma region Direct3D Resources
@@ -236,6 +254,27 @@ void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB)
     {
         throw new std::runtime_error("failed to create static heap!");
     }
+
+    UINT textureHeapSize = (1024 * 1024) * 128;
+    CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
+
+    if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))
+    {
+        throw new std::runtime_error("failed to create texture heap!");
+    }
+}
+
+ID3D12GraphicsCommandList* Game::GetCopyCommandList()
+{
+    std::lock_guard<std::mutex> _lock(copyEngineLock);
+
+    return CopyCommandAllocator->GetCommandList();
+}
+
+void Game::InitializeCopyEngine()
+{
+    CopyQueue = new Direct3DQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
+    CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
 }
 
 void Game::InitializePipeline()

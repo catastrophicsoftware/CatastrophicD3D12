@@ -1,6 +1,12 @@
 #pragma once
 #include "pch.h"
 
+struct InflightCommandBuffer
+{
+	ID3D12GraphicsCommandList* CMD;
+	UINT64 fenceValue;
+};
+
 class GPUCommandAllocator
 {
 public:

@@ -186,7 +186,7 @@ void DeviceResources::CreateDeviceResources()
         m_d3dFeatureLevel = m_d3dMinFeatureLevel;
     }
 
-    // LoadAssimp the command queue.
+    // Load the command queue.
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -195,7 +195,7 @@ void DeviceResources::CreateDeviceResources()
 
     m_commandQueue->SetName(L"DeviceResources");
 
-    // LoadAssimp descriptor heaps for render target views and depth stencil views.
+    // Load descriptor heaps for render target views and depth stencil views.
     D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = {};
     rtvDescriptorHeapDesc.NumDescriptors = m_backBufferCount;
     rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -217,7 +217,7 @@ void DeviceResources::CreateDeviceResources()
         m_dsvDescriptorHeap->SetName(L"DeviceResources");
     }
 
-    // LoadAssimp a command allocator for each back buffer that will be rendered to.
+    // Load a command allocator for each back buffer that will be rendered to.
     for (UINT n = 0; n < m_backBufferCount; n++)
     {
         ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
@@ -227,13 +227,13 @@ void DeviceResources::CreateDeviceResources()
         m_commandAllocators[n]->SetName(name);
     }
 
-    // LoadAssimp a command list for recording graphics commands.
+    // Load a command list for recording graphics commands.
     ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
     ThrowIfFailed(m_commandList->Close());
 
     m_commandList->SetName(L"DeviceResources");
 
-    // LoadAssimp a fence for tracking GPU execution progress.
+    // Load a fence for tracking GPU execution progress.
     ThrowIfFailed(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
     m_fenceValues[m_backBufferIndex]++;
 

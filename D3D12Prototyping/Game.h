@@ -13,6 +13,9 @@
 #include "LinearConstantBuffer.h"
 #include "DirectXHelpers.h"
 #include "Mesh.h"
+#include "GPUCommandAllocator.h"
+#include "GPUCommandQueue.h"
+#include "Texture2D.h"
 
 using namespace DirectX;
 
@@ -58,6 +61,7 @@ public:
     // Properties
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
+    std::mutex& GetCopyEngineLock();
 private:
     void Update(DX::StepTimer const& timer);
     void Render();
@@ -72,14 +76,34 @@ private:
     // Device resources.
     std::unique_ptr<DX::DeviceResources> m_deviceResources;
 
+    //input
     std::unique_ptr<DirectX::GamePad>  Controller;
     std::unique_ptr<DirectX::Keyboard> Keyboard;
     DirectX::Keyboard::State KeyboardState;
     DirectX::GamePad::State  GamepadState;
     void InitializeInput();
+    //
 
+
+    //------------------------------------------------------------------------------------------
+    //gpu memory management
     ID3D12Heap* DynamicHeap;
     ID3D12Heap* StaticHeap;
+    ID3D12Heap* TextureHeap;
+
+    UINT64 StaticHeapIndex;
+    inline void AdvanceStaticHeap(uint64 lastBufferSize)
+    {
+        if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+        {
+            DynamicHeapIndex += lastBufferSize; //add last buffer size
+            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+        }
+        //last buffer placement size is not larger than single page of gpu memory
+        //just align forward
+        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    }
+
     UINT64 DynamicHeapIndex;
     inline void AdvanceDynamicHeap(uint64 lastBufferSize)
     {
@@ -92,7 +116,25 @@ private:
         //just align forward
         DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex+1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
     }
+
+    UINT64 TextureHeapIndex;
+    inline void AdvanceTextureHeapIndex(uint64 lastTextureSize)
+    {
+        if (lastTextureSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+        {
+            DynamicHeapIndex += lastTextureSize; //add last buffer size
+            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+        }
+        //last buffer placement size is not larger than single page of gpu memory
+        //just align forward
+        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    }
+    
     void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB);
+
+    //------------------------------------------------------------------------------------------
+    Texture2D* Test;
+
 
     ID3D12RootSignature* RootSig;
     ID3DBlob* vs;
@@ -108,6 +150,14 @@ private:
 
     Mesh* testMesh;
 
+    //----------------------------------------------------
+    //copy engine
+    Direct3DQueue* CopyQueue;
+    GPUCommandAllocator* CopyCommandAllocator; //current limitation: only one thread can be creating copy commands
+    ID3D12GraphicsCommandList* GetCopyCommandList();
+    void InitializeCopyEngine();
+    std::mutex copyEngineLock;
+    //----------------------------------------------------
 
     LinearConstantBuffer* linearBuffer;
     void InitializePipeline();
