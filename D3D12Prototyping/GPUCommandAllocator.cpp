@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GPUCommandAllocator.h"
+#include "GPUCommandQueue.h"
 
 GPUCommandAllocator::GPUCommandAllocator(ID3D12Device* pGPU, D3D12_COMMAND_LIST_TYPE Type)
 {
@@ -14,8 +15,7 @@ GPUCommandAllocator::GPUCommandAllocator(ID3D12Device* pGPU, D3D12_COMMAND_LIST_
 
 GPUCommandAllocator::GPUCommandAllocator()
 {
-    Allocator->Release();
-    listsAllocated = 0;
+    Destroy();
 }
 
 ID3D12GraphicsCommandList* GPUCommandAllocator::GetCommandList()
@@ -38,4 +38,32 @@ void GPUCommandAllocator::Reset()
 int GPUCommandAllocator::NumAllocations()
 {
     return listsAllocated;
+}
+
+void GPUCommandAllocator::Destroy()
+{
+    Allocator->Release(); //currently no safety preventing this from being called on command lists that are being executed by the gpu
+    listsAllocated = 0;
+}
+
+InflightCommandBuffer::InflightCommandBuffer()
+{
+}
+
+InflightCommandBuffer::InflightCommandBuffer(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue)
+{
+    CMD = pCMDList;
+    this->pGPUQueue = pGPUQueue;
+    this->fenceValue = fenceValue;
+}
+
+void InflightCommandBuffer::CPUWait()
+{
+    //block current thread until gpu execution is complete
+    pGPUQueue->WaitForFenceCPUBlocking(fenceValue);
+}
+
+bool InflightCommandBuffer::IsComplete() const
+{
+    return pGPUQueue->GetLastCompletedFence() >= fenceValue;
 }

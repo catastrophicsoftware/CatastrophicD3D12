@@ -25,6 +25,7 @@ public:
 
     uint64 ExecuteCommandList(ID3D12CommandList* List);
 
+    void Destroy();
 private:
     ID3D12CommandQueue* mCommandQueue;
     D3D12_COMMAND_LIST_TYPE mQueueType;

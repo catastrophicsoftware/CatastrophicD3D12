@@ -27,6 +27,7 @@ GPUDescriptorHeap::GPUDescriptorHeap(ID3D12Device* pGPU, uint64 descriptorCount,
 
 GPUDescriptorHeap::~GPUDescriptorHeap()
 {
+	Destroy();
 }
 
 GPUDescriptorHandle GPUDescriptorHeap::GetDescriptor(uint32 index)
@@ -74,6 +75,11 @@ D3D12_GPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::FirstGPUHandle() const
 uint64 GPUDescriptorHeap::Count() const
 {
 	return count;
+}
+
+void GPUDescriptorHeap::Destroy()
+{
+	DescriptorHeap->Release();
 }
 
 GPUDescriptorHandle::GPUDescriptorHandle(GPUDescriptorHeap* pHeap, uint32 index)

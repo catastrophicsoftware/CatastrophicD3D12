@@ -10,6 +10,7 @@ LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB, I
 
 LinearConstantBuffer::~LinearConstantBuffer()
 {
+	Destroy();
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSize)
@@ -23,6 +24,12 @@ D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSi
 
 void LinearConstantBuffer::Reset()
 {
+	writeIndex = 0;
+}
+
+void LinearConstantBuffer::Destroy()
+{
+	buffer->Release();
 	writeIndex = 0;
 }
 

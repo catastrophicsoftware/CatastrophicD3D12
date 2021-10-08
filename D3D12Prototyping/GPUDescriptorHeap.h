@@ -31,6 +31,8 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE FirstGPUHandle() const;
 
 	uint64 Count() const;
+
+	void Destroy();
 private:
 	ID3D12Device* GPU;
 	ID3D12DescriptorHeap* DescriptorHeap;

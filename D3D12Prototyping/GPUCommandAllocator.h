@@ -1,10 +1,19 @@
 #pragma once
 #include "pch.h"
 
+class Direct3DQueue;
+
 struct InflightCommandBuffer
 {
-	ID3D12GraphicsCommandList* CMD;
-	UINT64 fenceValue;
+	ID3D12CommandList* CMD;
+	Direct3DQueue* pGPUQueue;
+	uint64 fenceValue;
+
+	InflightCommandBuffer();
+	InflightCommandBuffer(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue);
+
+	void CPUWait();
+	bool IsComplete() const;
 };
 
 class GPUCommandAllocator
@@ -16,8 +25,8 @@ public:
 	ID3D12GraphicsCommandList* GetCommandList();
 
 	void Reset();
-
 	int NumAllocations();
+	void Destroy();
 private:
 	ID3D12Device* GPU;
 	ID3D12CommandAllocator* Allocator;

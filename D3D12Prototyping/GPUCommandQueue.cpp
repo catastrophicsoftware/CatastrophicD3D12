@@ -98,3 +98,11 @@ uint64 Direct3DQueue::ExecuteCommandList(ID3D12CommandList* commandList)
 
     return mNextFenceValue++;
 }
+
+void Direct3DQueue::Destroy()
+{
+    WaitForIdle(); //flush queue
+
+    mCommandQueue->Release();
+    mFence->Release();
+}

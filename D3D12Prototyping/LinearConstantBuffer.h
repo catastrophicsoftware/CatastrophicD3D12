@@ -11,8 +11,8 @@ public:
 	~LinearConstantBuffer();
 
 	D3D12_GPU_VIRTUAL_ADDRESS Write(void* pData, uint64 dataSize);
-
 	void Reset();
+	void Destroy();
 private:
 	ID3D12Device* GPU;
 
