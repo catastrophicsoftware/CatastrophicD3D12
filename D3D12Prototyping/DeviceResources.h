@@ -81,9 +81,9 @@ namespace DX
             return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
         }
 
+        void GetAdapter(IDXGIAdapter1** ppAdapter);
     private:
         void MoveToNextFrame();
-        void GetAdapter(IDXGIAdapter1** ppAdapter);
         void UpdateColorSpace();
 
         static const size_t MAX_BACK_BUFFER_COUNT = 3;

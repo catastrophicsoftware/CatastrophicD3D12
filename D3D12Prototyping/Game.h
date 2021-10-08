@@ -17,6 +17,7 @@
 #include "GPUCommandQueue.h"
 #include "Texture2D.h"
 #include "StaticGeometryBuffer.h"
+#include "D3D12MemAlloc.h"
 
 struct GPUHeapAllocation
 {
@@ -101,55 +102,61 @@ private:
     //------------------------------------------------------------------------------------------------------------------
     //gpu memory management
     //todo: replace with proper gpu memory manager
-    ID3D12Heap* DynamicHeap;
-    ID3D12Heap* StaticHeap;
-    ID3D12Heap* TextureHeap;
-
-    UINT64 StaticHeapIndex;
-    inline void AdvanceStaticHeap(uint64 lastBufferSize)
-    {
-        if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
-        {
-            DynamicHeapIndex += lastBufferSize; //add last buffer size
-            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-        }
-        //last buffer placement size is not larger than single page of gpu memory
-        //just align forward
-        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-    }
-
-    UINT64 DynamicHeapIndex;
-    inline void AdvanceDynamicHeap(uint64 lastBufferSize)
-    {
-        if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
-        {
-            DynamicHeapIndex += lastBufferSize; //add last buffer size
-            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-        }
-        //last buffer placement size is not larger than single page of gpu memory
-        //just align forward
-        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex+1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-    }
-
-    UINT64 TextureHeapIndex;
-    inline void AdvanceTextureHeapIndex(uint64 lastTextureSize)
-    {
-        if (lastTextureSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
-        {
-            DynamicHeapIndex += lastTextureSize; //add last buffer size
-            DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-        }
-        //last buffer placement size is not larger than single page of gpu memory
-        //just align forward
-        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
-    }
     
-    void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
-    //------------------------------------------------------------------------------------------------------------------
-    StaticGeometryBuffer* GeoBuffer;
-    GPUDescriptorHeap* SRVHeap;
-    void InitializeDescriptorHeap();
+    D3D12MA::Allocator* GPUMemory;
+    void InitializeGPUMemory();
 
+
+    //ID3D12Heap* DynamicHeap;
+    //ID3D12Heap* StaticHeap;
+    //ID3D12Heap* TextureHeap;
+
+    //UINT64 StaticHeapIndex;
+    //inline void AdvanceStaticHeap(uint64 lastBufferSize)
+    //{
+    //    if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+    //    {
+    //        DynamicHeapIndex += lastBufferSize; //add last buffer size
+    //        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //    }
+    //    //last buffer placement size is not larger than single page of gpu memory
+    //    //just align forward
+    //    DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //}
+
+    //UINT64 DynamicHeapIndex;
+    //inline void AdvanceDynamicHeap(uint64 lastBufferSize)
+    //{
+    //    if (lastBufferSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+    //    {
+    //        DynamicHeapIndex += lastBufferSize; //add last buffer size
+    //        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //    }
+    //    //last buffer placement size is not larger than single page of gpu memory
+    //    //just align forward
+    //    DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex+1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //}
+
+    //UINT64 TextureHeapIndex;
+    //inline void AdvanceTextureHeapIndex(uint64 lastTextureSize)
+    //{
+    //    if (lastTextureSize > D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT)
+    //    {
+    //        DynamicHeapIndex += lastTextureSize; //add last buffer size
+    //        DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //    }
+    //    //last buffer placement size is not larger than single page of gpu memory
+    //    //just align forward
+    //    DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
+    //}
+    //
+    //void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
+    //------------------------------------------------------------------------------------------------------------------
+    GPUDescriptorHeap* SRVHeap;     //descriptor heap for cvb/srv/uavs
+    GPUDescriptorHeap* RTVHeap;     //descriptor heap for rtvs
+    GPUDescriptorHeap* SamplerHeap; //descriptor heap for samplers
+
+    void InitializeDescriptorHeap();
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
     Direct3DQueue* CopyQueue;

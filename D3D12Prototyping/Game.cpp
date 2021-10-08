@@ -19,7 +19,6 @@ Game::Game() noexcept(false) : BackgroundPool()
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
-    DynamicHeapIndex = 0;
 }
 
 Game::~Game()
@@ -50,7 +49,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeInput();
 
-    InitializeHeaps(128, 128, 128);
+    InitializeGPUMemory();
     InitializeCopyEngine();
     InitializeDescriptorHeap();
 
@@ -212,36 +211,55 @@ void Game::InitializeInput()
     Keyboard = std::make_unique<DirectX::Keyboard>();
 }
 
-void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB)
+void Game::InitializeGPUMemory()
 {
-    UINT64 dynamicHeapSize = (1024 * 1024) * dynamicHeapSizeMB;
-    CD3DX12_HEAP_DESC dynamic_heap_desc = CD3DX12_HEAP_DESC(dynamicHeapSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT,D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+    IDXGIAdapter1* pAdapter = nullptr;
+    m_deviceResources->GetAdapter(&pAdapter);
 
-    if (FAILED(GPU->CreateHeap(&dynamic_heap_desc, IID_PPV_ARGS(&DynamicHeap))))
+    D3D12MA::ALLOCATOR_DESC desc{};
+    desc.pAdapter = pAdapter;
+    desc.pDevice = GPU;
+    desc.Flags = D3D12MA::ALLOCATOR_FLAGS::ALLOCATOR_FLAG_NONE;
+    desc.PreferredBlockSize = 0; //default of 64MB blocks
+
+    if (FAILED(D3D12MA::CreateAllocator(&desc, &GPUMemory)))
     {
-        throw new std::runtime_error("failed to create dynamic upload heap!");
-    }
-
-    UINT64 staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
-    CD3DX12_HEAP_DESC static_heap_desc = CD3DX12_HEAP_DESC(staticHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
-
-    if (FAILED(GPU->CreateHeap(&static_heap_desc, IID_PPV_ARGS(&StaticHeap))))
-    {
-        throw new std::runtime_error("failed to create static heap!");
-    }
-
-    UINT64 textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
-    CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
-
-    if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))
-    {
-        throw new std::runtime_error("failed to create texture heap!");
+        throw new std::runtime_error("failed to create gpu memory allocator!");
     }
 }
+
+//void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB)
+//{
+//    UINT64 dynamicHeapSize = (1024 * 1024) * dynamicHeapSizeMB;
+//    CD3DX12_HEAP_DESC dynamic_heap_desc = CD3DX12_HEAP_DESC(dynamicHeapSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT,D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+//
+//    if (FAILED(GPU->CreateHeap(&dynamic_heap_desc, IID_PPV_ARGS(&DynamicHeap))))
+//    {
+//        throw new std::runtime_error("failed to create dynamic upload heap!");
+//    }
+//
+//    UINT64 staticHeapSize = (1024 * 1024) * staticHeapSizeMB;
+//    CD3DX12_HEAP_DESC static_heap_desc = CD3DX12_HEAP_DESC(staticHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+//
+//    if (FAILED(GPU->CreateHeap(&static_heap_desc, IID_PPV_ARGS(&StaticHeap))))
+//    {
+//        throw new std::runtime_error("failed to create static heap!");
+//    }
+//
+//    UINT64 textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
+//    CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
+//
+//    if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))
+//    {
+//        throw new std::runtime_error("failed to create texture heap!");
+//    }
+//}
 
 void Game::InitializeDescriptorHeap()
 {
     SRVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    RTVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,false);
+    SamplerHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 }
 
 ID3D12GraphicsCommandList* Game::GetCopyCommandList()

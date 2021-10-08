@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Camera3D.h" />
+    <ClInclude Include="D3D12MemAlloc.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DirectXTK12\AlignedNew.h" />
@@ -203,6 +204,7 @@
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Camera3D.cpp" />
+    <ClCompile Include="D3D12MemAlloc.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="DirectXTK12\AlphaTestEffect.cpp" />
     <ClCompile Include="DirectXTK12\BasicEffect.cpp" />

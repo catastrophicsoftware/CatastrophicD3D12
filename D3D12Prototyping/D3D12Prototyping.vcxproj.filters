@@ -189,6 +189,9 @@
     <ClInclude Include="Camera2D.h">
       <Filter>Framework\Game</Filter>
     </ClInclude>
+    <ClInclude Include="D3D12MemAlloc.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -352,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="Camera2D.cpp">
       <Filter>Framework\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12MemAlloc.cpp">
+      <Filter>Framework\GPU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
