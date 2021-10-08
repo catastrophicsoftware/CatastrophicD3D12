@@ -30,6 +30,12 @@ Game::~Game()
     }
 }
 
+inline std::string GetAssetPath(std::string assetName)
+{
+    std::string baseAssetDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
+    return baseAssetDirectory + assetName;
+}
+
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(HWND window, int width, int height)
 {
@@ -47,8 +53,6 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeHeaps(128, 128, 128);
     InitializeCopyEngine();
     InitializePipeline();
-
-    std::string baseAssetDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
