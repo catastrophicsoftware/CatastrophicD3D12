@@ -133,8 +133,7 @@ private:
     
     void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
 
-    //------------------------------------------------------------------------------------------
-    Texture2D* Test;
+    //-----------------------------------------------------------------------------------------
 
     StaticGeometryBuffer* GeoBuffer;
 
@@ -149,8 +148,6 @@ private:
     void* pCBMaterialGPUMemory;
     D3D12_VERTEX_BUFFER_VIEW vbView;
     D3D12_GPU_VIRTUAL_ADDRESS cbMaterialMagenta;
-
-    Mesh* testMesh;
 
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
