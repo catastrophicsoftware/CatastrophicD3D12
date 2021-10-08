@@ -15,6 +15,7 @@ GPUFence::GPUFence(ID3D12Device* pGPU, uint64 initialValue)
 
 GPUFence::~GPUFence()
 {
+	Destroy();
 }
 
 uint64 GPUFence::Signal(ID3D12CommandQueue* pQueue)
@@ -73,6 +74,14 @@ bool GPUFence::IsComplete(uint64 fenceValue)
 	}
 
 	return fenceValue <= lastCompletedFenceValue;
+}
+
+void GPUFence::Destroy()
+{
+	nextFenceValue = 0;
+	lastCompletedFenceValue = 0;
+	GPU = nullptr;
+	Fence->Release();
 }
 
 HANDLE GPUFence::CreateFenceEvent()

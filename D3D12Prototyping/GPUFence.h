@@ -17,6 +17,8 @@ public:
 	uint64 GetNextValue() const;
 	uint64 PollCurrentValue();
 	bool IsComplete(uint64 fenceValue);
+
+	void Destroy();
 private:
 	ID3D12Device* GPU;
 	ID3D12Fence* Fence;
