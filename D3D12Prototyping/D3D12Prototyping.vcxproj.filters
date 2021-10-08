@@ -19,6 +19,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{aaa53888-82e4-4a1f-8820-bdcc0d8bd577}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\GPU">
+      <UniqueIdentifier>{6fa571e7-a700-4432-b00f-300d6eea69cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Game">
+      <UniqueIdentifier>{e0a73948-11e3-42dd-a43a-15656c73557d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -150,21 +156,6 @@
     <ClInclude Include="thread_pool.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="GPUCommandQueue.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="GPUCommandAllocator.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="GPUFence.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera2D.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera3D.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -180,8 +171,23 @@
     <ClInclude Include="StaticGeometryBuffer.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="GPUCommandAllocator.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUCommandQueue.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
     <ClInclude Include="GPUDescriptorHeap.h">
-      <Filter>Framework</Filter>
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUFence.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera3D.h">
+      <Filter>Framework\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Framework\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -314,21 +320,6 @@
     <ClCompile Include="thread_pool.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="GPUCommandQueue.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="GPUCommandAllocator.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="GPUFence.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera2D.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera3D.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -344,8 +335,23 @@
     <ClCompile Include="StaticGeometryBuffer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="GPUCommandAllocator.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUCommandQueue.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
     <ClCompile Include="GPUDescriptorHeap.cpp">
-      <Filter>Framework</Filter>
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUFence.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera3D.cpp">
+      <Filter>Framework\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Framework\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
