@@ -88,9 +88,14 @@ D3D12_RESOURCE_STATES Texture2D::GetResourceState() const
 	return state;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE Texture2D::GetGPUDescriptor() const
+D3D12_GPU_DESCRIPTOR_HANDLE Texture2D::GetSRV() const
 {
-	return descriptor.hGPU;
+	return srv.hGPU;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE Texture2D::GetUAV() const
+{
+	return uav.hGPU;
 }
 
 void* Texture2D::GetGPUStagingMemory()
@@ -102,8 +107,25 @@ void* Texture2D::GetGPUStagingMemory()
 // pDescriptorHeap must be a GPUDescriptorHeap with available SRV descriptors
 void Texture2D::CreateSRV(GPUDescriptorHeap* pDescriptorHeap)
 {
-	descriptor = pDescriptorHeap->GetUnusedDescriptor();
+	if (!hasSRV)
+	{
+		srv = pDescriptorHeap->GetUnusedDescriptor();
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc{}; //currently unused
-	GPU->CreateShaderResourceView(texture, &viewDesc, descriptor.hCPU);
+		D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc{}; //currently unused
+		GPU->CreateShaderResourceView(texture, &viewDesc, srv.hCPU);
+		hasSRV = true;
+	}
+}
+
+//creates an unordered access view
+// pDescriptorHeap must be a GPUDescriptorHeap with available UAV descriptors
+void Texture2D::CreateUAV(GPUDescriptorHeap* pDescriptorHeap)
+{
+	if (!hasUAV)
+	{
+		uav = pDescriptorHeap->GetUnusedDescriptor();
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+		GPU->CreateUnorderedAccessView(texture, nullptr, &uavDesc, uav.hCPU);
+		hasUAV = true;
+	}
 }

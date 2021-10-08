@@ -15,17 +15,25 @@ public:
 	void Update(ID3D12GraphicsCommandList* pCopyCmdList, void* pTexData, D3D12_RESOURCE_STATES newState);
 
 	D3D12_RESOURCE_STATES GetResourceState() const;
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptor() const;
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRV() const;
+	D3D12_GPU_DESCRIPTOR_HANDLE GetUAV() const;
 
 	void* GetGPUStagingMemory();
 
 	void CreateSRV(GPUDescriptorHeap* pDescriptorHeap);
+	void CreateUAV(GPUDescriptorHeap* pDescriptorHeap);
 private:
 	ID3D12Device* GPU;
 
 	ID3D12Resource*       texture;
 	D3D12_RESOURCE_STATES state;
-	GPUDescriptorHandle   descriptor;
+
+	GPUDescriptorHandle   srv;
+	bool hasSRV;
+
+	GPUDescriptorHandle uav;
+	bool hasUAV;
 
 	ID3D12Resource* stagingBuffer;
 	void* stagingGPUMem;

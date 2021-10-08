@@ -113,6 +113,10 @@ void GPUDescriptorHeap::Destroy()
 	DescriptorHeap->Release();
 }
 
+GPUDescriptorHandle::GPUDescriptorHandle()
+{
+}
+
 GPUDescriptorHandle::GPUDescriptorHandle(GPUDescriptorHeap* pHeap, uint32 index)
 {
 	assert(pHeap != nullptr);

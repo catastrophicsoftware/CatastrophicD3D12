@@ -187,6 +187,7 @@
     <ClInclude Include="DirectXTK12\vbo.h" />
     <ClInclude Include="DirectXTK12\VertexTypes.h" />
     <ClInclude Include="DirectXTK12\WICTextureLoader.h" />
+    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GPUCommandAllocator.h" />
     <ClInclude Include="GPUCommandQueue.h" />
@@ -246,6 +247,7 @@
     <ClCompile Include="DirectXTK12\ToneMapPostProcess.cpp" />
     <ClCompile Include="DirectXTK12\VertexTypes.cpp" />
     <ClCompile Include="DirectXTK12\WICTextureLoader.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GPUCommandAllocator.cpp" />
     <ClCompile Include="GPUCommandQueue.cpp" />

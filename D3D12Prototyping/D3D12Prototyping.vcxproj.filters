@@ -192,6 +192,9 @@
     <ClInclude Include="D3D12MemAlloc.h">
       <Filter>Framework\GPU</Filter>
     </ClInclude>
+    <ClInclude Include="Exceptions.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -359,6 +362,7 @@
     <ClCompile Include="D3D12MemAlloc.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
+    <ClCompile Include="Exceptions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

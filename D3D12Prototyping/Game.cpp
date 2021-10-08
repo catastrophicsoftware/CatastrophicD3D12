@@ -51,7 +51,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeGPUMemory();
     InitializeCopyEngine();
-    InitializeDescriptorHeap();
+    InitializeStaticDescriptorHeaps();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -128,7 +128,6 @@ void Game::Clear()
     commandList->ClearRenderTargetView(rtvDescriptor, Colors::DarkSlateBlue, 0, nullptr);
     commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-    // Set the viewport and scissor rect.
     auto viewport = m_deviceResources->GetScreenViewport();
     auto scissorRect = m_deviceResources->GetScissorRect();
     commandList->RSSetViewports(1, &viewport);
@@ -157,7 +156,6 @@ void Game::OnSuspending()
 void Game::OnResuming()
 {
     m_timer.ResetElapsedTime();
-
     // TODO: Game is being power-resumed (or returning from minimize).
 }
 
@@ -173,13 +171,10 @@ void Game::OnWindowSizeChanged(int width, int height)
         return;
 
     CreateWindowSizeDependentResources();
-
-    // TODO: Game window is being resized.
 }
 
 void Game::GetDefaultSize(int& width, int& height) const noexcept
 {
-    // TODO: Change to desired default window size (note minimum size is 320x200).
     width = 1280;
     height = 720;
 }
@@ -202,7 +197,6 @@ void Game::CreateDeviceDependentResources()
 // Allocate all memory resources that change on a window SizeChanged event.
 void Game::CreateWindowSizeDependentResources()
 {
-    // TODO: Initialize windows-size dependent objects here.
 }
 
 void Game::InitializeInput()
@@ -250,8 +244,7 @@ ID3D12Resource* Game::CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool 
     }
 }
 
-
-void Game::InitializeDescriptorHeap()
+void Game::InitializeStaticDescriptorHeaps()
 {
     SRVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     RTVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,false);

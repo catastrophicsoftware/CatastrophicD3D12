@@ -19,24 +19,6 @@
 #include "StaticGeometryBuffer.h"
 #include "D3D12MemAlloc.h"
 
-struct GPUHeapAllocation
-{
-    ID3D12Heap* pHeap;
-    uint64      offset;
-    uint64      size;
-
-    GPUHeapAllocation()
-    {
-
-    }
-    GPUHeapAllocation(ID3D12Heap* pHeap, uint64 offset, uint64 size)
-    {
-        this->pHeap = pHeap;
-        this->offset = offset;
-        this->size = size;
-    }
-};
-
 using namespace DirectX;
 
 // A basic game implementation that creates a D3D12 device and
@@ -54,25 +36,18 @@ public:
     Game(Game const&) = delete;
     Game& operator= (Game const&) = delete;
 
-    // Initialization and management
     void Initialize(HWND window, int width, int height);
 
-    // Basic game loop
     void Tick();
 
-    // IDeviceNotify
     void OnDeviceLost() override;
     void OnDeviceRestored() override;
-
-    // Messages
     void OnActivated();
     void OnDeactivated();
     void OnSuspending();
     void OnResuming();
     void OnWindowMoved();
     void OnWindowSizeChanged(int width, int height);
-
-    // Properties
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
     std::mutex& GetCopyEngineLock();
@@ -86,8 +61,6 @@ private:
     void CreateWindowSizeDependentResources();
 
     ID3D12Device* GPU;
-
-    // Device resources.
     std::unique_ptr<DX::DeviceResources> m_deviceResources;
 
     //input
@@ -104,12 +77,14 @@ private:
     D3D12MA::Allocator* GPUMemory;
     void InitializeGPUMemory();
     ID3D12Resource* CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool cpuWritable=false);
-    //------------------------------------------------------------------------------------------------------------------
-    GPUDescriptorHeap* SRVHeap;     //descriptor heap for cvb/srv/uavs
-    GPUDescriptorHeap* RTVHeap;     //descriptor heap for rtvs
-    GPUDescriptorHeap* SamplerHeap; //descriptor heap for samplers
 
-    void InitializeDescriptorHeap();
+    //------------------------------------------------------------------------------------------------------------------
+    //srv management
+    GPUDescriptorHeap* SRVHeap;     //srv heap for cvb/srv/uavs
+    GPUDescriptorHeap* RTVHeap;     //srv heap for rtvs
+    GPUDescriptorHeap* SamplerHeap; //srv heap for samplers
+    void InitializeStaticDescriptorHeaps();
+
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
     Direct3DQueue* CopyQueue;
