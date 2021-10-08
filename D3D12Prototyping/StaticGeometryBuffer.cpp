@@ -18,11 +18,11 @@ StaticGeometryBuffer::~StaticGeometryBuffer()
 {
 }
 
-HRESULT StaticGeometryBuffer::Create(uint64 size)
+HRESULT StaticGeometryBuffer::Create(uint64 sizeMB)
 {
 	CD3DX12_HEAP_PROPERTIES staticHeap(D3D12_HEAP_TYPE_DEFAULT);
 	CD3DX12_HEAP_PROPERTIES dynHeap(D3D12_HEAP_TYPE_UPLOAD);
-	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer((1024*1024) * sizeMB);
 
 	{
 		//create vertex buffer and vertex staging buffer

@@ -9,7 +9,7 @@ public:
 	StaticGeometryBuffer(ID3D12Device* pDevice, Direct3DQueue* pCopyQueue);
 	~StaticGeometryBuffer();
 
-	HRESULT Create(uint64 size);
+	HRESULT Create(uint64 sizeMB);
 
 	D3D12_GPU_VIRTUAL_ADDRESS WriteVertices(void* pVertexData, uint64 vertexStride, uint64 numVertices);
 	D3D12_GPU_VIRTUAL_ADDRESS WriteIndices(void* pIndexData, uint64 indexCount);

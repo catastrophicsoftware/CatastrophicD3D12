@@ -48,9 +48,7 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeCopyEngine();
     InitializePipeline();
 
-    std::string baseDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
-
-    GeoBuffer = new StaticGeometryBuffer(GPU, CopyQueue);
+    std::string baseAssetDirectory = "C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\";
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -61,7 +59,6 @@ void Game::Initialize(HWND window, int width, int height)
 }
 
 #pragma region Frame Update
-// Executes the basic game loop.
 void Game::Tick()
 {
     m_timer.Tick([&]()
@@ -73,7 +70,6 @@ void Game::Tick()
     Render();
 }
 
-// Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
     PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update"); // See pch.h for info
@@ -88,7 +84,6 @@ void Game::Update(DX::StepTimer const& timer)
 #pragma endregion
 
 #pragma region Frame Render
-// Draws the scene.
 void Game::Render()
 {
     UINT fIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
@@ -126,7 +121,6 @@ void Game::Render()
     PIXEndEvent(m_deviceResources->GetCommandQueue());
 }
 
-// Helper method to clear the back buffers.
 void Game::Clear()
 {
     auto commandList = m_deviceResources->GetCommandList();
@@ -151,7 +145,6 @@ void Game::Clear()
 #pragma endregion
 
 #pragma region Message Handlers
-// Message handlers
 void Game::OnActivated()
 {
     // TODO: Game is becoming active window.
@@ -190,7 +183,6 @@ void Game::OnWindowSizeChanged(int width, int height)
     // TODO: Game window is being resized.
 }
 
-// Properties
 void Game::GetDefaultSize(int& width, int& height) const noexcept
 {
     // TODO: Change to desired default window size (note minimum size is 320x200).
@@ -205,7 +197,6 @@ std::mutex& Game::GetCopyEngineLock()
 #pragma endregion
 
 #pragma region Direct3D Resources
-// These are the resources that depend on the device.
 void Game::CreateDeviceDependentResources()
 {
     auto device = m_deviceResources->GetD3DDevice();
@@ -337,7 +328,7 @@ void Game::InitializePipeline()
         float aspect_ratio = m_deviceResources->GetScreenViewport().Width / m_deviceResources->GetScreenViewport().Height;
 
         GeoBuffer = new StaticGeometryBuffer(GPU, CopyQueue);
-        GeoBuffer->Create((1024 * 1024) * 64); //64MB static geometry buffer
+        GeoBuffer->Create(64); //64MB static geometry buffer
 
         VertexPosition vertices[] =
         {
