@@ -88,13 +88,22 @@ D3D12_RESOURCE_STATES Texture2D::GetResourceState() const
 	return state;
 }
 
+D3D12_GPU_DESCRIPTOR_HANDLE Texture2D::GetGPUDescriptor() const
+{
+	return descriptor.hGPU;
+}
+
 void* Texture2D::GetGPUStagingMemory()
 {
 	return stagingGPUMem;
 }
 
-void Texture2D::CreateSRV(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle)
+//creates a shader resource view
+// pDescriptorHeap must be a GPUDescriptorHeap with available SRV descriptors
+void Texture2D::CreateSRV(GPUDescriptorHeap* pDescriptorHeap)
 {
-	D3D12_SHADER_RESOURCE_VIEW_DESC vd{};
-	GPU->CreateShaderResourceView(texture, &vd, descriptorHandle);
+	descriptor = pDescriptorHeap->GetUnusedDescriptor();
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc{}; //currently unused
+	GPU->CreateShaderResourceView(texture, &viewDesc, descriptor.hCPU);
 }

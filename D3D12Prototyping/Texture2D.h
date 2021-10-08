@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.h"
+#include "GPUDescriptorHeap.h"
+
 
 class Texture2D
 {
@@ -13,14 +15,17 @@ public:
 	void Update(ID3D12GraphicsCommandList* pCopyCmdList, void* pTexData, D3D12_RESOURCE_STATES newState);
 
 	D3D12_RESOURCE_STATES GetResourceState() const;
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptor() const;
 
 	void* GetGPUStagingMemory();
+
+	void CreateSRV(GPUDescriptorHeap* pDescriptorHeap);
 private:
 	ID3D12Device* GPU;
 
-	void CreateSRV(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle);
-	ID3D12Resource* texture;
+	ID3D12Resource*       texture;
 	D3D12_RESOURCE_STATES state;
+	GPUDescriptorHandle   descriptor;
 
 	ID3D12Resource* stagingBuffer;
 	void* stagingGPUMem;
