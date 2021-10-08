@@ -45,7 +45,7 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeInput();
 
     InitializeDescriptorHeap();
-    InitializeHeaps(64, 64);
+    InitializeHeaps(128, 128, 128);
     InitializeCopyEngine();
     InitializePipeline();
 
@@ -227,7 +227,7 @@ void Game::InitializeInput()
     Keyboard = std::make_unique<DirectX::Keyboard>();
 }
 
-void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB)
+void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB)
 {
     UINT64 dynamicHeapSize = (1024 * 1024) * dynamicHeapSizeMB;
     CD3DX12_HEAP_DESC dynamic_heap_desc = CD3DX12_HEAP_DESC(dynamicHeapSize, D3D12_HEAP_TYPE_UPLOAD, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT,D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
@@ -245,7 +245,7 @@ void Game::InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB)
         throw new std::runtime_error("failed to create static heap!");
     }
 
-    UINT textureHeapSize = (1024 * 1024) * 128;
+    UINT textureHeapSize = (1024 * 1024) * textureHeapSizeMB;
     CD3DX12_HEAP_DESC dynTexHeap = CD3DX12_HEAP_DESC(textureHeapSize, D3D12_HEAP_TYPE_DEFAULT, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES);
 
     if (FAILED(GPU->CreateHeap(&dynTexHeap, IID_PPV_ARGS(&TextureHeap))))

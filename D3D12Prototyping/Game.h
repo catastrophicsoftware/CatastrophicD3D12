@@ -131,7 +131,7 @@ private:
         DynamicHeapIndex = AlignUp<uint64>(DynamicHeapIndex + 1, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
     }
     
-    void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB);
+    void InitializeHeaps(uint64 staticHeapSizeMB, uint64 dynamicHeapSizeMB, uint64 textureHeapSizeMB);
 
     //------------------------------------------------------------------------------------------
     Texture2D* Test;
