@@ -44,7 +44,6 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeInput();
 
-    InitializeDescriptorHeap();
     InitializeHeaps(128, 128, 128);
     InitializeCopyEngine();
     InitializePipeline();
@@ -423,11 +422,6 @@ void Game::InitializePipeline()
         XMFLOAT4 blue = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
         memcpy(pCBMaterialGPUMemory, &blue, sizeof(XMFLOAT4));
     }
-}
-
-void Game::InitializeDescriptorHeap()
-{
-    Descriptors = std::make_unique<DescriptorHeap>(GPU, DescriptorIndex::Count);
 }
 
 void Game::OnDeviceLost()

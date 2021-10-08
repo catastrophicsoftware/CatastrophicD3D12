@@ -164,15 +164,6 @@ private:
     LinearConstantBuffer* linearBuffer;
     void InitializePipeline();
 
-    enum DescriptorIndex
-    {
-        ViewProjection,
-        Count
-    };
-
-    std::unique_ptr<DescriptorHeap> Descriptors;
-    void InitializeDescriptorHeap();
-
     thread_pool BackgroundPool;
     // Rendering loop timer.
     DX::StepTimer m_timer;
