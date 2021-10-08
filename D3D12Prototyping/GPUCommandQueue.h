@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include "GPUCommandAllocator.h"
 typedef UINT64 uint64;
 
 class Direct3DQueue
@@ -24,6 +25,7 @@ public:
     ID3D12Fence* GetFence() { return mFence; }
 
     uint64 ExecuteCommandList(ID3D12CommandList* List);
+    InflightCommandBuffer ExecuteAndGetInflightHandle(ID3D12CommandList* List);
 
     void Destroy();
 private:

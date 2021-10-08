@@ -99,6 +99,13 @@ uint64 Direct3DQueue::ExecuteCommandList(ID3D12CommandList* commandList)
     return mNextFenceValue++;
 }
 
+InflightCommandBuffer Direct3DQueue::ExecuteAndGetInflightHandle(ID3D12CommandList* List)
+{
+    uint64 value = ExecuteCommandList(List);
+    InflightCommandBuffer handle{List,this,value};
+    return handle;
+}
+
 void Direct3DQueue::Destroy()
 {
     WaitForIdle(); //flush queue
