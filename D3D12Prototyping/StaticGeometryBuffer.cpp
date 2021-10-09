@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "StaticGeometryBuffer.h"
 
-StaticGeometryBuffer::StaticGeometryBuffer(ID3D12Device* pDevice, Direct3DQueue* pCopyQueue)
+StaticGeometryBuffer::StaticGeometryBuffer(ID3D12Device* pDevice, GPUQueue* pCopyQueue)
 {
 	GPU = pDevice;
 	vertexIndex = 0;
@@ -11,7 +11,7 @@ StaticGeometryBuffer::StaticGeometryBuffer(ID3D12Device* pDevice, Direct3DQueue*
 	CopyQueue = pCopyQueue;
 	CopyCmdAlloc = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_COPY);
 	DctCmdAlloc = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
-	GraphicsQueue = new Direct3DQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+	GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
 }
 
 StaticGeometryBuffer::~StaticGeometryBuffer()

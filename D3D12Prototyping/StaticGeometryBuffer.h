@@ -6,7 +6,7 @@
 class StaticGeometryBuffer
 {
 public:
-	StaticGeometryBuffer(ID3D12Device* pDevice, Direct3DQueue* pCopyQueue);
+	StaticGeometryBuffer(ID3D12Device* pDevice, GPUQueue* pCopyQueue);
 	~StaticGeometryBuffer();
 
 	HRESULT Create(uint64 sizeMB);
@@ -21,8 +21,8 @@ public:
 	void Reset();
 private:
 	ID3D12Device* GPU;
-	Direct3DQueue* CopyQueue;
-	Direct3DQueue* GraphicsQueue;
+	GPUQueue* CopyQueue;
+	GPUQueue* GraphicsQueue;
 	GPUCommandAllocator* CopyCmdAlloc;
 	GPUCommandAllocator* DctCmdAlloc;
 
