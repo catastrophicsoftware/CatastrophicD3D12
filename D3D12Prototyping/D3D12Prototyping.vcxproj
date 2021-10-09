@@ -189,18 +189,21 @@
     <ClInclude Include="DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="GPUCommandAllocator.h" />
     <ClInclude Include="GPUCommandQueue.h" />
     <ClInclude Include="GPUDescriptorHeap.h" />
     <ClInclude Include="GPUFence.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="StaticGeometryBuffer.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="tinyobj_loader_c.h" />
+    <ClInclude Include="WorldChunk.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp" />
@@ -249,6 +252,7 @@
     <ClCompile Include="DirectXTK12\WICTextureLoader.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="GPUCommandAllocator.cpp" />
     <ClCompile Include="GPUCommandQueue.cpp" />
     <ClCompile Include="GPUDescriptorHeap.cpp" />
@@ -261,10 +265,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Gaming.Desktop.x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="StaticGeometryBuffer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="tinyobj_loader_c.cpp" />
+    <ClCompile Include="WorldChunk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

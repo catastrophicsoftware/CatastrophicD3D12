@@ -52,6 +52,9 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeGPUMemory();
     InitializeCopyEngine();
     InitializeStaticDescriptorHeaps();
+    InitializeQueues();
+
+    InitializeWorld();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -105,6 +108,7 @@ void Game::Render()
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render"); // See pch.h for info
     //-----------------------------------------------------------------------------------------
 
+    RenderWorld(commandList);
 
     //------------------------------------------------------------------------------------------
     PIXEndEvent(commandList);
@@ -199,6 +203,33 @@ void Game::CreateWindowSizeDependentResources()
 {
 }
 
+void Game::InitializeQueues()
+{
+    GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+}
+
+void Game::InitializeWorld()
+{
+    TestChunk = new WorldChunk(GPU);
+    TestChunk->Initialize(0, 0, GPUMemory);
+
+    auto copyCMD = GraphicsCommandAllocator->GetCommandList();
+    TestChunk->UpdateGPUTexture(copyCMD);
+    TestChunk->createSRV(SRVHeap);
+
+    GraphicsQueue->WaitForFenceCPUBlocking(GraphicsQueue->ExecuteCommandList(copyCMD)); //submit and wait for texture copy work
+}
+
+void Game::RenderWorld(ID3D12GraphicsCommandList* pCMD)
+{
+    ID3D12DescriptorHeap* StaticDescriptorHeap = SRVHeap->HeapHandle();
+    pCMD->SetDescriptorHeaps(1, &StaticDescriptorHeap);
+    D3D12_VIEWPORT currentVP = m_deviceResources->GetScreenViewport();
+
+
+}
+
 void Game::InitializeInput()
 {
     Controller = std::make_unique<GamePad>();
@@ -260,7 +291,7 @@ ID3D12GraphicsCommandList* Game::GetCopyCommandList()
 
 void Game::InitializeCopyEngine()
 {
-    CopyQueue = new Direct3DQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
+    CopyQueue = new GPUQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
     CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
 }
 

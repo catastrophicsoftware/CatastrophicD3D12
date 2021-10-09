@@ -25,6 +25,9 @@
     <Filter Include="Framework\Game">
       <UniqueIdentifier>{e0a73948-11e3-42dd-a43a-15656c73557d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{82a7b3ec-c52d-4e9b-afb7-2e6f27a12580}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -195,6 +198,15 @@
     <ClInclude Include="Exceptions.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="WorldChunk.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteRenderer.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUBuffer.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -363,6 +375,15 @@
       <Filter>Framework\GPU</Filter>
     </ClCompile>
     <ClCompile Include="Exceptions.cpp" />
+    <ClCompile Include="WorldChunk.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteRenderer.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUBuffer.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

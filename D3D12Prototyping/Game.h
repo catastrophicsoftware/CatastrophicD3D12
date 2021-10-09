@@ -18,6 +18,7 @@
 #include "Texture2D.h"
 #include "StaticGeometryBuffer.h"
 #include "D3D12MemAlloc.h"
+#include "WorldChunk.h"
 
 using namespace DirectX;
 
@@ -63,13 +64,27 @@ private:
     ID3D12Device* GPU;
     std::unique_ptr<DX::DeviceResources> m_deviceResources;
 
-    //input
+    std::mutex graphicsQueueMutex;
+    GPUQueue* GraphicsQueue;
+    GPUCommandAllocator* GraphicsCommandAllocator;
+    void InitializeQueues();
+
+    //-----------------------------------------------------
+    // game
+    
+    WorldChunk* TestChunk;
+
+    void InitializeWorld();
+    void RenderWorld(ID3D12GraphicsCommandList* pCMD);
+    //-----------------------------------------------------
+
+    //input------------------------------------------------
     std::unique_ptr<DirectX::GamePad>  Controller;
     std::unique_ptr<DirectX::Keyboard> Keyboard;
     DirectX::Keyboard::State KeyboardState;
     DirectX::GamePad::State  GamepadState;
     void InitializeInput();
-    //
+    //-----------------------------------------------------
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -77,17 +92,16 @@ private:
     D3D12MA::Allocator* GPUMemory;
     void InitializeGPUMemory();
     ID3D12Resource* CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool cpuWritable=false);
-
     //------------------------------------------------------------------------------------------------------------------
-    //srv management
+    //static descriptor management
     GPUDescriptorHeap* SRVHeap;     //srv heap for cvb/srv/uavs
     GPUDescriptorHeap* RTVHeap;     //srv heap for rtvs
     GPUDescriptorHeap* SamplerHeap; //srv heap for samplers
-    void InitializeStaticDescriptorHeaps();
 
+    void InitializeStaticDescriptorHeaps();
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
-    Direct3DQueue* CopyQueue;
+    GPUQueue* CopyQueue;
     GPUCommandAllocator* CopyCommandAllocator; //current limitation: only one thread can be creating copy commands
     ID3D12GraphicsCommandList* GetCopyCommandList();
     void InitializeCopyEngine();
