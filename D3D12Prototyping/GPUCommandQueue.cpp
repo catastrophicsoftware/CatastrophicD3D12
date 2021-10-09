@@ -3,7 +3,7 @@
 #include "GPUCommandQueue.h"
 
 
-Direct3DQueue::Direct3DQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType)
+GPUQueue::GPUQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType)
 {
     mQueueType = commandType;
     mCommandQueue = NULL;
@@ -25,7 +25,7 @@ Direct3DQueue::Direct3DQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE comma
 }
 
 
-Direct3DQueue::~Direct3DQueue()
+GPUQueue::~GPUQueue()
 {
     CloseHandle(mFenceEventHandle);
 
@@ -37,14 +37,14 @@ Direct3DQueue::~Direct3DQueue()
 }
 
 
-uint64 Direct3DQueue::PollCurrentFenceValue()
+uint64 GPUQueue::PollCurrentFenceValue()
 {
     mLastCompletedFenceValue = std::max<uint64>(mLastCompletedFenceValue, mFence->GetCompletedValue());
 
     return mLastCompletedFenceValue;
 }
 
-bool Direct3DQueue::IsFenceComplete(uint64 fenceValue)
+bool GPUQueue::IsFenceComplete(uint64 fenceValue)
 {
     if (fenceValue > mLastCompletedFenceValue)
     {
@@ -55,22 +55,22 @@ bool Direct3DQueue::IsFenceComplete(uint64 fenceValue)
 }
 
 
-void Direct3DQueue::InsertWait(uint64 fenceValue)
+void GPUQueue::InsertWait(uint64 fenceValue)
 {
     mCommandQueue->Wait(mFence, fenceValue);
 }
 
-void Direct3DQueue::InsertWaitForQueueFence(Direct3DQueue* otherQueue, uint64 fenceValue)
+void GPUQueue::InsertWaitForQueueFence(GPUQueue* otherQueue, uint64 fenceValue)
 {
     mCommandQueue->Wait(otherQueue->GetFence(), fenceValue);
 }
 
-void Direct3DQueue::InsertWaitForQueue(Direct3DQueue* otherQueue)
+void GPUQueue::InsertWaitForQueue(GPUQueue* otherQueue)
 {
     mCommandQueue->Wait(otherQueue->GetFence(), otherQueue->GetNextFenceValue() - 1);
 }
 
-void Direct3DQueue::WaitForFenceCPUBlocking(uint64 fenceValue)
+void GPUQueue::WaitForFenceCPUBlocking(uint64 fenceValue)
 {
     if (IsFenceComplete(fenceValue))
     {
@@ -86,7 +86,7 @@ void Direct3DQueue::WaitForFenceCPUBlocking(uint64 fenceValue)
     }
 }
 
-uint64 Direct3DQueue::ExecuteCommandList(ID3D12CommandList* commandList)
+uint64 GPUQueue::ExecuteCommandList(ID3D12CommandList* commandList)
 {
     ((ID3D12GraphicsCommandList*)commandList)->Close();
 
@@ -99,17 +99,36 @@ uint64 Direct3DQueue::ExecuteCommandList(ID3D12CommandList* commandList)
     return mNextFenceValue++;
 }
 
-InflightCommandList Direct3DQueue::ExecuteAndGetInflightHandle(ID3D12CommandList* List)
+InflightCommandList GPUQueue::ExecuteAndGetInflightHandle(ID3D12CommandList* List)
 {
     uint64 value = ExecuteCommandList(List);
     InflightCommandList handle{List,this,value};
     return handle;
 }
 
-void Direct3DQueue::Destroy()
+void GPUQueue::Destroy()
 {
     WaitForIdle(); //flush queue
 
     mCommandQueue->Release();
     mFence->Release();
+}
+
+InflightGPUWork::InflightGPUWork()
+{
+}
+
+InflightGPUWork::InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal)
+{
+    this->pGPUQueue = pQueue;
+    this->fenceValue = fenceVal;
+}
+
+InflightGPUWork::~InflightGPUWork()
+{
+}
+
+void InflightGPUWork::Wait()
+{
+    pGPUQueue->WaitForFenceCPUBlocking(fenceValue);
 }

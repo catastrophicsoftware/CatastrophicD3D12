@@ -3,16 +3,16 @@
 #include "GPUCommandAllocator.h"
 typedef UINT64 uint64;
 
-class Direct3DQueue
+class GPUQueue
 {
 public:
-    Direct3DQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType);
-    ~Direct3DQueue();
+    GPUQueue(ID3D12Device* device, D3D12_COMMAND_LIST_TYPE commandType);
+    ~GPUQueue();
 
     bool IsFenceComplete(uint64 fenceValue);
     void InsertWait(uint64 fenceValue);
-    void InsertWaitForQueueFence(Direct3DQueue* otherQueue, uint64 fenceValue);
-    void InsertWaitForQueue(Direct3DQueue* otherQueue);
+    void InsertWaitForQueueFence(GPUQueue* otherQueue, uint64 fenceValue);
+    void InsertWaitForQueue(GPUQueue* otherQueue);
 
     void WaitForFenceCPUBlocking(uint64 fenceValue);
     void WaitForIdle() { WaitForFenceCPUBlocking(mNextFenceValue - 1); }
@@ -39,4 +39,16 @@ private:
     uint64 mNextFenceValue;
     uint64 mLastCompletedFenceValue;
     HANDLE mFenceEventHandle;
+};
+
+struct InflightGPUWork
+{
+    InflightGPUWork();
+    InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal);
+    ~InflightGPUWork();
+
+    GPUQueue* pGPUQueue;
+    uint64 fenceValue;
+
+    void Wait(); //blocks current cpu thread until gpu work is complete
 };

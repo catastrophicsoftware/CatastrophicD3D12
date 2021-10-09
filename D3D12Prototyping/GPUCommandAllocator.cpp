@@ -50,7 +50,7 @@ InflightCommandList::InflightCommandList()
 {
 }
 
-InflightCommandList::InflightCommandList(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue)
+InflightCommandList::InflightCommandList(ID3D12CommandList* pCMDList, GPUQueue* pGPUQueue, uint64 fenceValue)
 {
     CMD = pCMDList;
     this->pGPUQueue = pGPUQueue;

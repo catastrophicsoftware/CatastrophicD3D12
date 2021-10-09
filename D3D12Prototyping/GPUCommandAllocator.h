@@ -1,16 +1,16 @@
 #pragma once
 #include "pch.h"
 
-class Direct3DQueue;
+class GPUQueue;
 
 struct InflightCommandList
 {
 	ID3D12CommandList* CMD;
-	Direct3DQueue* pGPUQueue;
+	GPUQueue* pGPUQueue;
 	uint64 fenceValue;
 
 	InflightCommandList();
-	InflightCommandList(ID3D12CommandList* pCMDList, Direct3DQueue* pGPUQueue, uint64 fenceValue);
+	InflightCommandList(ID3D12CommandList* pCMDList, GPUQueue* pGPUQueue, uint64 fenceValue);
 
 	void CPUWait();
 	bool IsComplete() const;
