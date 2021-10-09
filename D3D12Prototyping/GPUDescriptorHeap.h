@@ -33,10 +33,12 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE FirstCPUHandle() const;
 	D3D12_GPU_DESCRIPTOR_HANDLE FirstGPUHandle() const;
 
+	ID3D12DescriptorHeap* HeapHandle() const;
 	uint64 Count() const;
 	uint32 UsedDescriptors() const;
 	bool IsFull() const;
 	void Destroy();
+	D3D12_DESCRIPTOR_HEAP_TYPE GetHeapType() const;
 private:
 	ID3D12Device* GPU;
 	ID3D12DescriptorHeap* DescriptorHeap;
@@ -51,7 +53,5 @@ private:
 	uint32 incrementSize;
 	uint32 index;
 
-	//std::vector<GPUDescriptorHandle> UnusedHandles;
-	//std::vector<GPUDescriptorHandle> UsedHandles;
 	std::queue<GPUDescriptorHandle> UnusedHandles;
 };

@@ -40,8 +40,6 @@ GPUDescriptorHeap::~GPUDescriptorHeap()
 
 GPUDescriptorHandle GPUDescriptorHeap::GetDescriptor(uint32 index)
 {
-	assert(index <= count);
-
 	return GPUDescriptorHandle(this, index);
 }
 
@@ -60,7 +58,7 @@ GPUDescriptorHandle GPUDescriptorHeap::GetUnusedDescriptor()
 
 D3D12_CPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::GetCPUHandle(uint32 index)
 {
-	assert(index >= count);
+	assert(index <= (count-1));
 	assert(DescriptorHeap != nullptr);
 	D3D12_CPU_DESCRIPTOR_HANDLE outHandle{};
 
@@ -70,7 +68,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::GetCPUHandle(uint32 index)
 
 D3D12_GPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::GetGPUHandle(uint32 index)
 {
-	assert(index >= count);
+	assert(index <= (count - 1));
 	assert(DescriptorHeap != nullptr);
 	D3D12_GPU_DESCRIPTOR_HANDLE outHandle{};
 
@@ -93,6 +91,11 @@ D3D12_GPU_DESCRIPTOR_HANDLE GPUDescriptorHeap::FirstGPUHandle() const
 	return gpuHeapStart;
 }
 
+ID3D12DescriptorHeap* GPUDescriptorHeap::HeapHandle() const
+{
+	return DescriptorHeap;
+}
+
 uint64 GPUDescriptorHeap::Count() const
 {
 	return count;
@@ -111,6 +114,11 @@ bool GPUDescriptorHeap::IsFull() const
 void GPUDescriptorHeap::Destroy()
 {
 	DescriptorHeap->Release();
+}
+
+D3D12_DESCRIPTOR_HEAP_TYPE GPUDescriptorHeap::GetHeapType() const
+{
+	return heapType;
 }
 
 GPUDescriptorHandle::GPUDescriptorHandle()
