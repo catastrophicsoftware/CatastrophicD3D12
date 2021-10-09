@@ -1,11 +1,30 @@
 #include "pch.h"
 #include "LinearConstantBuffer.h"
 
+LinearConstantBuffer::LinearConstantBuffer()
+{
+	GPU = nullptr;
+	writeIndex = 0;
+	BaseAddress = {};
+	buffer = nullptr;
+	pBaseGPUMem = nullptr;
+	pWritePtr = nullptr;
+}
+
 LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB, ID3D12Heap* targetHeap, uint64 heapOffset)
 {
 	writeIndex = 0;
 	this->GPU = GPU;
+	BaseAddress = {};
 	Initialize(sizeInMB, targetHeap, heapOffset);
+}
+
+LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB)
+{
+	writeIndex = 0;
+	this->GPU = GPU;
+	BaseAddress = {};
+	Initialize(sizeInMB);
 }
 
 LinearConstantBuffer::~LinearConstantBuffer()
@@ -27,15 +46,29 @@ void LinearConstantBuffer::Reset()
 	writeIndex = 0;
 }
 
+void LinearConstantBuffer::Reset(uint64 index)
+{
+	assert(index < writeIndex); //only support resetting backwards for now
+	writeIndex = index; //performs partial reset, resetting write index back to previous location
+}
+
 void LinearConstantBuffer::Destroy()
 {
+	//Warning! no protection against in-flight gpu usage
+	//this buffer may be being used at this point
 	buffer->Release();
 	writeIndex = 0;
 }
 
-void LinearConstantBuffer::Initialize(uint64 size, ID3D12Heap* targetHeap, uint64 heapOffset)
+uint64 LinearConstantBuffer::GetConsumedMemory() const
 {
-	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+	return writeIndex;
+}
+
+void LinearConstantBuffer::Initialize(uint64 sizeMB, ID3D12Heap* targetHeap, uint64 heapOffset)
+{
+	uint64 bufferSize = (1024 * 1024) * sizeMB;
+	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 	if (FAILED(GPU->CreatePlacedResource(targetHeap, heapOffset, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&buffer))))
 	{
 		throw new std::runtime_error("failed to create dynamic constant buffer!");
@@ -45,6 +78,29 @@ void LinearConstantBuffer::Initialize(uint64 size, ID3D12Heap* targetHeap, uint6
 		BaseAddress = buffer->GetGPUVirtualAddress();
 		CD3DX12_RANGE readRange(0, 0);
 		buffer->Map(0, &readRange,(void**)&pBaseGPUMem);
+	}
+}
+
+void LinearConstantBuffer::Initialize(uint64 sizeMB)
+{
+	uint64 bufferSize = (1024 * 1024) * sizeMB;
+	CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_UPLOAD);
+
+	if (FAILED(GPU->CreateCommittedResource(&heapProperties,
+		D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS,
+		&desc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&buffer))))
+	{
+		throw new std::runtime_error("failed to create dynamic constant buffer!");
+	}
+	else
+	{
+		BaseAddress = buffer->GetGPUVirtualAddress();
+		CD3DX12_RANGE readRange(0, 0); //write only
+		buffer->Map(0, &readRange, (void**)&pBaseGPUMem);
 	}
 }
 

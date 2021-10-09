@@ -7,16 +7,22 @@
 class LinearConstantBuffer
 {
 public:
+	LinearConstantBuffer();
 	LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB, ID3D12Heap* targetHeap, uint64 heapOffset);
+	LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB);
 	~LinearConstantBuffer();
 
 	D3D12_GPU_VIRTUAL_ADDRESS Write(void* pData, uint64 dataSize);
 	void Reset();
+	void Reset(uint64 writeIndex); //reset the write index partially
 	void Destroy();
+
+	uint64 GetConsumedMemory() const;
 private:
 	ID3D12Device* GPU;
 
 	void Initialize(uint64 size,ID3D12Heap* pTargetHeap, uint64 heapOffset);
+	void Initialize(uint64 size);
 	uint8_t* pBaseGPUMem;
 	uint8_t* pWritePtr;
 
