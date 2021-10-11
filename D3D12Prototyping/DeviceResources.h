@@ -143,7 +143,7 @@ namespace DX
 
         // Memory
         void InitializeEngineMemoryManagement();
-        const UINT32 PerFrameMemorySize = (1024 * 1024) * 16;
+        const UINT32 PerFrameMemorySize = 16;
         std::vector<LinearConstantBuffer*> PerFrameMemory;
     };
 }

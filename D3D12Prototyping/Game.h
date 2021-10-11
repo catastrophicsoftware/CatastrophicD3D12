@@ -66,7 +66,7 @@ private:
     void CreateWindowSizeDependentResources();
 
     ID3D12Device* GPU;
-    std::unique_ptr<DX::DeviceResources> m_deviceResources;
+    std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
     std::mutex graphicsQueueMutex;
     GPUQueue* GraphicsQueue;

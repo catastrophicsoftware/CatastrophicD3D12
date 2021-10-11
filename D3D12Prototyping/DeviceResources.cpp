@@ -245,8 +245,7 @@ void DeviceResources::CreateDeviceResources()
         throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
     }
 
-
-
+    InitializeEngineMemoryManagement();
 }
 
 void DeviceResources::InitializeEngineMemoryManagement()

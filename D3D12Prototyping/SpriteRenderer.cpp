@@ -1,16 +1,19 @@
 #include "pch.h"
 #include "SpriteRenderer.h"
 #include "VertexTypes.h"
+#include "DeviceResources.h"
+#include "LinearConstantBuffer.h"
 
 using namespace DirectX;
 
-SpriteRenderer::SpriteRenderer(ID3D12Device* pGPU, GPUQueue* pCopyEngine, GPUDescriptorHeap* pGlobalHeap)
+SpriteRenderer::SpriteRenderer(ID3D12Device* pGPU, GPUQueue* pCopyEngine, GPUDescriptorHeap* pGlobalHeap, DX::DeviceResources* pEngine)
 {
 	GPU = pGPU;
 	CopyEngine = pCopyEngine;
 	CopyCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_COPY);
 	GlobalSRV_UAV_CBV = pGlobalHeap;
 	renderPassInProgress = false;
+	Engine = pEngine;
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -23,7 +26,7 @@ void SpriteRenderer::Initialize(uint32 backBufferCount)
 	GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
 	GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-	InitializeGPUMemory();
+	//InitializeGPUMemory();
 	InitializePipelineState();
 }
 
@@ -33,14 +36,15 @@ void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, 
 	this->frameIndex = frameIndex;
 	pCurrentCommandList = cmd;
 
-	auto frameMemory = PerFrameMem[frameIndex];
-	frameMemory->Reset();
+	auto frameMemory = Engine->GetPerFrameMemory(frameIndex);
+
 	auto cameraCBV = frameMemory->Write(&cameraTransform, sizeof(Matrix));
 
 	renderPassInProgress = true;
 
 	cmd->SetGraphicsRootSignature(RootSignature);
 	cmd->SetGraphicsRootConstantBufferView(0, cameraCBV);
+	cmd->SetPipelineState(SpritePipelineState);
 
 	ID3D12DescriptorHeap* pGlobalHeap = GlobalSRV_UAV_CBV->HeapHandle();
 	cmd->SetDescriptorHeaps(1, &pGlobalHeap);
@@ -52,15 +56,13 @@ void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, 
 	cmd->IASetIndexBuffer(&ibView);
 }
 
-InflightGPUWork SpriteRenderer::EndRenderPass()
+void SpriteRenderer::EndRenderPass()
 {
 	assert(renderPassInProgress == true);
 
-	auto workHandle = GraphicsQueue->Execute(pCurrentCommandList);
-	PerFrameMem[frameIndex]->RegisterFence(workHandle); //record in-use region of per-frame allocator
+	// 10-11-2021 -- TODO: determine if anything else needs to go here
 
 	renderPassInProgress = false;
-	return workHandle;
 }
 
 void SpriteRenderer::RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 position)
@@ -69,8 +71,12 @@ void SpriteRenderer::RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 p
 
 	float zVal = 0.0f;
 	Matrix spriteTransform = Matrix::CreateTranslation(Vector3(position.x, position.y, zVal));
+	auto transformCBV = Engine->GetPerFrameMemory(frameIndex)->Write(&spriteTransform, sizeof(Matrix));
 
+	pCurrentCommandList->SetGraphicsRootConstantBufferView(1, transformCBV);
 	pCurrentCommandList->SetGraphicsRootDescriptorTable(2, texture);
+
+	pCurrentCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
 
 void SpriteRenderer::SetViewportAndScissor(D3D12_VIEWPORT viewport, D3D12_RECT scissor)
@@ -79,14 +85,14 @@ void SpriteRenderer::SetViewportAndScissor(D3D12_VIEWPORT viewport, D3D12_RECT s
 	gameScissorRect = scissor;
 }
 
-void SpriteRenderer::InitializeGPUMemory()
-{
-	for (int i = 0; i < numBackbuffers; ++i)
-	{
-		LinearConstantBuffer* newBuffer = new LinearConstantBuffer(GPU, 4);
-		PerFrameMem.push_back(newBuffer);
-	}
-}
+//void SpriteRenderer::InitializeGPUMemory()
+//{
+//	for (int i = 0; i < numBackbuffers; ++i)
+//	{
+//		LinearConstantBuffer* newBuffer = new LinearConstantBuffer(GPU, 4);
+//		PerFrameMem.push_back(newBuffer);
+//	}
+//}
 
 void SpriteRenderer::InitializePipelineState()
 {
@@ -167,7 +173,8 @@ void SpriteRenderer::InitializePipelineState()
 		sd.SampleMask = UINT_MAX;
 		sd.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		sd.NumRenderTargets = 1;
-		sd.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		//sd.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		sd.RTVFormats[0] = Engine->GetBackBufferFormat();
 		sd.SampleDesc.Count = 1;
 
 		if (FAILED(GPU->CreateGraphicsPipelineState(&sd, IID_PPV_ARGS(&SpritePipelineState))))
@@ -188,7 +195,7 @@ void SpriteRenderer::InitializePipelineState()
 			BUFFER_FLAG_LIFETIME_MAP,
 			true);*/
 
-		size_t vbSize = sizeof(DirectX::VertexPositionTexture) * 3;
+		size_t vbSize = sizeof(DirectX::VertexPositionTexture) * 4;
 		SpriteVB->Create(vbSize,
 			D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -214,18 +221,28 @@ void SpriteRenderer::InitializePipelineState()
 		uint32 quadIndices[6] = { 0,1,2, 2,3,0 };
 
 		auto GPUMem = UploadBuffer->Map();
+		auto cmd = CopyCommandAllocator->GetCommandList();
 
 		memcpy(GPUMem, &quadVerts, vbSize);
-		GPUMem += vbSize;
-		memcpy(GPUMem, &quadIndices, ibSize);
-
-		auto cmd = CopyCommandAllocator->GetCommandList();
 		cmd->CopyBufferRegion(SpriteVB->Handle(), 0, UploadBuffer->Handle(), 0, vbSize);
-		cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), vbSize, ibSize);
-
 		CopyEngine->Execute(cmd);
 		CopyEngine->Flush();
-		UploadBuffer->Release(); //this is not needed from this point onward.
+
+		cmd = CopyCommandAllocator->GetCommandList();
+		memcpy(GPUMem, &quadIndices, ibSize);
+		cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), 0, ibSize);
+		CopyEngine->Execute(cmd);
+		CopyEngine->Flush();
+		//GPUMem += vbSize;
+		//memcpy(GPUMem, &quadIndices, ibSize);
+
+		//auto cmd = CopyCommandAllocator->GetCommandList();
+		//cmd->CopyBufferRegion(SpriteVB->Handle(), 0, UploadBuffer->Handle(), 0, vbSize);
+		//cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), vbSize, ibSize);
+
+		//CopyEngine->Execute(cmd);
+		//CopyEngine->Flush();
+		//UploadBuffer->Release(); //this is not needed from this point onward.
 
 		cmd = GraphicsCommandAllocator->GetCommandList();
 

@@ -9,16 +9,21 @@
 
 using namespace DirectX::SimpleMath;
 
+namespace DX
+{
+	class DeviceResources;
+}
+
 class SpriteRenderer
 {
 public:
-	SpriteRenderer(ID3D12Device* pGPU, GPUQueue* pCopyEngine, GPUDescriptorHeap* pGlobalHeap);
+	SpriteRenderer(ID3D12Device* pGPU, GPUQueue* pCopyEngine, GPUDescriptorHeap* pGlobalHeap, DX::DeviceResources* pEngine);
 	~SpriteRenderer();
 
 	void Initialize(uint32 backBufferCount);
 
 	void BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, ID3D12GraphicsCommandList* pCMDList);
-	InflightGPUWork EndRenderPass();
+	void EndRenderPass();
 
 	void RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 position);
 
@@ -41,7 +46,6 @@ private:
 
 	GPUBuffer* SpriteVB;
 	GPUBuffer* SpriteIB;
-	/*GPUBuffer* SpriteCameraCB;*/
 	GPUBuffer* UploadBuffer;
 
 	GPUDescriptorHeap* GlobalSRV_UAV_CBV;
@@ -53,7 +57,9 @@ private:
 	uint32 frameIndex;
 	bool renderPassInProgress;
 
-	std::vector<LinearConstantBuffer*> PerFrameMem;
-	void InitializeGPUMemory();
+	DX::DeviceResources* Engine;
+
+	//std::vector<LinearConstantBuffer*> PerFrameMem;
+	//void InitializeGPUMemory();
 	void InitializePipelineState();
 };

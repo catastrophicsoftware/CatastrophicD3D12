@@ -17,7 +17,7 @@ using Microsoft::WRL::ComPtr;
 
 Game::Game() noexcept(false) : BackgroundPool()
 {
-    m_deviceResources = std::make_unique<DX::DeviceResources>();
+    m_deviceResources = std::make_shared<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
 }
 
@@ -238,7 +238,8 @@ void Game::InitializeWorld()
     TestChunk = new WorldChunk(GPU);
     TestChunk->Initialize(0, 0, GPUMemory);
 
-    Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap);
+    DX::DeviceResources* pEngine = m_deviceResources.get();
+    Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap, pEngine);
     Renderer->Initialize(m_deviceResources->GetBackBufferCount());
 
     auto copyCMD = GraphicsCommandAllocator->GetCommandList();
@@ -263,10 +264,10 @@ void Game::RenderWorld(uint32 index)
 
     Renderer->RenderSprite(TestChunk->GetTextureSRV(), Vector2(0.0f, 0.0f));
 
-    auto spriteRenderWork = Renderer->EndRenderPass();
+    Renderer->EndRenderPass();
 
-    m_deviceResources->GetCommandQueue()->Wait(spriteRenderWork.pGPUQueue->GetFence(), spriteRenderWork.fenceValue);
-    //insert gpu graphics pipeline halt until sprite rendering work is complete
+    //m_deviceResources->GetCommandQueue()->Wait(spriteRenderWork.pGPUQueue->GetFence(), spriteRenderWork.fenceValue);
+    ////insert gpu graphics pipeline halt until sprite rendering work is complete
 }
 
 void Game::InitializeInput()
