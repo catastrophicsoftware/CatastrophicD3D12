@@ -27,6 +27,11 @@ public:
 
 	bool Created() const;
 	D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress();
+
+	ID3D12Resource* Handle() const;
+
+	void WriteElementAtIndex(uint64 elementSize, uint64 index, void* pData);
+	D3D12_GPU_VIRTUAL_ADDRESS GetElementAddress(uint64 elementSize, uint64 index);
 private:
 	ID3D12Device* GPU;
 	ID3D12Resource* buffer;

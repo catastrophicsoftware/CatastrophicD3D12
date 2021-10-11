@@ -111,6 +111,28 @@ D3D12_GPU_VIRTUAL_ADDRESS GPUBuffer::GetGPUAddress()
 	return GPUAddress;
 }
 
+ID3D12Resource* GPUBuffer::Handle() const
+{
+	return buffer;
+}
+
+void GPUBuffer::WriteElementAtIndex(uint64 elementSize, uint64 index, void* pData)
+{
+	assert(cpuAccessible);
+	assert(((elementSize * index) + elementSize) <= size); //ensure there is space to write an element after the current index
+
+	if (!mapped)
+		Map();
+
+	uint64* pDest = pGPUMemory + (elementSize * index);
+	memcpy(pDest, pData, elementSize);
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS GPUBuffer::GetElementAddress(uint64 elementSize, uint64 index)
+{
+	return GPUAddress + (elementSize * index);
+}
+
 void GPUBuffer::createGPUBuffer(uint64 sizeInBytes,D3D12_RESOURCE_STATES initialState,bool cpuAccessible,CENGINE_BUFFER_FLAGS flags, ID3D12Heap* pTargetHeap, uint64 heapOffset)
 {
 	size = sizeInBytes;
