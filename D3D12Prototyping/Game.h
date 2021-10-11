@@ -21,6 +21,9 @@
 #include "WorldChunk.h"
 #include "SpriteRenderer.h"
 #include "Camera2D.h"
+#include "SpriteBatch.h"
+#include "GraphicsMemory.h"
+#include "ResourceUploadBatch.h"
 
 using namespace DirectX;
 
@@ -78,6 +81,9 @@ private:
     
     WorldChunk* TestChunk;
     SpriteRenderer* Renderer;
+
+    SpriteBatch* Render2D;
+    GraphicsMemory* GMem;
 
     void InitializeWorld();
     void RenderWorld(uint32 index);

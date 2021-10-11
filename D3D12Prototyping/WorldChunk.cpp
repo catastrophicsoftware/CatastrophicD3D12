@@ -98,12 +98,19 @@ XMUINT2 WorldChunk::GetIndex() const
 
 void WorldChunk::allocateCPUChunkData()
 {
+	srand(GetTickCount());
 	if (!cpuDataReady)
 	{
 		cpuChunkData = new uint32[CHUNK_DIMENSION * CHUNK_DIMENSION];
 
 		for (int i = 0; i < CHUNK_ELEMENT_COUNT; ++i)
-			if ((i % 2) == 0) cpuChunkData[i] = magenta; else cpuChunkData[i] = 0;
+		{
+			float r = RandFloat();
+			if (r > 0.5f)
+				cpuChunkData[i] = light_green;
+			else
+				cpuChunkData[i] = dark_brown;
+		}
 
 		cpuDataReady = true;
 		cpuDataDirty = true; //set if not already set
@@ -124,10 +131,10 @@ void WorldChunk::createSRV(GPUDescriptorHeap* DescriptorHeap)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc{};
 	viewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	viewDesc.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+	viewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	viewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	viewDesc.Texture2D.MipLevels = -1;
-	viewDesc.Texture2D.MostDetailedMip = 1;
+	viewDesc.Texture2D.MipLevels = 1;
+	viewDesc.Texture2D.MostDetailedMip = 0;
 
 	textureSRV = DescriptorHeap->GetUnusedDescriptor();
 
@@ -148,7 +155,9 @@ void WorldChunk::CreateTexture(D3D12MA::Allocator* GPUMemory)
 {
 	CD3DX12_RESOURCE_DESC texDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UINT,
 		CHUNK_DIMENSION,
-		CHUNK_DIMENSION);
+		CHUNK_DIMENSION,
+		1,
+		1);
 
 	textureState = D3D12_RESOURCE_STATE_COPY_DEST; //waiting for initial data
 

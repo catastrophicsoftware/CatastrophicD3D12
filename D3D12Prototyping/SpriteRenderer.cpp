@@ -38,6 +38,7 @@ void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, 
 
 	auto frameMemory = Engine->GetPerFrameMemory(frameIndex);
 
+	cameraTransform = cameraTransform.Transpose();
 	auto cameraCBV = frameMemory->Write(&cameraTransform, sizeof(Matrix));
 
 	renderPassInProgress = true;
@@ -69,8 +70,11 @@ void SpriteRenderer::RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 p
 {
 	assert(pCurrentCommandList != nullptr);
 
-	float zVal = 0.0f;
+	float zVal = 1.0f;
 	Matrix spriteTransform = Matrix::CreateTranslation(Vector3(position.x, position.y, zVal));
+	spriteTransform *= Matrix::CreateOrthographicOffCenter(0.0f, Engine->GetScreenViewport().Width, Engine->GetScreenViewport().Height, 0.0f, 0.0f, 100.0f);
+	spriteTransform = spriteTransform.Transpose();
+
 	auto transformCBV = Engine->GetPerFrameMemory(frameIndex)->Write(&spriteTransform, sizeof(Matrix));
 
 	pCurrentCommandList->SetGraphicsRootConstantBufferView(1, transformCBV);
@@ -151,7 +155,7 @@ void SpriteRenderer::InitializePipelineState()
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC sd{};
 		CD3DX12_RASTERIZER_DESC spriteRasterizerState(D3D12_FILL_MODE_SOLID,
-			D3D12_CULL_MODE_BACK,
+			D3D12_CULL_MODE_NONE,
 			FALSE,
 			D3D12_DEFAULT_DEPTH_BIAS,
 			D3D12_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -188,12 +192,6 @@ void SpriteRenderer::InitializePipelineState()
 		SpriteVB = new GPUBuffer(GPU);
 		SpriteIB = new GPUBuffer(GPU);
 		UploadBuffer = new GPUBuffer(GPU);
-		/*SpriteCameraCB = new GPUBuffer(GPU);
-
-		SpriteCameraCB->Create(sizeof(Matrix) * 3,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			BUFFER_FLAG_LIFETIME_MAP,
-			true);*/
 
 		size_t vbSize = sizeof(DirectX::VertexPositionTexture) * 4;
 		SpriteVB->Create(vbSize,
@@ -209,13 +207,13 @@ void SpriteRenderer::InitializePipelineState()
 			BUFFER_FLAG_LIFETIME_MAP,
 			true);
 
-		float zVal = 0.0f;
+		float zVal = 1.0f;
 		DirectX::VertexPositionTexture quadVerts[4] =
 		{
-			{XMFLOAT3(-0.25f,1.0f,zVal),XMFLOAT2(0.0f,1.0f)},
-			{XMFLOAT3(0.25f,1.0f,zVal),XMFLOAT2(0.0f,0.0f)},
-			{XMFLOAT3(-0.25f,-1.0f,zVal), XMFLOAT2(1.0f,1.0f)},
-			{XMFLOAT3(0.25f,-1.0f,zVal), XMFLOAT2(1.0f,0.0f)}
+			{XMFLOAT3(-1.0f,1.0f,zVal),XMFLOAT2(0.0f,1.0f)},
+			{XMFLOAT3(1.0f,1.0f,zVal),XMFLOAT2(0.0f,0.0f)},
+			{XMFLOAT3(-1.0f,-1.0f,zVal), XMFLOAT2(1.0f,1.0f)},
+			{XMFLOAT3(1.0f,-1.0f,zVal), XMFLOAT2(1.0f,0.0f)}
 		};
 
 		uint32 quadIndices[6] = { 0,1,2, 2,3,0 };
@@ -232,17 +230,7 @@ void SpriteRenderer::InitializePipelineState()
 		memcpy(GPUMem, &quadIndices, ibSize);
 		cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), 0, ibSize);
 		CopyEngine->Execute(cmd);
-		CopyEngine->Flush();
-		//GPUMem += vbSize;
-		//memcpy(GPUMem, &quadIndices, ibSize);
-
-		//auto cmd = CopyCommandAllocator->GetCommandList();
-		//cmd->CopyBufferRegion(SpriteVB->Handle(), 0, UploadBuffer->Handle(), 0, vbSize);
-		//cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), vbSize, ibSize);
-
-		//CopyEngine->Execute(cmd);
-		//CopyEngine->Flush();
-		//UploadBuffer->Release(); //this is not needed from this point onward.
+		CopyEngine->Flush(); //currently uploading data in two passes for debugging
 
 		cmd = GraphicsCommandAllocator->GetCommandList();
 

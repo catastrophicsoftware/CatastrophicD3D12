@@ -12,5 +12,6 @@ float4 main(PixelInput input) : SV_TARGET
 	float4 spriteTextureSample = spriteTexture.Sample(samplerState,input.texcoord);
 	spriteTextureSample.a = 1.0f;
 
-	return spriteTextureSample;
+	//return spriteTextureSample;
+	return float4(1, 0, 0, 1);
 }

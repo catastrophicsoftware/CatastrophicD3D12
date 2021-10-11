@@ -12,12 +12,12 @@ struct VertexOutput
 
 cbuffer CBPerFrame : register(b0)
 {
-	matrix cameraTransform;
+	float4x4 cameraTransform;
 }
 
 cbuffer CBDynamic : register(b1)
 {
-	matrix spriteTransform;
+	float4x4 spriteTransform;
 }
 
 VertexOutput main(VertexInput input)

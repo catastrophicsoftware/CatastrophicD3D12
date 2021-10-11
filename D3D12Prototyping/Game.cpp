@@ -84,6 +84,8 @@ void Game::Update(DX::StepTimer const& timer)
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
+    camera.Update();
+
     // TODO: Add your game logic here.
     elapsedTime;
 
@@ -238,6 +240,25 @@ void Game::InitializeWorld()
     TestChunk = new WorldChunk(GPU);
     TestChunk->Initialize(0, 0, GPUMemory);
 
+    { // DXTK12 SpriteBatch path
+        ResourceUploadBatch UploadBatch(GPU);
+        UploadBatch.Begin();
+        GMem = new GraphicsMemory(GPU);
+
+        RenderTargetState rtState(m_deviceResources->GetBackBufferFormat(),
+            m_deviceResources->GetDepthBufferFormat());
+
+        SpriteBatchPipelineStateDescription pd(rtState);
+
+        Render2D = new SpriteBatch(GPU, UploadBatch, pd);
+        auto vp = m_deviceResources->GetScreenViewport();
+        Render2D->SetViewport(vp);
+        Render2D->SetRotation(DXGI_MODE_ROTATION_IDENTITY);
+
+        auto uploadWait = UploadBatch.End(m_deviceResources->GetCommandQueue());
+        uploadWait.wait();
+    }
+
     DX::DeviceResources* pEngine = m_deviceResources.get();
     Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap, pEngine);
     Renderer->Initialize(m_deviceResources->GetBackBufferCount());
@@ -257,14 +278,27 @@ void Game::RenderWorld(uint32 index)
 {
     Matrix cameraTransform = camera.GetTransform();
     auto renderTarget = m_deviceResources->GetRenderTargetView();
-    Renderer->SetViewportAndScissor(m_deviceResources->GetScreenViewport(),
+    auto cmd = m_deviceResources->GetCommandList();
+    auto vp = m_deviceResources->GetScreenViewport();
+    ID3D12DescriptorHeap* pHeap = SRVHeap->HeapHandle();
+    cmd->SetDescriptorHeaps(1, &pHeap);
+
+    Render2D->SetViewport(vp);
+
+    XMMATRIX transform = camera.GetTransform();
+    Render2D->Begin(m_deviceResources->GetCommandList(), DirectX::SpriteSortMode_Immediate,transform);
+
+    Render2D->Draw(TestChunk->GetTextureSRV(), XMUINT2(256, 256), Vector2(0, 0));
+    Render2D->End();
+
+    /*Renderer->SetViewportAndScissor(m_deviceResources->GetScreenViewport(),
         m_deviceResources->GetScissorRect());
 
     Renderer->BeginRenderPass(index, cameraTransform, m_deviceResources->GetCommandList());
 
     Renderer->RenderSprite(TestChunk->GetTextureSRV(), Vector2(0.0f, 0.0f));
 
-    Renderer->EndRenderPass();
+    Renderer->EndRenderPass();*/
 
     //m_deviceResources->GetCommandQueue()->Wait(spriteRenderWork.pGPUQueue->GetFence(), spriteRenderWork.fenceValue);
     ////insert gpu graphics pipeline halt until sprite rendering work is complete
