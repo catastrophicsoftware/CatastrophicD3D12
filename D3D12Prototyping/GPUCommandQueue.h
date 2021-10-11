@@ -11,7 +11,8 @@ struct InflightGPUWork
     InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal);
     ~InflightGPUWork();
 
-    GPUQueue* pGPUQueue;
+    GPUQueue* pGPUQueue; //10-10-2021 -- reference to queue will not be needed once queue management is improved. only a uint64 fence value will be required to 
+    //know which queue to the fence is from
     uint64 fenceValue;
 
     void BlockUntilComplete(); //blocks current cpu thread until gpu work is complete
