@@ -240,8 +240,6 @@ void Game::InitializeWorld()
     TestChunk->createSRV(SRVHeap);
 
     GraphicsQueue->WaitForFenceCPUBlocking(GraphicsQueue->ExecuteCommandList(copyCMD)); //submit and wait for texture copy work
-
-    Renderer = new SpriteRenderer(GPU, GraphicsQueue, SRVHeap);
 }
 
 void Game::RenderWorld(ID3D12GraphicsCommandList* pCMD)
