@@ -330,7 +330,7 @@ void SpriteBatch::Impl::DeviceResources::CreateIndexBuffer(_In_ ID3D12Device* de
     upload.Transition(indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     SetDebugObjectName(indexBuffer.Get(), L"DirectXTK:SpriteBatch Index Buffer");
 
-    // LoadAssimp the index buffer view
+    // Load the index buffer view
     indexBufferView.BufferLocation = indexBuffer->GetGPUVirtualAddress();
     indexBufferView.Format = DXGI_FORMAT_R16_UINT;
     indexBufferView.SizeInBytes = static_cast<UINT>(bufferDesc.Width);
