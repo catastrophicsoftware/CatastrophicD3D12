@@ -13,6 +13,7 @@ class GPUBuffer
 public:
 	GPUBuffer();
 	GPUBuffer(ID3D12Device* pGPU);
+	~GPUBuffer();
 
 	void Create(uint64 sizeInBytes, D3D12_RESOURCE_STATES initialState,CENGINE_BUFFER_FLAGS bufferFlags= BUFFER_FLAG_NONE, bool cpuAccessible=false);
 	void Create(uint64 sizeInBytes, D3D12_RESOURCE_STATES initialState, CENGINE_BUFFER_FLAGS bufferFlags, bool cpuAccessible, ID3D12Heap* pTargetHeap, uint64 heapOffset);
@@ -32,6 +33,8 @@ public:
 
 	void WriteElementAtIndex(uint64 elementSize, uint64 index, void* pData);
 	D3D12_GPU_VIRTUAL_ADDRESS GetElementAddress(uint64 elementSize, uint64 index);
+
+	void Release();
 private:
 	ID3D12Device* GPU;
 	ID3D12Resource* buffer;

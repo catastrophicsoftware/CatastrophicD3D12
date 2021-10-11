@@ -29,13 +29,22 @@ GPUBuffer::GPUBuffer(ID3D12Device* pGPU)
 	size = 0;
 }
 
+GPUBuffer::~GPUBuffer()
+{
+	Release();
+}
+
 void GPUBuffer::Create(uint64 size, D3D12_RESOURCE_STATES state, CENGINE_BUFFER_FLAGS flags, bool cpuAccess)
 {
+	assert(!created);
+
 	createGPUBuffer(size, state, cpuAccess, flags);
 }
 
 void GPUBuffer::Create(uint64 sizeInBytes, D3D12_RESOURCE_STATES initialState, CENGINE_BUFFER_FLAGS bufferFlags, bool cpuAccessible,ID3D12Heap* pTargetHeap, uint64 heapOffset)
 {
+	assert(!created);
+
 	createGPUBuffer(sizeInBytes, initialState, cpuAccessible, flags, pTargetHeap, heapOffset);
 }
 
@@ -133,6 +142,14 @@ D3D12_GPU_VIRTUAL_ADDRESS GPUBuffer::GetElementAddress(uint64 elementSize, uint6
 	return GPUAddress + (elementSize * index);
 }
 
+void GPUBuffer::Release()
+{
+	if (created)
+	{
+		buffer->Release();
+	}
+}
+
 void GPUBuffer::createGPUBuffer(uint64 sizeInBytes,D3D12_RESOURCE_STATES initialState,bool cpuAccessible,CENGINE_BUFFER_FLAGS flags, ID3D12Heap* pTargetHeap, uint64 heapOffset)
 {
 	size = sizeInBytes;
@@ -176,6 +193,7 @@ void GPUBuffer::createGPUBuffer(uint64 sizeInBytes,D3D12_RESOURCE_STATES initial
 		//comitted resource
 		D3D12_HEAP_TYPE heapType = cpuAccessible ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT;
 		//Warning: read-back not currently supported!
+		this->cpuAccessible = cpuAccessible;
 
 		CD3DX12_HEAP_PROPERTIES heapProperties(heapType);
 		if (FAILED(GPU->CreateCommittedResource(&heapProperties,
