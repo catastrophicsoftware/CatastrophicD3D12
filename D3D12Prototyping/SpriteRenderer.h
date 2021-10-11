@@ -17,16 +17,16 @@ public:
 
 	void Initialize(uint32 backBufferCount);
 
-	void BeginRenderPass(uint32 frameIndex, ID3D12GraphicsCommandList* cmd, Matrix cameraTransform);
-	void EndRenderPass();
+	void BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, CD3DX12_CPU_DESCRIPTOR_HANDLE backbufferRTV);
+	InflightGPUWork EndRenderPass();
 
 	void RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 position);
 
 	void SetViewportAndScissor(D3D12_VIEWPORT viewport, D3D12_RECT scissor);
 private:
 	ID3D12Device* GPU;
-	GPUQueue* GPUWorkQueue;
-	GPUCommandAllocator* CommandAllocator;
+	GPUQueue* GraphicsQueue;
+	GPUCommandAllocator* GraphicsCommandAllocator;
 
 	GPUQueue* CopyEngine;
 	GPUCommandAllocator* CopyCommandAllocator;
@@ -38,17 +38,19 @@ private:
 
 	D3D12_VERTEX_BUFFER_VIEW vbView;
 	D3D12_INDEX_BUFFER_VIEW ibView;
+
 	GPUBuffer* SpriteVB;
 	GPUBuffer* SpriteIB;
-
-	GPUBuffer* SpriteCameraCB;
-
+	/*GPUBuffer* SpriteCameraCB;*/
 	GPUBuffer* UploadBuffer;
+
 	GPUDescriptorHeap* GlobalSRV_UAV_CBV;
+	ID3D12GraphicsCommandList* pCurrentCommandList;
 
 	D3D12_VIEWPORT gameViewport;
 	D3D12_RECT gameScissorRect;
 	
+	uint32 frameIndex;
 	bool renderPassInProgress;
 
 	std::vector<LinearConstantBuffer*> PerFrameMem;

@@ -86,7 +86,6 @@
     <ClInclude Include="DirectXTK12\vbo.h">
       <Filter>DirectXTK\headers</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXTK12\SpriteFont.h" />
     <ClInclude Include="DirectXTK12\Audio.h">
       <Filter>DirectXTK\headers</Filter>
     </ClInclude>
@@ -206,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="GPUBuffer.h">
       <Filter>Framework\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK12\SpriteFont.h">
+      <Filter>DirectXTK\headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

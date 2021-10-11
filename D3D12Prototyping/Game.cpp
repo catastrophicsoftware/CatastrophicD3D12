@@ -51,7 +51,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     InitializeGPUMemory();
     InitializeCopyEngine();
-    InitializeStaticDescriptorHeaps();
+    InitializeStaticDescriptorHeaps(1024, 256, 32);
     InitializeQueues();
 
     InitializeWorld();
@@ -78,7 +78,9 @@ void Game::Tick()
 
 void Game::Update(DX::StepTimer const& timer)
 {
+#ifndef DISABLE_PIX_EVENTS
     PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update"); // See pch.h for info
+#endif
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
@@ -105,23 +107,38 @@ void Game::Render()
     Clear();
 
     auto commandList = m_deviceResources->GetCommandList();
+#ifndef DISABLE_PIX_EVENTS
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render"); // See pch.h for info
+#endif
     //-----------------------------------------------------------------------------------------
+
     RenderWorld(commandList);
 
     //------------------------------------------------------------------------------------------
-    PIXEndEvent(commandList);
 
-    // Show the new frame.
+#ifndef DISABLE_PIX_EVENTS
+    PIXEndEvent(commandList);
+#endif
+
+#ifndef DISABLE_PIX_EVENTS
     PIXBeginEvent(m_deviceResources->GetCommandQueue(), PIX_COLOR_DEFAULT, L"Present"); // See pch.h for info
+#endif
     m_deviceResources->Present();
+
+#ifndef DISABLE_PIX_EVENTS
     PIXEndEvent(m_deviceResources->GetCommandQueue());
+#endif
+
+    //TODO: cleanup DISABLE_PIX_EVENTS
 }
 
 void Game::Clear()
 {
     auto commandList = m_deviceResources->GetCommandList();
+
+#ifndef DISABLE_PIX_EVENTS
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Clear"); // See pch.h for info
+#endif
 
     // Clear the views.
     auto rtvDescriptor = m_deviceResources->GetRenderTargetView();
@@ -136,7 +153,9 @@ void Game::Clear()
     commandList->RSSetViewports(1, &viewport);
     commandList->RSSetScissorRects(1, &scissorRect);
 
+#ifndef DISABLE_PIX_EVENTS
     PIXEndEvent(commandList);
+#endif
 }
 #pragma endregion
 
@@ -214,12 +233,15 @@ void Game::InitializeWorld()
     TestChunk->Initialize(0, 0, GPUMemory);
 
     Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap);
+    Renderer->Initialize(m_deviceResources->GetBackBufferCount());
 
     auto copyCMD = GraphicsCommandAllocator->GetCommandList();
     TestChunk->UpdateGPUTexture(copyCMD);
     TestChunk->createSRV(SRVHeap);
 
     GraphicsQueue->WaitForFenceCPUBlocking(GraphicsQueue->ExecuteCommandList(copyCMD)); //submit and wait for texture copy work
+
+    Renderer = new SpriteRenderer(GPU, GraphicsQueue, SRVHeap);
 }
 
 void Game::RenderWorld(ID3D12GraphicsCommandList* pCMD)
@@ -274,11 +296,11 @@ ID3D12Resource* Game::CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool 
     }
 }
 
-void Game::InitializeStaticDescriptorHeaps()
+void Game::InitializeStaticDescriptorHeaps(uint32 numSRVDescriptors, uint32 numRTVDescriptors, uint32 numSamplerDescriptors)
 {
-    SRVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    RTVHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,false);
-    SamplerHeap = new GPUDescriptorHeap(GPU, 128, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    SRVHeap = new GPUDescriptorHeap(GPU,numSRVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    RTVHeap = new GPUDescriptorHeap(GPU,numRTVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,false);
+    SamplerHeap = new GPUDescriptorHeap(GPU, numSamplerDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 }
 
 ID3D12GraphicsCommandList* Game::GetCopyCommandList()
@@ -292,6 +314,10 @@ void Game::InitializeCopyEngine()
 {
     CopyQueue = new GPUQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
     CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
+
+    UploadBuffer = new GPUBuffer(GPU);
+    uint64 uploadBufferSize = (1024 * 1024) * 512;
+    UploadBuffer->Create(uploadBufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_LIFETIME_MAP, true);
 }
 
 void Game::InitializeGPUQueues()

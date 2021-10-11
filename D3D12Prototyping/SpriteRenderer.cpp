@@ -20,19 +20,23 @@ SpriteRenderer::~SpriteRenderer()
 void SpriteRenderer::Initialize(uint32 backBufferCount)
 {
 	numBackbuffers = backBufferCount;
+	GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+	GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
 
 	InitializeGPUMemory();
 	InitializePipelineState();
 }
 
-void SpriteRenderer::BeginRenderPass(uint32 frameIndex, ID3D12GraphicsCommandList* cmd, Matrix cameraTransform)
+void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, CD3DX12_CPU_DESCRIPTOR_HANDLE backbufferRTV)
 {
 	assert(renderPassInProgress == false);
+	this->frameIndex = frameIndex;
+	auto cmd = GraphicsCommandAllocator->GetCommandList();
+	pCurrentCommandList = cmd; //store reference, calls to RenderSprite will be using this
+
 	auto frameMemory = PerFrameMem[frameIndex];
 	frameMemory->Reset();
 	auto cameraCBV = frameMemory->Write(&cameraTransform, sizeof(Matrix));
-
-	
 
 	renderPassInProgress = true;
 
@@ -43,16 +47,31 @@ void SpriteRenderer::BeginRenderPass(uint32 frameIndex, ID3D12GraphicsCommandLis
 	cmd->SetDescriptorHeaps(1, &pGlobalHeap);
 	cmd->RSSetViewports(1, &gameViewport);
 	cmd->RSSetScissorRects(1, &gameScissorRect);
+	cmd->OMSetRenderTargets(1, &backbufferRTV, FALSE, nullptr); //this is one of the engine backbuffers and is already in correct state for render target writes
+	cmd->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmd->IASetVertexBuffers(0, 1, &vbView);
+	cmd->IASetIndexBuffer(&ibView);
 }
 
-void SpriteRenderer::EndRenderPass()
+InflightGPUWork SpriteRenderer::EndRenderPass()
 {
 	assert(renderPassInProgress == true);
 
-	//TODO: figure out what/if anything needs to be done here
-	//possibly return an InflightGPUWork handle
+	auto workHandle = GraphicsQueue->Execute(pCurrentCommandList);
+	PerFrameMem[frameIndex]->RegisterFence(workHandle); //record in-use region of per-frame allocator
 
 	renderPassInProgress = false;
+	return workHandle;
+}
+
+void SpriteRenderer::RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 position)
+{
+	assert(pCurrentCommandList != nullptr);
+
+	float zVal = 0.0f;
+	Matrix spriteTransform = Matrix::CreateTranslation(Vector3(position.x, position.y, zVal));
+
+	pCurrentCommandList->SetGraphicsRootDescriptorTable(2, texture);
 }
 
 void SpriteRenderer::SetViewportAndScissor(D3D12_VIEWPORT viewport, D3D12_RECT scissor)
@@ -163,12 +182,12 @@ void SpriteRenderer::InitializePipelineState()
 		SpriteVB = new GPUBuffer(GPU);
 		SpriteIB = new GPUBuffer(GPU);
 		UploadBuffer = new GPUBuffer(GPU);
-		SpriteCameraCB = new GPUBuffer(GPU);
+		/*SpriteCameraCB = new GPUBuffer(GPU);
 
 		SpriteCameraCB->Create(sizeof(Matrix) * 3,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			BUFFER_FLAG_LIFETIME_MAP,
-			true);
+			true);*/
 
 		size_t vbSize = sizeof(DirectX::VertexPositionTexture) * 3;
 		SpriteVB->Create(vbSize,
@@ -178,10 +197,11 @@ void SpriteRenderer::InitializePipelineState()
 		SpriteIB->Create(ibSize,
 			D3D12_RESOURCE_STATE_COPY_DEST);
 
-		const uint32 uploadBufferSize = (1024 * 1024) * 2;
+		const uint32 uploadBufferSize = (1024 * 1024) * 4;
 		UploadBuffer->Create(uploadBufferSize,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
-			BUFFER_FLAG_LIFETIME_MAP);
+			BUFFER_FLAG_LIFETIME_MAP,
+			true);
 
 		float zVal = 0.0f;
 		DirectX::VertexPositionTexture quadVerts[4] =
@@ -204,11 +224,16 @@ void SpriteRenderer::InitializePipelineState()
 		cmd->CopyBufferRegion(SpriteVB->Handle(), 0, UploadBuffer->Handle(), 0, vbSize);
 		cmd->CopyBufferRegion(SpriteIB->Handle(), 0, UploadBuffer->Handle(), vbSize, ibSize);
 
-		SpriteVB->StateTransition(cmd, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-		SpriteIB->StateTransition(cmd, D3D12_RESOURCE_STATE_INDEX_BUFFER); //transition buffers to required state
-
 		CopyEngine->Execute(cmd);
 		CopyEngine->Flush();
+		UploadBuffer->Release(); //this is not needed from this point onward.
+
+		cmd = GraphicsCommandAllocator->GetCommandList();
+
+		SpriteVB->StateTransition(cmd, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		SpriteIB->StateTransition(cmd, D3D12_RESOURCE_STATE_INDEX_BUFFER); //transition buffers to required state
+		GraphicsQueue->Execute(cmd);
+		GraphicsQueue->Flush();
 
 		vbView = {};
 		vbView.BufferLocation = SpriteVB->GetGPUAddress();

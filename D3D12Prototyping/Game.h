@@ -100,7 +100,7 @@ private:
     GPUDescriptorHeap* RTVHeap;     //srv heap for rtvs
     GPUDescriptorHeap* SamplerHeap; //srv heap for samplers
 
-    void InitializeStaticDescriptorHeaps();
+    void InitializeStaticDescriptorHeaps(uint32 numSRVDescriptors,uint32 numRTVDescriptors,uint32 numSamplerDescriptors);
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
     GPUQueue* CopyQueue;
@@ -108,6 +108,8 @@ private:
     ID3D12GraphicsCommandList* GetCopyCommandList();
     void InitializeCopyEngine();
     std::mutex copyEngineLock;
+
+    GPUBuffer* UploadBuffer; //global 512MB upload buffer
     //------------------------------------------------------------------------------------------------------------------
     // graphics + compute queue management
     

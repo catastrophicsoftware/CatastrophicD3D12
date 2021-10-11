@@ -293,7 +293,7 @@
 #endif
 
 
-
+#define DISABLE_PIX_EVENTS
 
 
 #ifdef _DEBUG
