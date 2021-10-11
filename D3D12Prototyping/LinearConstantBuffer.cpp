@@ -94,7 +94,7 @@ void LinearConstantBuffer::Initialize(uint64 sizeMB)
 	CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_UPLOAD);
 
 	if (FAILED(GPU->CreateCommittedResource(&heapProperties,
-		D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS,
+		D3D12_HEAP_FLAG_NONE,
 		&desc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
