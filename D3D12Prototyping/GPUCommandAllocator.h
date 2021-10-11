@@ -3,7 +3,7 @@
 
 class GPUQueue;
 
-struct InflightCommandList
+struct InflightCommandList //10-10-2021 -- not sure if this will be used long term
 {
 	ID3D12CommandList* CMD;
 	GPUQueue* pGPUQueue;
