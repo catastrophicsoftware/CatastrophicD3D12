@@ -9,6 +9,7 @@ LinearConstantBuffer::LinearConstantBuffer()
 	buffer = nullptr;
 	pBaseGPUMem = nullptr;
 	pWritePtr = nullptr;
+	pFence = nullptr;
 }
 
 LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB, ID3D12Heap* targetHeap, uint64 heapOffset)
@@ -16,6 +17,7 @@ LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB, I
 	writeIndex = 0;
 	this->GPU = GPU;
 	BaseAddress = {};
+	pFence = nullptr;
 	Initialize(sizeInMB, targetHeap, heapOffset);
 }
 
@@ -24,6 +26,7 @@ LinearConstantBuffer::LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB)
 	writeIndex = 0;
 	this->GPU = GPU;
 	BaseAddress = {};
+	pFence = nullptr;
 	Initialize(sizeInMB);
 }
 
@@ -35,6 +38,10 @@ LinearConstantBuffer::~LinearConstantBuffer()
 void LinearConstantBuffer::RegisterFence(InflightGPUWork workHandle)
 {
 
+}
+
+void LinearConstantBuffer::RegisterFence(ID3D12Fence* pFence, UINT64 value)
+{
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSize)
@@ -72,6 +79,26 @@ void LinearConstantBuffer::Destroy()
 uint64 LinearConstantBuffer::GetConsumedMemory() const
 {
 	return writeIndex;
+}
+
+bool LinearConstantBuffer::IsFenceComplete() const
+{
+	assert(pFence != nullptr);
+
+	return pFence->GetCompletedValue() >= fenceValue;
+}
+
+void LinearConstantBuffer::WaitForFence() //this should probably not be here
+{
+	assert(pFence != nullptr);
+
+	if (!IsFenceComplete())
+	{
+		//still not done
+		HANDLE hFenceEvent = CreateEvent(nullptr, false, false, nullptr);
+		pFence->SetEventOnCompletion(fenceValue, hFenceEvent);
+		WaitForSingleObject(hFenceEvent, INFINITE);
+	}
 }
 
 void LinearConstantBuffer::Initialize(uint64 sizeMB, ID3D12Heap* targetHeap, uint64 heapOffset)

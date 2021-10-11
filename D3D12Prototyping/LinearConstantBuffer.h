@@ -14,12 +14,15 @@ public:
 	~LinearConstantBuffer();
 
 	void RegisterFence(InflightGPUWork workHandle);
+	void RegisterFence(ID3D12Fence* pFence, UINT64 value);
 
 	D3D12_GPU_VIRTUAL_ADDRESS Write(void* pData, uint64 dataSize);
 	void Reset();
 	void Destroy();
 
 	uint64 GetConsumedMemory() const;
+	bool IsFenceComplete() const;
+	void WaitForFence();
 private:
 	ID3D12Device* GPU;
 
@@ -35,6 +38,9 @@ private:
 	D3D12_GPU_VIRTUAL_ADDRESS BaseAddress;
 
 	InflightGPUWork fence;
+	UINT64 fenceValue;
+	ID3D12Fence* pFence;
+
 
 	const size_t minConstantBufferAlignment = 256;
 };
