@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "LinearConstantBuffer.h"
 
 namespace DX
 {
@@ -83,6 +83,8 @@ namespace DX
         }
 
         void GetAdapter(IDXGIAdapter1** ppAdapter);
+
+        LinearConstantBuffer* GetPerFrameMemory(UINT32 frameIndex) const;
     private:
         void MoveToNextFrame();
         void UpdateColorSpace();
@@ -135,5 +137,13 @@ namespace DX
 
         // The IDeviceNotify can be held directly as it owns the DeviceResources.
         IDeviceNotify*                                      m_deviceNotify;
+
+        // Synchronization
+        UINT32 frameIndex;
+
+        // Memory
+        void InitializeEngineMemoryManagement();
+        const UINT32 PerFrameMemorySize = (1024 * 1024) * 16;
+        std::vector<LinearConstantBuffer*> PerFrameMemory;
     };
 }

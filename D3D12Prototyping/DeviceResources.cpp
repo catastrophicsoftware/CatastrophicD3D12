@@ -244,6 +244,18 @@ void DeviceResources::CreateDeviceResources()
     {
         throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
     }
+
+
+
+}
+
+void DeviceResources::InitializeEngineMemoryManagement()
+{
+    for (int i = 0; i < m_backBufferCount; ++i) //initialize per-frame dynamic buffers
+    {
+        LinearConstantBuffer* NewBuffer = new LinearConstantBuffer(m_d3dDevice.Get(), PerFrameMemorySize);
+        PerFrameMemory.push_back(NewBuffer);
+    }
 }
 
 // These resources need to be recreated every time the window size is changed.
@@ -492,6 +504,9 @@ void DeviceResources::HandleDeviceLost()
 // Prepare the command list and render target for rendering.
 void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
 {
+    //frameIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
+    frameIndex = GetCurrentFrameIndex() % m_backBufferCount;
+
     // Reset command list and allocator.
     ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
     ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
@@ -520,9 +535,9 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
     m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
     // 10-11-2021 -- TODO: fence per-frame buffers here
-    
+    PerFrameMemory[frameIndex]->RegisterFence(m_fence.Get(), m_fenceValues[m_backBufferIndex]); //50-50 chance of working of causing catastrophic
+    //and difficult to solve issues
     //---------------------------------------------------
-
     HRESULT hr;
     if (m_options & c_AllowTearing)
     {
@@ -659,6 +674,12 @@ void DeviceResources::GetAdapter(IDXGIAdapter1** ppAdapter)
     }
 
     *ppAdapter = adapter.Detach();
+}
+
+LinearConstantBuffer* DX::DeviceResources::GetPerFrameMemory(UINT32 frameIndex) const
+{
+    assert(frameIndex <= (m_backBufferCount - 1));
+    return PerFrameMemory[frameIndex];
 }
 
 // Sets the color space for the swap chain in order to handle HDR output.
