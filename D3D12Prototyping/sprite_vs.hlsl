@@ -12,7 +12,7 @@ struct VertexOutput
 
 cbuffer CBPerFrame : register(b0)
 {
-	matrix viewProjection;
+	matrix cameraTransform;
 }
 
 cbuffer CBDynamic : register(b1)
@@ -26,7 +26,7 @@ VertexOutput main(VertexInput input)
 	output.texcoord = input.texcoord;
 
 	output.position = mul(input.position, spriteTransform);
-	output.position = mul(output.position, viewProjection);
+	output.position = mul(output.position, cameraTransform);
 
 	return output;
 }
