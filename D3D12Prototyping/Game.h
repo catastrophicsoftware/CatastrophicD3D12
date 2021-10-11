@@ -19,6 +19,7 @@
 #include "StaticGeometryBuffer.h"
 #include "D3D12MemAlloc.h"
 #include "WorldChunk.h"
+#include "SpriteRenderer.h"
 
 using namespace DirectX;
 
@@ -73,6 +74,7 @@ private:
     // game
     
     WorldChunk* TestChunk;
+    SpriteRenderer* Renderer;
 
     void InitializeWorld();
     void RenderWorld(ID3D12GraphicsCommandList* pCMD);
@@ -106,6 +108,12 @@ private:
     ID3D12GraphicsCommandList* GetCopyCommandList();
     void InitializeCopyEngine();
     std::mutex copyEngineLock;
+    //------------------------------------------------------------------------------------------------------------------
+    // graphics + compute queue management
+    
+    GPUQueue* ComputeQueue;
+    GPUCommandAllocator* ComputeCommandAllocator;
+    void InitializeGPUQueues();
     //------------------------------------------------------------------------------------------------------------------
 
     thread_pool BackgroundPool;

@@ -107,7 +107,6 @@ void Game::Render()
     auto commandList = m_deviceResources->GetCommandList();
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render"); // See pch.h for info
     //-----------------------------------------------------------------------------------------
-
     RenderWorld(commandList);
 
     //------------------------------------------------------------------------------------------
@@ -214,6 +213,8 @@ void Game::InitializeWorld()
     TestChunk = new WorldChunk(GPU);
     TestChunk->Initialize(0, 0, GPUMemory);
 
+    Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap);
+
     auto copyCMD = GraphicsCommandAllocator->GetCommandList();
     TestChunk->UpdateGPUTexture(copyCMD);
     TestChunk->createSRV(SRVHeap);
@@ -226,8 +227,6 @@ void Game::RenderWorld(ID3D12GraphicsCommandList* pCMD)
     ID3D12DescriptorHeap* StaticDescriptorHeap = SRVHeap->HeapHandle();
     pCMD->SetDescriptorHeaps(1, &StaticDescriptorHeap);
     D3D12_VIEWPORT currentVP = m_deviceResources->GetScreenViewport();
-
-
 }
 
 void Game::InitializeInput()
@@ -293,6 +292,12 @@ void Game::InitializeCopyEngine()
 {
     CopyQueue = new GPUQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
     CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
+}
+
+void Game::InitializeGPUQueues()
+{
+    ComputeQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+    ComputeCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_COMPUTE);
 }
 
 void Game::OnDeviceLost()
