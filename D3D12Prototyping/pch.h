@@ -237,6 +237,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 #pragma warning(push)
 #pragma warning(disable : 5204 5220)
@@ -337,3 +338,23 @@ namespace DX
 
 typedef UINT64 uint64;
 typedef unsigned int uint32;
+
+struct ScopedPerformanceTimer
+{
+    ScopedPerformanceTimer(const char* name)
+    {
+        start_time = std::chrono::high_resolution_clock::now();
+        timerName = name;
+    }
+    ~ScopedPerformanceTimer()
+    {
+        end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        std::cout << timerName << " -- Completed in: " << duration.count() << " milliseconds\n";
+    }
+
+    const char* timerName;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+    std::chrono::time_point<std::chrono::high_resolution_clock> end_time;
+};
+#define SCOPED_PERFORMANCE_TIMER(name) ScopedPerformanceTimer perfTimer(name);
