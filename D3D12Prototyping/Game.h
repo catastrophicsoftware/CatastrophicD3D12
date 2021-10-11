@@ -20,6 +20,7 @@
 #include "D3D12MemAlloc.h"
 #include "WorldChunk.h"
 #include "SpriteRenderer.h"
+#include "Camera2D.h"
 
 using namespace DirectX;
 
@@ -53,6 +54,8 @@ public:
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
     std::mutex& GetCopyEngineLock();
+
+    LinearConstantBuffer* GetPerFrameBuffer(uint32 frameIndex) const;
 private:
     void Update(DX::StepTimer const& timer);
     void Render();
@@ -70,23 +73,25 @@ private:
     GPUCommandAllocator* GraphicsCommandAllocator;
     void InitializeQueues();
 
-    //-----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     // game
     
     WorldChunk* TestChunk;
     SpriteRenderer* Renderer;
 
     void InitializeWorld();
-    void RenderWorld(ID3D12GraphicsCommandList* pCMD);
-    //-----------------------------------------------------
+    void RenderWorld(uint32 index);
+    Camera2D camera;
+    //------------------------------------------------------------------------------------------------------------------
 
-    //input------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
+    //input
     std::unique_ptr<DirectX::GamePad>  Controller;
     std::unique_ptr<DirectX::Keyboard> Keyboard;
     DirectX::Keyboard::State KeyboardState;
     DirectX::GamePad::State  GamepadState;
     void InitializeInput();
-    //-----------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -94,6 +99,8 @@ private:
     D3D12MA::Allocator* GPUMemory;
     void InitializeGPUMemory();
     ID3D12Resource* CreateGPUResource(D3D12_RESOURCE_DESC* resourceDesc, bool cpuWritable=false);
+
+    std::vector<LinearConstantBuffer*> PerFrameMemory;
     //------------------------------------------------------------------------------------------------------------------
     //static descriptor management
     GPUDescriptorHeap* SRVHeap;     //srv heap for cvb/srv/uavs
@@ -101,6 +108,7 @@ private:
     GPUDescriptorHeap* SamplerHeap; //srv heap for samplers
 
     void InitializeStaticDescriptorHeaps(uint32 numSRVDescriptors,uint32 numRTVDescriptors,uint32 numSamplerDescriptors);
+
     //------------------------------------------------------------------------------------------------------------------
     //copy engine
     GPUQueue* CopyQueue;

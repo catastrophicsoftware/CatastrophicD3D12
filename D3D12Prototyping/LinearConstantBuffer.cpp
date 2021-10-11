@@ -48,13 +48,16 @@ D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSi
 
 void LinearConstantBuffer::Reset()
 {
-	if (!fence.IsComplete())
+	if (fence.pGPUQueue != nullptr) //if fence has never been set it will be nullptr
 	{
-		//FRAME RATE ANNIHILATING CPU/GPU SYNC POINT
-		//AVOID HITTING AT ALL COSTS
-		fence.BlockUntilComplete(); //wait until previous access is complete
+		if (!fence.IsComplete())
+		{
+			//FRAME RATE ANNIHILATING CPU/GPU SYNC POINT
+			//AVOID HITTING AT ALL COSTS
+			fence.BlockUntilComplete(); //wait until previous access is complete
+		}
+		writeIndex = 0;
 	}
-	writeIndex = 0;
 }
 
 void LinearConstantBuffer::Destroy()

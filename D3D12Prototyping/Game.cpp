@@ -95,6 +95,7 @@ void Game::Update(DX::StepTimer const& timer)
 void Game::Render()
 {
     UINT fIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
+    PerFrameMemory[fIndex]->Reset();
 
     // Don't try to render anything before the first Update.
     if (m_timer.GetFrameCount() == 0)
@@ -112,7 +113,7 @@ void Game::Render()
 #endif
     //-----------------------------------------------------------------------------------------
 
-    RenderWorld(commandList);
+    RenderWorld(fIndex);
 
     //------------------------------------------------------------------------------------------
 
@@ -205,6 +206,11 @@ std::mutex& Game::GetCopyEngineLock()
 {
     return copyEngineLock;
 }
+LinearConstantBuffer* Game::GetPerFrameBuffer(uint32 frameIndex) const
+{
+    assert(frameIndex <= (m_deviceResources->GetBackBufferCount() - 1));
+    return PerFrameMemory[frameIndex];
+}
 #pragma endregion
 
 #pragma region Direct3D Resources
@@ -240,13 +246,27 @@ void Game::InitializeWorld()
     TestChunk->createSRV(SRVHeap);
 
     GraphicsQueue->WaitForFenceCPUBlocking(GraphicsQueue->ExecuteCommandList(copyCMD)); //submit and wait for texture copy work
+
+    camera.SetPosition(XMFLOAT2(0.0f, 0.0f));
+    camera.SetViewport(m_deviceResources->GetScreenViewport());
+    camera.Update();
 }
 
-void Game::RenderWorld(ID3D12GraphicsCommandList* pCMD)
+void Game::RenderWorld(uint32 index)
 {
-    ID3D12DescriptorHeap* StaticDescriptorHeap = SRVHeap->HeapHandle();
-    pCMD->SetDescriptorHeaps(1, &StaticDescriptorHeap);
-    D3D12_VIEWPORT currentVP = m_deviceResources->GetScreenViewport();
+    Matrix cameraTransform = camera.GetTransform();
+    auto renderTarget = m_deviceResources->GetRenderTargetView();
+    Renderer->SetViewportAndScissor(m_deviceResources->GetScreenViewport(),
+        m_deviceResources->GetScissorRect());
+
+    Renderer->BeginRenderPass(index, cameraTransform, m_deviceResources->GetCommandList());
+
+    Renderer->RenderSprite(TestChunk->GetTextureSRV(), Vector2(0.0f, 0.0f));
+
+    auto spriteRenderWork = Renderer->EndRenderPass();
+
+    m_deviceResources->GetCommandQueue()->Wait(spriteRenderWork.pGPUQueue->GetFence(), spriteRenderWork.fenceValue);
+    //insert gpu graphics pipeline halt until sprite rendering work is complete
 }
 
 void Game::InitializeInput()
@@ -269,6 +289,14 @@ void Game::InitializeGPUMemory()
     if (FAILED(D3D12MA::CreateAllocator(&desc, &GPUMemory)))
     {
         throw new std::runtime_error("failed to create gpu memory allocator!");
+    }
+
+    const uint32 perFrameBufferSize = (1024 * 1024) * 16;
+    for (int i = 0; i < m_deviceResources->GetBackBufferCount(); ++i)
+    {
+        LinearConstantBuffer* PerFrameBuffer = new LinearConstantBuffer(GPU, 16);
+        
+        PerFrameMemory.push_back(PerFrameBuffer);
     }
 }
 

@@ -17,7 +17,7 @@ public:
 
 	void Initialize(uint32 backBufferCount);
 
-	void BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, CD3DX12_CPU_DESCRIPTOR_HANDLE backbufferRTV);
+	void BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, ID3D12GraphicsCommandList* pCMDList);
 	InflightGPUWork EndRenderPass();
 
 	void RenderSprite(D3D12_GPU_DESCRIPTOR_HANDLE texture, Vector2 position);

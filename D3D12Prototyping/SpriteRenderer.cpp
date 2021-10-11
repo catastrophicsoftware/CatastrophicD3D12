@@ -27,12 +27,11 @@ void SpriteRenderer::Initialize(uint32 backBufferCount)
 	InitializePipelineState();
 }
 
-void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, CD3DX12_CPU_DESCRIPTOR_HANDLE backbufferRTV)
+void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, ID3D12GraphicsCommandList* cmd)
 {
 	assert(renderPassInProgress == false);
 	this->frameIndex = frameIndex;
-	auto cmd = GraphicsCommandAllocator->GetCommandList();
-	pCurrentCommandList = cmd; //store reference, calls to RenderSprite will be using this
+	pCurrentCommandList = cmd;
 
 	auto frameMemory = PerFrameMem[frameIndex];
 	frameMemory->Reset();
@@ -47,7 +46,7 @@ void SpriteRenderer::BeginRenderPass(uint32 frameIndex, Matrix cameraTransform, 
 	cmd->SetDescriptorHeaps(1, &pGlobalHeap);
 	cmd->RSSetViewports(1, &gameViewport);
 	cmd->RSSetScissorRects(1, &gameScissorRect);
-	cmd->OMSetRenderTargets(1, &backbufferRTV, FALSE, nullptr); //this is one of the engine backbuffers and is already in correct state for render target writes
+
 	cmd->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cmd->IASetVertexBuffers(0, 1, &vbView);
 	cmd->IASetIndexBuffer(&ibView);

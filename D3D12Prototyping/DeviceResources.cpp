@@ -519,6 +519,10 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
     ThrowIfFailed(m_commandList->Close());
     m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
+    // 10-11-2021 -- TODO: fence per-frame buffers here
+    
+    //---------------------------------------------------
+
     HRESULT hr;
     if (m_options & c_AllowTearing)
     {

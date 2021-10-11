@@ -125,6 +125,8 @@ void GPUQueue::Destroy()
 
 InflightGPUWork::InflightGPUWork()
 {
+    pGPUQueue = nullptr;
+    fenceValue = 0;
 }
 
 InflightGPUWork::InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal)
