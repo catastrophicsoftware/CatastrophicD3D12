@@ -3,6 +3,21 @@
 #include "GPUCommandAllocator.h"
 typedef UINT64 uint64;
 
+class GPUQueue;
+
+struct InflightGPUWork
+{
+    InflightGPUWork();
+    InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal);
+    ~InflightGPUWork();
+
+    GPUQueue* pGPUQueue;
+    uint64 fenceValue;
+
+    void BlockUntilComplete(); //blocks current cpu thread until gpu work is complete
+    bool IsComplete();
+};
+
 class GPUQueue
 {
 public:
@@ -15,7 +30,7 @@ public:
     void InsertWaitForQueue(GPUQueue* otherQueue);
 
     void WaitForFenceCPUBlocking(uint64 fenceValue);
-    void WaitForIdle() { WaitForFenceCPUBlocking(mNextFenceValue - 1); }
+    void Flush() { WaitForFenceCPUBlocking(mNextFenceValue - 1); }
 
     ID3D12CommandQueue* GetCommandQueue() { return mCommandQueue; }
 
@@ -26,6 +41,7 @@ public:
 
     uint64 ExecuteCommandList(ID3D12CommandList* List);
     InflightCommandList ExecuteAndGetInflightHandle(ID3D12CommandList* List);
+    InflightGPUWork Execute(ID3D12CommandList* List);
 
     void Destroy();
 private:
@@ -39,16 +55,4 @@ private:
     uint64 mNextFenceValue;
     uint64 mLastCompletedFenceValue;
     HANDLE mFenceEventHandle;
-};
-
-struct InflightGPUWork
-{
-    InflightGPUWork();
-    InflightGPUWork(GPUQueue* pQueue, uint64 fenceVal);
-    ~InflightGPUWork();
-
-    GPUQueue* pGPUQueue;
-    uint64 fenceValue;
-
-    void Wait(); //blocks current cpu thread until gpu work is complete
 };

@@ -106,9 +106,18 @@ InflightCommandList GPUQueue::ExecuteAndGetInflightHandle(ID3D12CommandList* Lis
     return handle;
 }
 
+InflightGPUWork GPUQueue::Execute(ID3D12CommandList* List)
+{
+    InflightGPUWork workHandle{};
+    workHandle.pGPUQueue = this;
+    workHandle.fenceValue = ExecuteCommandList(List);
+
+    return workHandle;
+}
+
 void GPUQueue::Destroy()
 {
-    WaitForIdle(); //flush queue
+    Flush(); //flush queue
 
     mCommandQueue->Release();
     mFence->Release();
@@ -128,7 +137,12 @@ InflightGPUWork::~InflightGPUWork()
 {
 }
 
-void InflightGPUWork::Wait()
+void InflightGPUWork::BlockUntilComplete()
 {
     pGPUQueue->WaitForFenceCPUBlocking(fenceValue);
+}
+
+bool InflightGPUWork::IsComplete()
+{
+    return pGPUQueue->GetLastCompletedFence() >= fenceValue;
 }
