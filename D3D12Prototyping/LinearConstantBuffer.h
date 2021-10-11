@@ -1,7 +1,8 @@
 #pragma once
 #include <d3d12.h>
 #include "pch.h"
-
+#include <stack>
+#include "GPUCommandQueue.h"
 
 
 class LinearConstantBuffer
@@ -12,9 +13,10 @@ public:
 	LinearConstantBuffer(ID3D12Device* GPU, uint64 sizeInMB);
 	~LinearConstantBuffer();
 
+	void RegisterFence(InflightGPUWork workHandle);
+
 	D3D12_GPU_VIRTUAL_ADDRESS Write(void* pData, uint64 dataSize);
 	void Reset();
-	void Reset(uint64 writeIndex); //reset the write index partially
 	void Destroy();
 
 	uint64 GetConsumedMemory() const;
@@ -31,6 +33,8 @@ private:
 
 	ID3D12Resource* buffer;
 	D3D12_GPU_VIRTUAL_ADDRESS BaseAddress;
+
+	InflightGPUWork fence;
 
 	const size_t minConstantBufferAlignment = 256;
 };

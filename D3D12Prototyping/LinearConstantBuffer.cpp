@@ -32,6 +32,11 @@ LinearConstantBuffer::~LinearConstantBuffer()
 	Destroy();
 }
 
+void LinearConstantBuffer::RegisterFence(InflightGPUWork workHandle)
+{
+
+}
+
 D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSize)
 {
 	D3D12_GPU_VIRTUAL_ADDRESS writeOffset = BaseAddress + writeIndex;
@@ -43,13 +48,13 @@ D3D12_GPU_VIRTUAL_ADDRESS LinearConstantBuffer::Write(void* pData, uint64 dataSi
 
 void LinearConstantBuffer::Reset()
 {
+	if (!fence.IsComplete())
+	{
+		//FRAME RATE ANNIHILATING CPU/GPU SYNC POINT
+		//AVOID HITTING AT ALL COSTS
+		fence.BlockUntilComplete(); //wait until previous access is complete
+	}
 	writeIndex = 0;
-}
-
-void LinearConstantBuffer::Reset(uint64 index)
-{
-	assert(index < writeIndex); //only support resetting backwards for now
-	writeIndex = index; //performs partial reset, resetting write index back to previous location
 }
 
 void LinearConstantBuffer::Destroy()
@@ -59,6 +64,7 @@ void LinearConstantBuffer::Destroy()
 	buffer->Release();
 	writeIndex = 0;
 }
+
 
 uint64 LinearConstantBuffer::GetConsumedMemory() const
 {
