@@ -209,7 +209,9 @@
     <ClInclude Include="DirectXTK12\SpriteFont.h">
       <Filter>DirectXTK\headers</Filter>
     </ClInclude>
-    <ClInclude Include="GPUResource.h" />
+    <ClInclude Include="GPUResource.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -387,7 +389,9 @@
     <ClCompile Include="GPUBuffer.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
-    <ClCompile Include="GPUResource.cpp" />
+    <ClCompile Include="GPUResource.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

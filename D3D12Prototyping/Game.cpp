@@ -286,7 +286,7 @@ void Game::RenderWorld(uint32 index)
     Render2D->SetViewport(vp);
 
     XMMATRIX transform = camera.GetTransform();
-    Render2D->Begin(m_deviceResources->GetCommandList(), DirectX::SpriteSortMode_Immediate,transform);
+    Render2D->Begin(m_deviceResources->GetCommandList(), DirectX::SpriteSortMode_Deferred,transform);
 
     Render2D->Draw(TestChunk->GetTextureSRV(), XMUINT2(256, 256), Vector2(0, 0));
     Render2D->End();
