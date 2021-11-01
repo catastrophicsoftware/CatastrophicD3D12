@@ -4,18 +4,27 @@
 
 using namespace DirectX;
 
-IGPUResource::IGPUResource(uint64 id, DX::DeviceResources* pEngine, ID3D12Resource* pResourceHandle, bool cpuAccessible, D3D12_RESOURCE_STATES initialState, CENGINE_GPU_RESOURCE_TYPE type)
+IGPUResource::IGPUResource(uint64 id, DX::DeviceResources* Engine) : GPU(nullptr),
+Handle(nullptr),
+id(0),
+cpuAccessible(false),
+mapped(false),
+state(D3D12_RESOURCE_STATE_COMMON),
+gpuAddress(0),
+resourceType(Undefined),
+pMappedMemory(nullptr),
+desc({})
 {
-    assert(pEngine != nullptr && pResourceHandle != nullptr);
-    Engine = pEngine;
+    assert(Engine != nullptr);
+    this->Engine = Engine;
+    this->id = id;
     GPU = Engine->GetD3DDevice();
-    Handle = pResourceHandle;
-    this->cpuAccessible = cpuAccessible;
-    state = initialState;
-    desc = pResourceHandle->GetDesc();
-    gpuAddress = Handle->GetGPUVirtualAddress();
-    mapped = false;
-    resourceType = type;
+
+    //10-15-2021 -- maybe just self-reigster with the engine at this point
+    //rather than creating all objects through the engine
+    
+
+    //TODO: Add a GetNextID() function to engine so resource ID's can be properly tracked
 }
 
 IGPUResource::IGPUResource() : GPU(nullptr),

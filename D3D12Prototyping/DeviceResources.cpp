@@ -53,7 +53,8 @@ DeviceResources::DeviceResources(
         m_outputSize{0, 0, 1, 1},
         m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),
         m_options(flags),
-        m_deviceNotify(nullptr)
+        m_deviceNotify(nullptr),
+        resourceID(1)
 {
     if (backBufferCount < 2 || backBufferCount > MAX_BACK_BUFFER_COUNT)
     {
@@ -679,6 +680,13 @@ LinearConstantBuffer* DX::DeviceResources::GetPerFrameMemory(UINT32 frameIndex) 
 {
     assert(frameIndex <= (m_backBufferCount - 1));
     return PerFrameMemory[frameIndex];
+}
+
+uint64 DX::DeviceResources::GetResourceID()
+{
+    uint64 id = resourceID;
+    resourceID++;
+    return id;
 }
 
 // Sets the color space for the swap chain in order to handle HDR output.

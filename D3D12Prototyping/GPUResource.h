@@ -29,7 +29,7 @@ class IGPUResource
 {
 public:
 	IGPUResource();
-	IGPUResource(uint64 id,DX::DeviceResources* Engine, ID3D12Resource* pResourceHandle, bool cpuAccessible, D3D12_RESOURCE_STATES initialState, CENGINE_GPU_RESOURCE_TYPE type);
+	IGPUResource(uint64 id,DX::DeviceResources* Engine);
 	virtual ~IGPUResource() = 0;
 
 	uint64* Map();

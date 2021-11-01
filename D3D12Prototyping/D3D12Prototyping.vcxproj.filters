@@ -212,6 +212,7 @@
     <ClInclude Include="GPUResource.h">
       <Filter>Framework\GPU</Filter>
     </ClInclude>
+    <ClInclude Include="ConstantBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -392,6 +393,7 @@
     <ClCompile Include="GPUResource.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
+    <ClCompile Include="ConstantBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

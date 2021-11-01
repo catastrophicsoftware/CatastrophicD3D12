@@ -4,6 +4,7 @@
 
 #pragma once
 #include "LinearConstantBuffer.h"
+#include "GPUResource.h"
 
 namespace DX
 {
@@ -85,6 +86,8 @@ namespace DX
         void GetAdapter(IDXGIAdapter1** ppAdapter);
 
         LinearConstantBuffer* GetPerFrameMemory(UINT32 frameIndex) const;
+
+        uint64 GetResourceID();
     private:
         void MoveToNextFrame();
         void UpdateColorSpace();
@@ -145,5 +148,8 @@ namespace DX
         void InitializeEngineMemoryManagement();
         const UINT32 PerFrameMemorySize = 16;
         std::vector<LinearConstantBuffer*> PerFrameMemory;
+
+        std::map<uint64, IGPUResource*> GPUResources;
+        uint64 resourceID;
     };
 }
