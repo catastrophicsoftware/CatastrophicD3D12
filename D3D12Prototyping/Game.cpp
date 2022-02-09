@@ -54,7 +54,7 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeStaticDescriptorHeaps(1024, 256, 32);
     InitializeQueues();
 
-    InitializeWorld();
+    //InitializeWorld();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -84,7 +84,7 @@ void Game::Update(DX::StepTimer const& timer)
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-    camera.Update();
+    //camera.Update();
 
     // TODO: Add your game logic here.
     elapsedTime;
@@ -115,7 +115,7 @@ void Game::Render()
 #endif
     //-----------------------------------------------------------------------------------------
 
-    RenderWorld(fIndex);
+    //RenderWorld(fIndex);
 
     //------------------------------------------------------------------------------------------
 
@@ -233,75 +233,6 @@ void Game::InitializeQueues()
 {
     GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
     GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
-}
-
-void Game::InitializeWorld()
-{
-    TestChunk = new WorldChunk(GPU);
-    TestChunk->Initialize(0, 0, GPUMemory);
-
-    { // DXTK12 SpriteBatch path
-        ResourceUploadBatch UploadBatch(GPU);
-        UploadBatch.Begin();
-        GMem = new GraphicsMemory(GPU);
-
-        RenderTargetState rtState(m_deviceResources->GetBackBufferFormat(),
-            m_deviceResources->GetDepthBufferFormat());
-
-        SpriteBatchPipelineStateDescription pd(rtState);
-
-        Render2D = new SpriteBatch(GPU, UploadBatch, pd);
-        auto vp = m_deviceResources->GetScreenViewport();
-        Render2D->SetViewport(vp);
-        Render2D->SetRotation(DXGI_MODE_ROTATION_IDENTITY);
-
-        auto uploadWait = UploadBatch.End(m_deviceResources->GetCommandQueue());
-        uploadWait.wait();
-    }
-
-    DX::DeviceResources* pEngine = m_deviceResources.get();
-    Renderer = new SpriteRenderer(GPU, CopyQueue, SRVHeap, pEngine);
-    Renderer->Initialize(m_deviceResources->GetBackBufferCount());
-
-    auto copyCMD = GraphicsCommandAllocator->GetCommandList();
-    TestChunk->UpdateGPUTexture(copyCMD);
-    TestChunk->createSRV(SRVHeap);
-
-    GraphicsQueue->WaitForFenceCPUBlocking(GraphicsQueue->ExecuteCommandList(copyCMD)); //submit and wait for texture copy work
-
-    camera.SetPosition(XMFLOAT2(0.0f, 0.0f));
-    camera.SetViewport(m_deviceResources->GetScreenViewport());
-    camera.Update();
-}
-
-void Game::RenderWorld(uint32 index)
-{
-    Matrix cameraTransform = camera.GetTransform();
-    auto renderTarget = m_deviceResources->GetRenderTargetView();
-    auto cmd = m_deviceResources->GetCommandList();
-    auto vp = m_deviceResources->GetScreenViewport();
-    ID3D12DescriptorHeap* pHeap = SRVHeap->HeapHandle();
-    cmd->SetDescriptorHeaps(1, &pHeap);
-
-    Render2D->SetViewport(vp);
-
-    XMMATRIX transform = camera.GetTransform();
-    Render2D->Begin(m_deviceResources->GetCommandList(), DirectX::SpriteSortMode_Deferred,transform);
-
-    Render2D->Draw(TestChunk->GetTextureSRV(), XMUINT2(256, 256), Vector2(0, 0));
-    Render2D->End();
-
-    /*Renderer->SetViewportAndScissor(m_deviceResources->GetScreenViewport(),
-        m_deviceResources->GetScissorRect());
-
-    Renderer->BeginRenderPass(index, cameraTransform, m_deviceResources->GetCommandList());
-
-    Renderer->RenderSprite(TestChunk->GetTextureSRV(), Vector2(0.0f, 0.0f));
-
-    Renderer->EndRenderPass();*/
-
-    //m_deviceResources->GetCommandQueue()->Wait(spriteRenderWork.pGPUQueue->GetFence(), spriteRenderWork.fenceValue);
-    ////insert gpu graphics pipeline halt until sprite rendering work is complete
 }
 
 void Game::InitializeInput()
