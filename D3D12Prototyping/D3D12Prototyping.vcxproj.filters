@@ -212,7 +212,9 @@
     <ClInclude Include="thread_pool.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="ForwardRenderer.h" />
+    <ClInclude Include="ForwardRenderer.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -390,7 +392,9 @@
     <ClCompile Include="GPUResource.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
-    <ClCompile Include="ForwardRenderer.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

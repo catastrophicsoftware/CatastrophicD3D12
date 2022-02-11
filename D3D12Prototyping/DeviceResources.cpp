@@ -535,7 +535,7 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
     m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
     // 10-11-2021 -- TODO: fence per-frame buffers here
-    PerFrameMemory[frameIndex]->RegisterFence(m_fence.Get(), m_fenceValues[m_backBufferIndex]); //50-50 chance of working of causing catastrophic
+    //PerFrameMemory[frameIndex]->RegisterFence(m_fence.Get(), m_fenceValues[m_backBufferIndex]); //50-50 chance of working of causing catastrophic
     //and difficult to solve issues
     //---------------------------------------------------
     HRESULT hr;
