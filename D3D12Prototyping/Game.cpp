@@ -220,6 +220,10 @@ LinearConstantBuffer* Game::GetPerFrameBuffer(uint32 frameIndex) const
     assert(frameIndex <= (m_deviceResources->GetBackBufferCount() - 1));
     return PerFrameMemory[frameIndex];
 }
+std::shared_ptr<DX::DeviceResources> Game::GetGPUResources() const
+{
+    return m_deviceResources;
+}
 #pragma endregion
 
 #pragma region Direct3D Resources

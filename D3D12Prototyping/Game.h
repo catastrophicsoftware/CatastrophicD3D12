@@ -59,6 +59,8 @@ public:
     std::mutex& GetCopyEngineLock();
 
     LinearConstantBuffer* GetPerFrameBuffer(uint32 frameIndex) const;
+
+    std::shared_ptr<DX::DeviceResources> GetGPUResources() const;
 private:
     void Update(DX::StepTimer const& timer);
     void Render();
