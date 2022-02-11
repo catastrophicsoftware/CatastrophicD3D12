@@ -155,13 +155,7 @@
     <ClInclude Include="DirectXTK12\WICTextureLoader.h">
       <Filter>DirectXTK\headers</Filter>
     </ClInclude>
-    <ClInclude Include="thread_pool.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyobj_loader_c.h">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="LinearConstantBuffer.h">
@@ -212,7 +206,13 @@
     <ClInclude Include="GPUResource.h">
       <Filter>Framework\GPU</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="obj_loader.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -347,9 +347,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="tinyobj_loader_c.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="LinearConstantBuffer.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -393,7 +390,7 @@
     <ClCompile Include="GPUResource.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

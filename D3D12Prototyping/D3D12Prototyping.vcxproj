@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Camera3D.h" />
-    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="D3D12MemAlloc.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="d3dx12.h" />
@@ -189,6 +188,7 @@
     <ClInclude Include="DirectXTK12\VertexTypes.h" />
     <ClInclude Include="DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="GPUCommandAllocator.h" />
@@ -198,19 +198,18 @@
     <ClInclude Include="GPUResource.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="obj_loader.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="StaticGeometryBuffer.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="thread_pool.h" />
-    <ClInclude Include="tinyobj_loader_c.h" />
     <ClInclude Include="WorldChunk.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Camera3D.cpp" />
-    <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="D3D12MemAlloc.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="DirectXTK12\AlphaTestEffect.cpp" />
@@ -254,6 +253,7 @@
     <ClCompile Include="DirectXTK12\VertexTypes.cpp" />
     <ClCompile Include="DirectXTK12\WICTextureLoader.cpp" />
     <ClCompile Include="Exceptions.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="GPUCommandAllocator.cpp" />
@@ -273,7 +273,6 @@
     <ClCompile Include="StaticGeometryBuffer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="thread_pool.cpp" />
-    <ClCompile Include="tinyobj_loader_c.cpp" />
     <ClCompile Include="WorldChunk.cpp" />
   </ItemGroup>
   <ItemGroup>

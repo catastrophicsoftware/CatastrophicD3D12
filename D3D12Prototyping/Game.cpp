@@ -53,6 +53,13 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeCopyEngine();
     InitializeStaticDescriptorHeaps(1024, 256, 32);
     InitializeQueues();
+    InitializeStaticGeometryBuffer();
+
+    Mesh* testMesh = new Mesh();
+    testMesh->Load(GetAssetPath("cube.obj"));
+    testMesh->CreateBufferViews(EngineStaticGeometry->WriteVertices(testMesh->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture),
+        testMesh->VertexCount()), EngineStaticGeometry->WriteIndices(testMesh->GetIndexDataPointer(),testMesh->IndexCount()));
+
 
     //InitializeWorld();
 
@@ -115,7 +122,7 @@ void Game::Render()
 #endif
     //-----------------------------------------------------------------------------------------
 
-    //RenderWorld(fIndex);
+
 
     //------------------------------------------------------------------------------------------
 
@@ -233,6 +240,12 @@ void Game::InitializeQueues()
 {
     GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
     GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+}
+
+void Game::InitializeStaticGeometryBuffer()
+{
+    EngineStaticGeometry = new StaticGeometryBuffer(GPU, CopyQueue);
+    EngineStaticGeometry->Create(64);
 }
 
 void Game::InitializeInput()
