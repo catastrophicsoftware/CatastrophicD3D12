@@ -93,3 +93,27 @@ uint32* Mesh::GetIndexDataPointer()
 {
 	return Indices.data();
 }
+
+D3D12_VERTEX_BUFFER_VIEW Mesh::GetVBV() const
+{
+	return vertexBufferView;
+}
+
+D3D12_INDEX_BUFFER_VIEW Mesh::GetIBV() const
+{
+	return indexBufferView;
+}
+
+void Mesh::ReleaseCPUGeometryData()
+{
+	if (Vertices.size() > 0)
+	{
+		std::vector<VertexPositionNormalTexture> emptyVerts;
+		Vertices.swap(emptyVerts);
+	}
+	if (Indices.size() > 0)
+	{
+		std::vector<uint32> emptyIndices;
+		Indices.swap(emptyIndices);
+	}
+}

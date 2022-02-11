@@ -21,6 +21,11 @@ public:
 
 	DirectX::VertexPositionNormalTexture* GetVertexDataPointer();
 	uint32* GetIndexDataPointer();
+
+	D3D12_VERTEX_BUFFER_VIEW GetVBV() const;
+	D3D12_INDEX_BUFFER_VIEW GetIBV() const;
+
+	void ReleaseCPUGeometryData();
 private:
 	uint32 NumVertices;
 	uint32 NumIndices;
