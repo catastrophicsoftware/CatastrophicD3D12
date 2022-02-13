@@ -1,7 +1,3 @@
-//
-// Game.cpp
-//
-
 #include "pch.h"
 #include "Game.h"
 
@@ -81,9 +77,6 @@ void Game::Initialize(HWND window, int width, int height)
 
     Renderer = new ForwardRenderer(this);
     Renderer->InitializeRenderer();
-
-    rotVel = 0.0f;
-
 
     mainCamera = Camera();
     mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -277,11 +270,8 @@ std::mutex& Game::GetCopyEngineLock()
 {
     return copyEngineLock;
 }
-LinearConstantBuffer* Game::GetPerFrameBuffer(uint32 frameIndex) const
-{
-    assert(frameIndex <= (m_deviceResources->GetBackBufferCount() - 1));
-    return PerFrameMemory[frameIndex];
-}
+
+
 std::shared_ptr<DX::DeviceResources> Game::GetGPUResources() const
 {
     return m_deviceResources;

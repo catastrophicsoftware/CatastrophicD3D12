@@ -1,7 +1,3 @@
-//
-// Game.h
-//
-
 #pragma once
 
 #include "DeviceResources.h"
@@ -58,8 +54,6 @@ public:
 
     std::mutex& GetCopyEngineLock();
 
-    LinearConstantBuffer* GetPerFrameBuffer(uint32 frameIndex) const;
-
     std::shared_ptr<DX::DeviceResources> GetGPUResources() const;
 private:
     void Update(DX::StepTimer const& timer);
@@ -79,8 +73,6 @@ private:
     // game
     Mesh* CubeModel;
     Camera mainCamera;
-    float rotVel = 0.0f;
-    float rotation = 0.0f;
     //------------------------------------------------------------------------------------------------------------------
 
     ForwardRenderer* Renderer;
