@@ -8,6 +8,7 @@
 #include "VertexTypes.h"
 #include <d3dcompiler.h>
 #include <fstream>
+#include "ForwardRenderer.h"
 
 extern void ExitGame() noexcept;
 
@@ -55,20 +56,38 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeQueues();
     InitializeStaticGeometryBuffer();
 
-    Mesh* testMesh = new Mesh();
-    testMesh->Load(GetAssetPath("cube.obj"));
-    testMesh->CreateBufferViews(EngineStaticGeometry->WriteVertices(testMesh->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture),
-        testMesh->VertexCount()), EngineStaticGeometry->WriteIndices(testMesh->GetIndexDataPointer(),testMesh->IndexCount()));
+    CubeModel = new Mesh();
+    CubeModel->Load(GetAssetPath("teapot.obj"));
+    CubeModel->CreateBufferViews(EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture),
+        CubeModel->VertexCount()), EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount()));
+
+
+    EngineStaticGeometry->Commit();
+
+    Renderer = new ForwardRenderer(this);
+    Renderer->InitializeRenderer();
+
+    rotVel = 0.0f;
+
+    //XMMATRIX view = XMMatrixLookAtLH(XMVectorSet(0.0f, 0.0f, 10.0f,1.0f), XMVectorSet(0.0f, 0.0f, 0.0f,1.0f), XMVectorSet(0.0f, 1.0f, 0.0f,1.0f));
+    //XMMATRIX proj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
+
+    mainCamera = Camera();
+    mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
+    mainCamera.SetLens(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
+    mainCamera.UpdateViewMatrix();
+
+    Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
 
 
     //InitializeWorld();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
-    /*
+    
     m_timer.SetFixedTimeStep(true);
-    m_timer.SetTargetElapsedSeconds(1.0 / 60);
-    */
+    m_timer.SetTargetElapsedSeconds(1.0f / 60.0f);
+    
 }
 
 #pragma region Frame Update
@@ -91,7 +110,34 @@ void Game::Update(DX::StepTimer const& timer)
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-    //camera.Update();
+
+    //movement
+    if (GamepadState.thumbSticks.leftX > 0.1f)
+        mainCamera.Strafe(0.2f);
+
+    if (-0.1f > GamepadState.thumbSticks.leftX)
+        mainCamera.Strafe(-0.2f);
+
+    if (GamepadState.thumbSticks.leftY > 0.1f)
+        mainCamera.Walk(0.2f);
+
+    if (-0.1f > GamepadState.thumbSticks.leftY)
+        mainCamera.Walk(-0.2f);
+
+    if (GamepadState.thumbSticks.rightX > 0.1f)
+        mainCamera.RotateY(0.02f);
+
+    if (-0.1f > GamepadState.thumbSticks.rightX)
+        mainCamera.RotateY(-0.02f);
+
+    if (GamepadState.thumbSticks.rightY > 0.1f)
+        mainCamera.Pitch(-0.02f);
+
+    if (-0.1f > GamepadState.thumbSticks.rightY)
+        mainCamera.Pitch(0.02f);
+
+
+    mainCamera.UpdateViewMatrix();
 
     // TODO: Add your game logic here.
     elapsedTime;
@@ -104,7 +150,7 @@ void Game::Update(DX::StepTimer const& timer)
 void Game::Render()
 {
     UINT fIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
-    PerFrameMemory[fIndex]->Reset();
+    //PerFrameMemory[fIndex]->Reset();
 
     // Don't try to render anything before the first Update.
     if (m_timer.GetFrameCount() == 0)
@@ -122,6 +168,14 @@ void Game::Render()
 #endif
     //-----------------------------------------------------------------------------------------
 
+    Renderer->BeginFrame(commandList, fIndex);
+    XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(0.0f, 0.0f, 0.0f) * XMMatrixRotationX(rotation);
+    Renderer->UpdateWorldTransform(worldTransform);
+    Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
+    
+    Renderer->Render(CubeModel);
+    
+    Renderer->EndFrame();
 
 
     //------------------------------------------------------------------------------------------
@@ -156,7 +210,7 @@ void Game::Clear()
 
     commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
     commandList->ClearRenderTargetView(rtvDescriptor, Colors::DarkSlateBlue, 0, nullptr);
-    commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+    //commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
     auto viewport = m_deviceResources->GetScreenViewport();
     auto scissorRect = m_deviceResources->GetScissorRect();

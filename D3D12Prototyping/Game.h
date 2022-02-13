@@ -20,12 +20,14 @@
 #include "D3D12MemAlloc.h"
 #include "WorldChunk.h"
 #include "SpriteRenderer.h"
-#include "Camera2D.h"
+#include "Camera3D.h"
 #include "SpriteBatch.h"
 #include "GraphicsMemory.h"
 #include "ResourceUploadBatch.h"
 
 using namespace DirectX;
+
+class ForwardRenderer;
 
 // A basic game implementation that creates a D3D12 device and
 // provides a game loop.
@@ -82,8 +84,14 @@ private:
 
     //------------------------------------------------------------------------------------------------------------------
     // game
-    StaticGeometryBuffer* EngineStaticGeometry;
+    Mesh* CubeModel;
+    Camera mainCamera;
+    float rotVel = 0.0f;
+    float rotation = 0.0f;
     //------------------------------------------------------------------------------------------------------------------
+
+    ForwardRenderer* Renderer;
+    StaticGeometryBuffer* EngineStaticGeometry;
 
     //------------------------------------------------------------------------------------------------------------------
     //input

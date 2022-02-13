@@ -7,6 +7,9 @@ ForwardRenderer::ForwardRenderer(Game* pEngine)
 {
     this->pEngine = pEngine;
     BackBufferFormat = pEngine->GetGPUResources()->GetBackBufferFormat();
+
+    pDevice = pEngine->GetGPUResources()->GetD3DDevice();
+    renderPassInProgress = false;
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -73,8 +76,9 @@ void ForwardRenderer::CreatePipelineState()
         psoDesc.PS = psBytecode;
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        psoDesc.DepthStencilState.DepthEnable = FALSE;
-        psoDesc.DepthStencilState.StencilEnable = FALSE;
+        //psoDesc.DepthStencilState.DepthEnable = TRUE;
+        //psoDesc.DepthStencilState.StencilEnable = TRUE;
+
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         psoDesc.NumRenderTargets = 1;
@@ -107,6 +111,7 @@ void ForwardRenderer::BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIn
         pCMD->SetGraphicsRootConstantBufferView(2, pCBMaterial->GetGPUAddress());
 
         renderPassInProgress = true;
+        pCurrentFrameCommandList = pCMD;
     }
     else
         throw std::runtime_error("RENDER PASS ALREADY IN PROGRESS!");
@@ -125,7 +130,8 @@ void ForwardRenderer::Render(Mesh* pMesh)
             pCurrentFrameCommandList->IASetIndexBuffer(&ibv);
         }
 
-        pCurrentFrameCommandList->DrawIndexedInstanced(3, (pMesh->IndexCount() / 3), 0, 0, 0);
+        pCurrentFrameCommandList->IASetPrimitiveTopology(pMesh->Topology());
+        pCurrentFrameCommandList->DrawIndexedInstanced(pMesh->IndexCount(), 1,0,0,0);
     }
     else
         throw std::runtime_error("RENDER PASS ALREADY IN PROGRESS!");
@@ -197,10 +203,10 @@ void ForwardRenderer::UpdateWorldTransform(XMMATRIX world)
 HRESULT ForwardRenderer::CreateGPUBuffers()
 {
     pCBViewProjection = new GPUBuffer(pDevice);
-    pCBViewProjection->Create(sizeof(CBViewProjection), D3D12_RESOURCE_STATE_COMMON, BUFFER_FLAG_LIFETIME_MAP, true);
+    pCBViewProjection->Create(sizeof(CBViewProjection), D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_LIFETIME_MAP, true);
 
     pCBMaterial = new GPUBuffer(pDevice);
-    pCBMaterial->Create(sizeof(CBMaterial), D3D12_RESOURCE_STATE_COMMON, BUFFER_FLAG_LIFETIME_MAP, true);
+    pCBMaterial->Create(sizeof(CBMaterial), D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_LIFETIME_MAP, true);
     pCBMaterialGPUMemory = pCBMaterial->Map(); //cache pointer to material constant buffer GPU memory.
 
     PerFrameConstants = new LinearConstantBuffer(pDevice, 8);

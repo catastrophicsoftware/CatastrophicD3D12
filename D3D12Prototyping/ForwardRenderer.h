@@ -56,6 +56,7 @@ private:
 	GPUBuffer* pCBMaterial;
 	uint64* pCBMaterialGPUMemory;
 
+
 	ID3D12GraphicsCommandList* pCurrentFrameCommandList;
 	bool renderPassInProgress;
 	uint32 currentFrameIndex;
