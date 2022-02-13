@@ -169,11 +169,16 @@ void Game::Render()
     //-----------------------------------------------------------------------------------------
 
     Renderer->BeginFrame(commandList, fIndex);
-    XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(0.0f, 0.0f, 0.0f) * XMMatrixRotationX(rotation);
-    Renderer->UpdateWorldTransform(worldTransform);
     Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
     
-    Renderer->Render(CubeModel);
+    float position = 0.0f;
+    for (int i = 0; i < 2; ++i)
+    {
+        XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(position,0.0f,0.0f) * XMMatrixRotationX(rotation);
+        Renderer->UpdateWorldTransform(XMMatrixTranspose(worldTransform));
+        Renderer->Render(CubeModel);
+        position += 10.0f;
+    }
     
     Renderer->EndFrame();
 
