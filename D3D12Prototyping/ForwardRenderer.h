@@ -19,7 +19,6 @@ class Game;
 class ForwardRenderer
 {
 public:
-	//ForwardRenderer(ID3D12Device* pDevice, DXGI_FORMAT backBufferFormat);
 	ForwardRenderer(Game* pEngine);
 	~ForwardRenderer();
 
@@ -49,7 +48,6 @@ private:
 
 	DXGI_FORMAT BackBufferFormat;
 
-	CBMaterial materialGrey;
 	CBViewProjection viewProjection;
 
 	GPUBuffer* pCBViewProjection;
