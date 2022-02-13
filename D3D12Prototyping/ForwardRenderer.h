@@ -27,11 +27,10 @@ public:
 
 	void BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIndex);
 	void Render(Mesh* pMesh);
+	void EndFrame();
 	void Render(const D3D12_VERTEX_BUFFER_VIEW vertexBufferView, const D3D12_INDEX_BUFFER_VIEW indexBufferView, int numVertices);
 
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
-
-	void EndFrame();
 
 	void UpdateViewProjection(XMMATRIX view, XMMATRIX projection);
 	void UpdateWorldTransform(XMMATRIX world);
@@ -53,7 +52,6 @@ private:
 	GPUBuffer* pCBViewProjection;
 	GPUBuffer* pCBMaterial;
 	uint64* pCBMaterialGPUMemory;
-
 
 	ID3D12GraphicsCommandList* pCurrentFrameCommandList;
 	bool renderPassInProgress;
