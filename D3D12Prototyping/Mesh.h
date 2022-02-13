@@ -26,6 +26,9 @@ public:
 	D3D12_INDEX_BUFFER_VIEW GetIBV() const;
 
 	void ReleaseCPUGeometryData();
+
+	void SetVertexCounts(int numVerts, int numIndices, int vertexStride, DXGI_FORMAT indexFormat);
+	void SetTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
 private:
 	uint32 NumVertices;
 	uint32 NumIndices;

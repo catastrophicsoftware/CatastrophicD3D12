@@ -110,6 +110,5 @@ void LinearConstantBuffer::Advance(uint64 lastDataSize)
 	else
 	{
 		writeIndex = DirectX::AlignUp(writeIndex + 1, minConstantBufferAlignment);
-		Sleep(2);
 	}
 }

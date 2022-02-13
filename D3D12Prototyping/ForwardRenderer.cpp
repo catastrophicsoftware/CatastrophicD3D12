@@ -76,10 +76,6 @@ void ForwardRenderer::CreatePipelineState()
         psoDesc.PS = psBytecode;
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        /*psoDesc.DepthStencilState.DepthEnable = TRUE;
-        psoDesc.DepthStencilState.StencilEnable = TRUE;
-        psoDesc.DepthStencilState.*/
-
         psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
         psoDesc.DSVFormat = pEngine->GetGPUResources()->GetDepthBufferFormat();
 
@@ -136,7 +132,8 @@ void ForwardRenderer::Render(Mesh* pMesh)
         }
 
         pCurrentFrameCommandList->IASetPrimitiveTopology(pMesh->Topology());
-        pCurrentFrameCommandList->DrawIndexedInstanced(pMesh->IndexCount(), 1,0,0,0);
+
+        pCurrentFrameCommandList->DrawIndexedInstanced(pMesh->IndexCount(), 1, 0, 0, 0);
     }
     else
         throw std::runtime_error("RENDER PASS ALREADY IN PROGRESS!");

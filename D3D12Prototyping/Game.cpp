@@ -51,18 +51,33 @@ void Game::Initialize(HWND window, int width, int height)
     InitializeInput();
 
     InitializeGPUMemory();
+    InitializeGPUQueues();
     InitializeCopyEngine();
     InitializeStaticDescriptorHeaps(1024, 256, 32);
-    InitializeQueues();
     InitializeStaticGeometryBuffer();
 
+
+
+    //------------------------------------------------------------------------------------
+
     CubeModel = new Mesh();
-    CubeModel->Load(GetAssetPath("teapot.obj"));
-    CubeModel->CreateBufferViews(EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture),
-        CubeModel->VertexCount()), EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount()));
+    CubeModel->Load(GetAssetPath("building.obj"));
+
+    GPUBuffer* vertexBuffer = new GPUBuffer(GPU);
+    vertexBuffer->Create(sizeof(VertexPositionNormalTexture) * CubeModel->VertexCount(),D3D12_RESOURCE_STATE_GENERIC_READ, CENGINE_BUFFER_FLAGS::BUFFER_FLAG_NONE, true);
+    
+    auto pGPUMemory = vertexBuffer->Map();
+    memcpy(pGPUMemory, CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture) * CubeModel->VertexCount());
+    vertexBuffer->Unmap();
+
+    GPUBuffer* indexBuffer = new GPUBuffer(GPU);
+    indexBuffer->Create(sizeof(int) * CubeModel->IndexCount(), D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_NONE, true);
+    pGPUMemory = indexBuffer->Map();
+    memcpy(pGPUMemory, CubeModel->GetIndexDataPointer(), sizeof(int) * CubeModel->IndexCount());
+    indexBuffer->Unmap();
 
 
-    EngineStaticGeometry->Commit();
+    CubeModel->CreateBufferViews(vertexBuffer->GetGPUAddress(), indexBuffer->GetGPUAddress());
 
     Renderer = new ForwardRenderer(this);
     Renderer->InitializeRenderer();
@@ -73,7 +88,7 @@ void Game::Initialize(HWND window, int width, int height)
     //XMMATRIX proj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
 
     mainCamera = Camera();
-    mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 1.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
+    mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
     mainCamera.SetLens(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
     mainCamera.UpdateViewMatrix();
 
@@ -170,15 +185,12 @@ void Game::Render()
 
     Renderer->BeginFrame(commandList, fIndex);
     Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
-    
-    float position = 0.0f;
-    for (int i = 0; i < 2; ++i)
-    {
-        XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(position,0.0f,0.0f) * XMMatrixRotationX(rotation);
-        Renderer->UpdateWorldTransform(XMMatrixTranspose(worldTransform));
-        Renderer->Render(CubeModel);
-        position += 10.0f;
-    }
+    //Renderer->UpdateViewProjection(mainCamera.View(), mainCamera.Proj());
+    XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(0.0f, 0.0f, 10.0f);
+    Renderer->UpdateWorldTransform(XMMatrixTranspose(worldTransform));
+
+    Renderer->Render(CubeModel);
+
     
     Renderer->EndFrame();
 
@@ -299,11 +311,7 @@ void Game::CreateWindowSizeDependentResources()
 {
 }
 
-void Game::InitializeQueues()
-{
-    GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
-    GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
-}
+
 
 void Game::InitializeStaticGeometryBuffer()
 {
@@ -392,6 +400,9 @@ void Game::InitializeGPUQueues()
 {
     ComputeQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_COMPUTE);
     ComputeCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+
+    GraphicsQueue = new GPUQueue(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    GraphicsCommandAllocator = new GPUCommandAllocator(GPU, D3D12_COMMAND_LIST_TYPE_DIRECT);
 }
 
 void Game::OnDeviceLost()

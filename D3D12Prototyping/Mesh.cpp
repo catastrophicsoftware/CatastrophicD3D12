@@ -118,3 +118,16 @@ void Mesh::ReleaseCPUGeometryData()
 		Indices.swap(emptyIndices);
 	}
 }
+
+void Mesh::SetVertexCounts(int numVerts, int numIndices, int vertexStride, DXGI_FORMAT indexFormat)
+{
+	NumVertices = numVerts;
+	NumIndices = numIndices;
+	VertexStride = vertexStride;
+	IndexFormat = indexFormat;
+}
+
+void Mesh::SetTopology(D3D12_PRIMITIVE_TOPOLOGY topology)
+{
+	this->topology = topology;
+}

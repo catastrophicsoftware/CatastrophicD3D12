@@ -75,11 +75,6 @@ private:
     ID3D12Device* GPU;
     std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
-    std::mutex graphicsQueueMutex;
-    GPUQueue* GraphicsQueue;
-    GPUCommandAllocator* GraphicsCommandAllocator;
-    void InitializeQueues();
-
     void InitializeStaticGeometryBuffer();
 
     //------------------------------------------------------------------------------------------------------------------
@@ -131,7 +126,14 @@ private:
     // graphics + compute queue management
     
     GPUQueue* ComputeQueue;
+    //GPUQueue* GraphicsQueue;
+
+    std::mutex graphicsQueueMutex;
+    GPUQueue* GraphicsQueue;
+    GPUCommandAllocator* GraphicsCommandAllocator;
+
     GPUCommandAllocator* ComputeCommandAllocator;
+    //GPUCommandAllocator* GraphicsCommandAllocator;
     void InitializeGPUQueues();
     //------------------------------------------------------------------------------------------------------------------
 
