@@ -76,8 +76,12 @@ void ForwardRenderer::CreatePipelineState()
         psoDesc.PS = psBytecode;
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        //psoDesc.DepthStencilState.DepthEnable = TRUE;
-        //psoDesc.DepthStencilState.StencilEnable = TRUE;
+        /*psoDesc.DepthStencilState.DepthEnable = TRUE;
+        psoDesc.DepthStencilState.StencilEnable = TRUE;
+        psoDesc.DepthStencilState.*/
+
+        psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        psoDesc.DSVFormat = pEngine->GetGPUResources()->GetDepthBufferFormat();
 
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -98,6 +102,7 @@ void ForwardRenderer::BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIn
 
     if ((frameCount % 100) == 0)
         PerFrameConstants->Reset(); //kind of hacky, reset per frame buffer every 100 frames
+
 
     if (!renderPassInProgress)
     {
