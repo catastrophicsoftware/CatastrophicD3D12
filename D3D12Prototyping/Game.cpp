@@ -84,8 +84,6 @@ void Game::Initialize(HWND window, int width, int height)
 
     rotVel = 0.0f;
 
-    //XMMATRIX view = XMMatrixLookAtLH(XMVectorSet(0.0f, 0.0f, 10.0f,1.0f), XMVectorSet(0.0f, 0.0f, 0.0f,1.0f), XMVectorSet(0.0f, 1.0f, 0.0f,1.0f));
-    //XMMATRIX proj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
 
     mainCamera = Camera();
     mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -95,14 +93,8 @@ void Game::Initialize(HWND window, int width, int height)
     Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
 
 
-    //InitializeWorld();
-
-    // TODO: Change the timer settings if you want something other than the default variable timestep mode.
-    // e.g. for 60 FPS fixed timestep update logic, call:
-    
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0f / 60.0f);
-    
 }
 
 #pragma region Frame Update
@@ -165,7 +157,6 @@ void Game::Update(DX::StepTimer const& timer)
 void Game::Render()
 {
     UINT fIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
-    //PerFrameMemory[fIndex]->Reset();
 
     // Don't try to render anything before the first Update.
     if (m_timer.GetFrameCount() == 0)
@@ -185,8 +176,8 @@ void Game::Render()
 
     Renderer->BeginFrame(commandList, fIndex);
     Renderer->UpdateViewProjection(XMMatrixTranspose(mainCamera.View()), XMMatrixTranspose(mainCamera.Proj()));
-    //Renderer->UpdateViewProjection(mainCamera.View(), mainCamera.Proj());
     XMMATRIX worldTransform = XMMatrixIdentity() * XMMatrixTranslation(0.0f, 0.0f, 10.0f);
+
     Renderer->UpdateWorldTransform(XMMatrixTranspose(worldTransform));
 
     Renderer->Render(CubeModel);
@@ -390,10 +381,6 @@ void Game::InitializeCopyEngine()
 {
     CopyQueue = new GPUQueue(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
     CopyCommandAllocator = new GPUCommandAllocator(m_deviceResources->GetD3DDevice(), D3D12_COMMAND_LIST_TYPE_COPY);
-
-    UploadBuffer = new GPUBuffer(GPU);
-    uint64 uploadBufferSize = (1024 * 1024) * 512;
-    UploadBuffer->Create(uploadBufferSize, D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_LIFETIME_MAP, true);
 }
 
 void Game::InitializeGPUQueues()

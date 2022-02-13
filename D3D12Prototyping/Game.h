@@ -18,8 +18,6 @@
 #include "Texture2D.h"
 #include "StaticGeometryBuffer.h"
 #include "D3D12MemAlloc.h"
-#include "WorldChunk.h"
-#include "SpriteRenderer.h"
 #include "Camera3D.h"
 #include "SpriteBatch.h"
 #include "GraphicsMemory.h"
@@ -121,19 +119,17 @@ private:
     void InitializeCopyEngine();
     std::mutex copyEngineLock;
 
-    GPUBuffer* UploadBuffer; //global 512MB upload buffer
     //------------------------------------------------------------------------------------------------------------------
     // graphics + compute queue management
     
     GPUQueue* ComputeQueue;
-    //GPUQueue* GraphicsQueue;
-
-    std::mutex graphicsQueueMutex;
     GPUQueue* GraphicsQueue;
-    GPUCommandAllocator* GraphicsCommandAllocator;
 
+    std::mutex computeQueueMutex;
+    std::mutex graphicsQueueMutex;
+
+    GPUCommandAllocator* GraphicsCommandAllocator;
     GPUCommandAllocator* ComputeCommandAllocator;
-    //GPUCommandAllocator* GraphicsCommandAllocator;
     void InitializeGPUQueues();
     //------------------------------------------------------------------------------------------------------------------
 
