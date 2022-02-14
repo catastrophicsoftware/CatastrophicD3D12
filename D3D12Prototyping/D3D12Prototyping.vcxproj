@@ -196,7 +196,7 @@
     <ClInclude Include="GPUCommandQueue.h" />
     <ClInclude Include="GPUDescriptorHeap.h" />
     <ClInclude Include="GPUFence.h" />
-    <ClInclude Include="GPUResource.h" />
+    <ClInclude Include="GPUMeshData.h" />
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="obj_loader.h" />
@@ -260,7 +260,7 @@
     <ClCompile Include="GPUCommandQueue.cpp" />
     <ClCompile Include="GPUDescriptorHeap.cpp" />
     <ClCompile Include="GPUFence.cpp" />
-    <ClCompile Include="GPUResource.cpp" />
+    <ClCompile Include="GPUMeshData.cpp" />
     <ClCompile Include="LinearConstantBuffer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />

@@ -59,19 +59,6 @@ void Game::Initialize(HWND window, int width, int height)
     CubeModel = new Mesh();
     CubeModel->Load(GetAssetPath("building.obj"));
 
-    /*GPUBuffer* vertexBuffer = new GPUBuffer(GPU);
-    vertexBuffer->Create(sizeof(VertexPositionNormalTexture) * CubeModel->VertexCount(),D3D12_RESOURCE_STATE_GENERIC_READ, CENGINE_BUFFER_FLAGS::BUFFER_FLAG_NONE, true);
-    
-    auto pGPUMemory = vertexBuffer->Map();
-    memcpy(pGPUMemory, CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture) * CubeModel->VertexCount());
-    vertexBuffer->Unmap();
-
-    GPUBuffer* indexBuffer = new GPUBuffer(GPU);
-    indexBuffer->Create(sizeof(int) * CubeModel->IndexCount(), D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_NONE, true);
-    pGPUMemory = indexBuffer->Map();
-    memcpy(pGPUMemory, CubeModel->GetIndexDataPointer(), sizeof(int) * CubeModel->IndexCount());
-    indexBuffer->Unmap();*/
-
     auto vertexHandle = EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture), CubeModel->VertexCount());
     auto indexHandle = EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount());
     EngineStaticGeometry->Commit();
