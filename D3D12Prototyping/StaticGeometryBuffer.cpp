@@ -69,7 +69,7 @@ D3D12_GPU_VIRTUAL_ADDRESS StaticGeometryBuffer::WriteIndices(void* pIndexData, u
 	if (!locked)
 	{
 		D3D12_GPU_VIRTUAL_ADDRESS outGPUAddr = StaticIndexBuffer->GetGPUVirtualAddress() + indexIndex;
-		UINT64 currentOffset = indexCount; //record offset of return address
+		UINT64 currentOffset = indexIndex; //record offset of return address
 
 		indexIndex += indexCount; //advance index
 
