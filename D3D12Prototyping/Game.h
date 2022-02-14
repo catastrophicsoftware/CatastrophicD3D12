@@ -1,7 +1,3 @@
-//
-// Game.h
-//
-
 #pragma once
 
 #include "DeviceResources.h"
@@ -18,8 +14,6 @@
 #include "Texture2D.h"
 #include "StaticGeometryBuffer.h"
 #include "D3D12MemAlloc.h"
-#include "WorldChunk.h"
-#include "SpriteRenderer.h"
 #include "Camera3D.h"
 #include "SpriteBatch.h"
 #include "GraphicsMemory.h"
@@ -60,8 +54,6 @@ public:
 
     std::mutex& GetCopyEngineLock();
 
-    LinearConstantBuffer* GetPerFrameBuffer(uint32 frameIndex) const;
-
     std::shared_ptr<DX::DeviceResources> GetGPUResources() const;
 private:
     void Update(DX::StepTimer const& timer);
@@ -81,8 +73,6 @@ private:
     // game
     Mesh* CubeModel;
     Camera mainCamera;
-    float rotVel = 0.0f;
-    float rotation = 0.0f;
     //------------------------------------------------------------------------------------------------------------------
 
     ForwardRenderer* Renderer;
@@ -121,19 +111,17 @@ private:
     void InitializeCopyEngine();
     std::mutex copyEngineLock;
 
-    GPUBuffer* UploadBuffer; //global 512MB upload buffer
     //------------------------------------------------------------------------------------------------------------------
     // graphics + compute queue management
     
     GPUQueue* ComputeQueue;
-    //GPUQueue* GraphicsQueue;
-
-    std::mutex graphicsQueueMutex;
     GPUQueue* GraphicsQueue;
-    GPUCommandAllocator* GraphicsCommandAllocator;
 
+    std::mutex computeQueueMutex;
+    std::mutex graphicsQueueMutex;
+
+    GPUCommandAllocator* GraphicsCommandAllocator;
     GPUCommandAllocator* ComputeCommandAllocator;
-    //GPUCommandAllocator* GraphicsCommandAllocator;
     void InitializeGPUQueues();
     //------------------------------------------------------------------------------------------------------------------
 

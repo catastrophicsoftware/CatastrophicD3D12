@@ -191,12 +191,6 @@
     <ClInclude Include="Exceptions.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="WorldChunk.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteRenderer.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="GPUBuffer.h">
       <Filter>Framework\GPU</Filter>
     </ClInclude>
@@ -214,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="ForwardRenderer.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Framework\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -380,12 +377,6 @@
       <Filter>Framework\GPU</Filter>
     </ClCompile>
     <ClCompile Include="Exceptions.cpp" />
-    <ClCompile Include="WorldChunk.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="SpriteRenderer.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="GPUBuffer.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
@@ -394,6 +385,9 @@
     </ClCompile>
     <ClCompile Include="ForwardRenderer.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Framework\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

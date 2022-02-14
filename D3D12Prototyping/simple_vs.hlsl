@@ -30,7 +30,7 @@ VertexOutput main(VertexInput input)
 	output.position = mul(output.position, view);
 	output.position = mul(output.position, projection);
 
-	output.normal = mul(input.normal, world); //transform normal into world space
+	output.normal = normalize(mul(input.normal, world)); //transform normal into world space
 	output.uv = input.uv; //pass through texcoord
 
 	return output;

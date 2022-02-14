@@ -53,8 +53,7 @@ DeviceResources::DeviceResources(
         m_outputSize{0, 0, 1, 1},
         m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),
         m_options(flags),
-        m_deviceNotify(nullptr),
-        resourceID(1)
+        m_deviceNotify(nullptr)
 {
     if (backBufferCount < 2 || backBufferCount > MAX_BACK_BUFFER_COUNT)
     {
@@ -246,17 +245,8 @@ void DeviceResources::CreateDeviceResources()
         throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
     }
 
-    InitializeEngineMemoryManagement();
 }
 
-void DeviceResources::InitializeEngineMemoryManagement()
-{
-    for (int i = 0; i < m_backBufferCount; ++i) //initialize per-frame dynamic buffers
-    {
-        LinearConstantBuffer* NewBuffer = new LinearConstantBuffer(m_d3dDevice.Get(), PerFrameMemorySize);
-        PerFrameMemory.push_back(NewBuffer);
-    }
-}
 
 // These resources need to be recreated every time the window size is changed.
 void DeviceResources::CreateWindowSizeDependentResources()
@@ -504,7 +494,6 @@ void DeviceResources::HandleDeviceLost()
 // Prepare the command list and render target for rendering.
 void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
 {
-    //frameIndex = m_deviceResources->GetCurrentFrameIndex() % m_deviceResources->GetBackBufferCount();
     frameIndex = GetCurrentFrameIndex() % m_backBufferCount;
 
     // Reset command list and allocator.
@@ -676,18 +665,6 @@ void DeviceResources::GetAdapter(IDXGIAdapter1** ppAdapter)
     *ppAdapter = adapter.Detach();
 }
 
-LinearConstantBuffer* DX::DeviceResources::GetPerFrameMemory(UINT32 frameIndex) const
-{
-    assert(frameIndex <= (m_backBufferCount - 1));
-    return PerFrameMemory[frameIndex];
-}
-
-uint64 DX::DeviceResources::GetResourceID()
-{
-    uint64 id = resourceID;
-    resourceID++;
-    return id;
-}
 
 // Sets the color space for the swap chain in order to handle HDR output.
 void DeviceResources::UpdateColorSpace()
