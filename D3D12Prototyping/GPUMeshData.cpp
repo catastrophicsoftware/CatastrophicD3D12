@@ -2,7 +2,7 @@
 #include "GPUMeshData.h"
 
 
-GPUMeshData::GPUMeshData(D3D12_GPU_VIRTUAL_ADDRESS vertexGPUAddress, D3D12_GPU_VIRTUAL_ADDRESS indexGPUAddress, uint32 indexCount, uint32 vertexCount, uint32 vertexStride, D3D12_PRIMITIVE_TOPOLOGY topology)
+GPUMeshData::GPUMeshData(std::string name, D3D12_GPU_VIRTUAL_ADDRESS vertexGPUAddress, D3D12_GPU_VIRTUAL_ADDRESS indexGPUAddress, uint32 indexCount, uint32 vertexCount, uint32 vertexStride, D3D12_PRIMITIVE_TOPOLOGY topology)
 {
 	assert(vertexCount > 0);
 	assert(vertexStride > 0);
@@ -21,6 +21,7 @@ GPUMeshData::GPUMeshData(D3D12_GPU_VIRTUAL_ADDRESS vertexGPUAddress, D3D12_GPU_V
 	this->vertexCount = vertexCount;
 	this->indexCount = indexCount;
 	this->vertexStride = vertexStride;
+	this->name = name;
 }
 
 GPUMeshData::~GPUMeshData()
@@ -32,7 +33,7 @@ D3D12_VERTEX_BUFFER_VIEW GPUMeshData::GetVBV() const
 	return vertexBufferView;
 }
 
-D3D12_INDEX_BUFFER_VIEW GPUMeshData::GetIVB() const
+D3D12_INDEX_BUFFER_VIEW GPUMeshData::GetIBV() const
 {
 	return indexBufferView;
 }
@@ -55,4 +56,9 @@ uint32 GPUMeshData::IndexCount() const
 uint32 GPUMeshData::VertexStride() const
 {
 	return vertexStride;
+}
+
+std::string GPUMeshData::GetName() const
+{
+	return name;
 }

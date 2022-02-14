@@ -209,7 +209,9 @@
     <ClInclude Include="GameObject.h">
       <Filter>Framework\Game</Filter>
     </ClInclude>
-    <ClInclude Include="GPUMeshData.h" />
+    <ClInclude Include="GPUMeshData.h">
+      <Filter>Framework\GPU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -384,7 +386,9 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Framework\Game</Filter>
     </ClCompile>
-    <ClCompile Include="GPUMeshData.cpp" />
+    <ClCompile Include="GPUMeshData.cpp">
+      <Filter>Framework\GPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

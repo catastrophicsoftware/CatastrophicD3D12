@@ -57,14 +57,11 @@ void Game::Initialize(HWND window, int width, int height)
     //------------------------------------------------------------------------------------
 
     CubeModel = new Mesh();
-    CubeModel->Load(GetAssetPath("building.obj"));
+    CubeModel->Load(GetAssetPath("building.obj"), EngineStaticGeometry);
 
-    auto vertexHandle = EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture), CubeModel->VertexCount());
-    auto indexHandle = EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount());
+    //auto vertexHandle = EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture), CubeModel->VertexCount());
+    //auto indexHandle = EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount());
     EngineStaticGeometry->Commit();
-
-
-    CubeModel->CreateBufferViews(vertexHandle, indexHandle);
 
     Renderer = new ForwardRenderer(this);
     Renderer->InitializeRenderer();

@@ -4,7 +4,6 @@
 
 #pragma once
 #include "LinearConstantBuffer.h"
-#include "GPUResource.h"
 
 namespace DX
 {

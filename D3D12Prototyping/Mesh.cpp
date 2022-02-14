@@ -2,10 +2,11 @@
 #include "Mesh.h"
 #include <fstream>
 #include "obj_loader.h"
+#include "GPUMeshData.h"
+#include "StaticGeometryBuffer.h"
 
 Mesh::Mesh()
 {
-	topology = D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 }
 
 
@@ -13,11 +14,12 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::Load(std::string meshFile)
+void Mesh::Load(std::string meshFile, StaticGeometryBuffer* staticGeometry)
 {
 	SCOPED_PERFORMANCE_TIMER("Mesh::Load()");
 
-	objl::Loader* meshLoader = new objl::Loader();
+	std::unique_ptr<objl::Loader> meshLoader = std::make_unique<objl::Loader>();
+
 	meshLoader->LoadFile(meshFile);
 
 	if (meshLoader->LoadedMeshes.size() == 0)
@@ -26,10 +28,6 @@ void Mesh::Load(std::string meshFile)
 	}
 	else
 	{
-		NumVertices = meshLoader->LoadedVertices.size();
-		NumIndices = meshLoader->LoadedIndices.size();
-		VertexStride = sizeof(objl::Vertex);
-
 		for (int i = 0; i < meshLoader->LoadedVertices.size(); ++i)
 		{
 			objl::Vertex currentVertex = meshLoader->LoadedVertices[i];
@@ -45,65 +43,16 @@ void Mesh::Load(std::string meshFile)
 			Indices.push_back(meshLoader->LoadedIndices[i]);
 		}
 
-		IndexFormat = DXGI_FORMAT_R32_UINT;
+		auto vertexGPUMemoryHandle = staticGeometry->WriteVertices(Vertices.data(), sizeof(VertexPositionNormalTexture), Vertices.size());
+		auto indexGPUMemoryHandle = staticGeometry->WriteIndices(Indices.data(), Indices.size());
+
+		gpuMeshData = std::make_shared<GPUMeshData>(meshFile, vertexGPUMemoryHandle, indexGPUMemoryHandle, Indices.size(), Vertices.size(), sizeof(VertexPositionNormalTexture), D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		ReleaseCPUGeometryData(); //cpu copy of geometry no longer needed
 	}
 }
 
-uint32 Mesh::VertexCount() const
-{
-	return NumVertices;
-}
 
-uint32 Mesh::IndexCount() const
-{
-	return NumIndices;
-}
-
-D3D12_PRIMITIVE_TOPOLOGY Mesh::Topology() const
-{
-	return topology;
-}
-
-void Mesh::CreateBufferViews(D3D12_GPU_VIRTUAL_ADDRESS vbAddr, D3D12_GPU_VIRTUAL_ADDRESS ibAddr)
-{	
-	{
-		D3D12_VERTEX_BUFFER_VIEW view{};
-		view.BufferLocation = vbAddr;
-		view.SizeInBytes = NumVertices * sizeof(VertexPositionNormalTexture);
-		view.StrideInBytes = sizeof(VertexPositionNormalTexture);
-
-		vertexBufferView = view;
-	}
-
-	{
-		D3D12_INDEX_BUFFER_VIEW view{};
-		view.BufferLocation = ibAddr;
-		view.Format = IndexFormat;
-		view.SizeInBytes = sizeof(uint32) * NumIndices;
-
-		indexBufferView = view;
-	}
-}
-
-DirectX::VertexPositionNormalTexture* Mesh::GetVertexDataPointer()
-{
-	return Vertices.data();
-}
-
-uint32* Mesh::GetIndexDataPointer()
-{
-	return Indices.data();
-}
-
-D3D12_VERTEX_BUFFER_VIEW Mesh::GetVBV() const
-{
-	return vertexBufferView;
-}
-
-D3D12_INDEX_BUFFER_VIEW Mesh::GetIBV() const
-{
-	return indexBufferView;
-}
 
 void Mesh::ReleaseCPUGeometryData()
 {
@@ -119,15 +68,7 @@ void Mesh::ReleaseCPUGeometryData()
 	}
 }
 
-void Mesh::SetVertexCounts(int numVerts, int numIndices, int vertexStride, DXGI_FORMAT indexFormat)
+std::shared_ptr<GPUMeshData> Mesh::GetGPUMeshData() const
 {
-	NumVertices = numVerts;
-	NumIndices = numIndices;
-	VertexStride = vertexStride;
-	IndexFormat = indexFormat;
-}
-
-void Mesh::SetTopology(D3D12_PRIMITIVE_TOPOLOGY topology)
-{
-	this->topology = topology;
+	return gpuMeshData;
 }

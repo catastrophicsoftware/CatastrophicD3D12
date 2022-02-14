@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ForwardRenderer.h"
 #include "Game.h"
-
+#include "GPUMeshData.h"
 
 ForwardRenderer::ForwardRenderer(Game* pEngine)
 {
@@ -122,18 +122,20 @@ void ForwardRenderer::Render(Mesh* pMesh)
 {
     if (renderPassInProgress)
     {
-        auto vbv = pMesh->GetVBV();
+        auto gpuData = pMesh->GetGPUMeshData();
+
+        auto vbv = gpuData->GetVBV();
         pCurrentFrameCommandList->IASetVertexBuffers(0, 1, &vbv);
 
-        if (pMesh->IndexCount() > 0)
+        if (gpuData->IndexCount() > 0)
         {
-            auto ibv = pMesh->GetIBV();
+            auto ibv = gpuData->GetIBV();
             pCurrentFrameCommandList->IASetIndexBuffer(&ibv);
         }
 
-        pCurrentFrameCommandList->IASetPrimitiveTopology(pMesh->Topology());
+        pCurrentFrameCommandList->IASetPrimitiveTopology(gpuData->GetTopology());
 
-        pCurrentFrameCommandList->DrawIndexedInstanced(pMesh->IndexCount(), 1, 0, 0, 0);
+        pCurrentFrameCommandList->DrawIndexedInstanced(gpuData->IndexCount(), 1, 0, 0, 0);
     }
     else
         throw std::runtime_error("RENDER PASS ALREADY IN PROGRESS!");

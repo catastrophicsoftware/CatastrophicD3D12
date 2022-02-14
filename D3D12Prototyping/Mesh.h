@@ -6,39 +6,22 @@
 
 using namespace DirectX;
 
+class GPUMeshData;
+class StaticGeometryBuffer;
+
 class Mesh
 {
 public:
 	Mesh();
 	~Mesh();
 
-	void Load(std::string meshFile);
-
-	uint32 VertexCount() const;
-	uint32 IndexCount() const;
-	D3D12_PRIMITIVE_TOPOLOGY Topology() const;
-	void CreateBufferViews(D3D12_GPU_VIRTUAL_ADDRESS vbAddr, D3D12_GPU_VIRTUAL_ADDRESS ibAddr);
-
-	DirectX::VertexPositionNormalTexture* GetVertexDataPointer();
-	uint32* GetIndexDataPointer();
-
-	D3D12_VERTEX_BUFFER_VIEW GetVBV() const;
-	D3D12_INDEX_BUFFER_VIEW GetIBV() const;
+	void Load(std::string meshFile, StaticGeometryBuffer* staticGeometry);
 
 	void ReleaseCPUGeometryData();
 
-	void SetVertexCounts(int numVerts, int numIndices, int vertexStride, DXGI_FORMAT indexFormat);
-	void SetTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
+	std::shared_ptr<GPUMeshData> GetGPUMeshData() const;
 private:
-	uint32 NumVertices;
-	uint32 NumIndices;
-	uint32 VertexStride;
-
-	D3D12_PRIMITIVE_TOPOLOGY topology;
-	DXGI_FORMAT IndexFormat;
-
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView;
+	std::shared_ptr<GPUMeshData> gpuMeshData;
 
 	std::vector<DirectX::VertexPositionNormalTexture> Vertices;
 	std::vector<uint32> Indices;
