@@ -5,7 +5,13 @@
 class GPUMeshData
 {
 public:
-	GPUMeshData(std::string name,D3D12_GPU_VIRTUAL_ADDRESS vertexGPUAddress, D3D12_GPU_VIRTUAL_ADDRESS indexGPUAddress, uint32 indexCount, uint32 vertexCount, uint32 vertexStride, D3D12_PRIMITIVE_TOPOLOGY topology);
+	GPUMeshData(std::string name,D3D12_GPU_VIRTUAL_ADDRESS vertexGPUAddress,
+		D3D12_GPU_VIRTUAL_ADDRESS indexGPUAddress,
+		uint32 indexCount,
+		uint32 vertexCount,
+		uint32 vertexStride,
+		D3D12_PRIMITIVE_TOPOLOGY topology);
+
 	~GPUMeshData();
 
 	D3D12_VERTEX_BUFFER_VIEW GetVBV() const;
