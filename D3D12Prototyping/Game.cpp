@@ -59,7 +59,7 @@ void Game::Initialize(HWND window, int width, int height)
     CubeModel = new Mesh();
     CubeModel->Load(GetAssetPath("building.obj"));
 
-    GPUBuffer* vertexBuffer = new GPUBuffer(GPU);
+    /*GPUBuffer* vertexBuffer = new GPUBuffer(GPU);
     vertexBuffer->Create(sizeof(VertexPositionNormalTexture) * CubeModel->VertexCount(),D3D12_RESOURCE_STATE_GENERIC_READ, CENGINE_BUFFER_FLAGS::BUFFER_FLAG_NONE, true);
     
     auto pGPUMemory = vertexBuffer->Map();
@@ -70,16 +70,20 @@ void Game::Initialize(HWND window, int width, int height)
     indexBuffer->Create(sizeof(int) * CubeModel->IndexCount(), D3D12_RESOURCE_STATE_GENERIC_READ, BUFFER_FLAG_NONE, true);
     pGPUMemory = indexBuffer->Map();
     memcpy(pGPUMemory, CubeModel->GetIndexDataPointer(), sizeof(int) * CubeModel->IndexCount());
-    indexBuffer->Unmap();
+    indexBuffer->Unmap();*/
+
+    auto vertexHandle = EngineStaticGeometry->WriteVertices(CubeModel->GetVertexDataPointer(), sizeof(VertexPositionNormalTexture), CubeModel->VertexCount());
+    auto indexHandle = EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount());
+    EngineStaticGeometry->Commit();
 
 
-    CubeModel->CreateBufferViews(vertexBuffer->GetGPUAddress(), indexBuffer->GetGPUAddress());
+    CubeModel->CreateBufferViews(vertexHandle, indexHandle);
 
     Renderer = new ForwardRenderer(this);
     Renderer->InitializeRenderer();
 
     mainCamera = Camera();
-    mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+    mainCamera.LookAt(XMVectorSet(0.0f, 0.0f, 20.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
     mainCamera.SetLens(XMConvertToRadians(45.0f), (float)width / height, 0.1f, 10000.0f);
     mainCamera.UpdateViewMatrix();
 
