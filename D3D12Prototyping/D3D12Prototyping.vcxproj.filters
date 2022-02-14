@@ -209,6 +209,9 @@
     <ClInclude Include="ForwardRenderer.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Framework\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -382,6 +385,9 @@
     </ClCompile>
     <ClCompile Include="ForwardRenderer.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Framework\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

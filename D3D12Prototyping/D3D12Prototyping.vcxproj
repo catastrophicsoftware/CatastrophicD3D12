@@ -190,6 +190,7 @@
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="GPUCommandAllocator.h" />
     <ClInclude Include="GPUCommandQueue.h" />
@@ -253,6 +254,7 @@
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="GPUCommandAllocator.cpp" />
     <ClCompile Include="GPUCommandQueue.cpp" />
