@@ -52,10 +52,13 @@ void ForwardRenderer::CreatePipelineState()
 
 
     globalDiffuseSampler = {};
-    globalDiffuseSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-    globalDiffuseSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-    globalDiffuseSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-    globalDiffuseSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    globalDiffuseSampler.Filter = D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+
+    globalDiffuseSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    globalDiffuseSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    globalDiffuseSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+
     globalDiffuseSampler.MipLODBias = 0;
     globalDiffuseSampler.MaxAnisotropy = 0;
     globalDiffuseSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
