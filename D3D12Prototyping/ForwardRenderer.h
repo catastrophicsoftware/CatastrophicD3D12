@@ -15,6 +15,7 @@ struct CBViewProjection
 };
 
 class Game;
+class Texture2D;
 
 class ForwardRenderer
 {
@@ -38,6 +39,8 @@ private:
 	Game* pEngine;
 
 	HRESULT CreateGPUBuffers();
+
+	Texture2D* TestTexture;
 
 	LinearConstantBuffer* PerFrameConstants;
 	ID3D12Device* pDevice;

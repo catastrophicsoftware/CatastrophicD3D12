@@ -63,9 +63,6 @@ void Game::Initialize(HWND window, int width, int height)
     //auto indexHandle = EngineStaticGeometry->WriteIndices(CubeModel->GetIndexDataPointer(), CubeModel->IndexCount());
     EngineStaticGeometry->Commit();
 
-    TestTexture = new Texture2D(this);
-    TestTexture->LoadFromDDS(L"C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\test_grid.dds",CopyQueue->GetCommandQueue());
-
     Renderer = new ForwardRenderer(this);
     Renderer->InitializeRenderer();
 

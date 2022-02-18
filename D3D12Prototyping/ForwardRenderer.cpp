@@ -2,6 +2,7 @@
 #include "ForwardRenderer.h"
 #include "Game.h"
 #include "GPUMeshData.h"
+#include "Texture2D.h"
 
 ForwardRenderer::ForwardRenderer(Game* pEngine)
 {
@@ -23,6 +24,9 @@ void ForwardRenderer::InitializeRenderer()
     CreatePipelineState();
     CreateGPUBuffers();
 
+    //texture test code------
+    TestTexture = new Texture2D(pEngine);
+    TestTexture->LoadFromDDS(L"C:\\Users\\funkb\\source\\repos\\D3D12Prototyping\\Gaming.Desktop.x64\\Debug\\assets\\test_grid.dds", pEngine->GetGPUResources()->GetCommandQueue());
 }
 
 void ForwardRenderer::CreatePipelineState()
@@ -128,6 +132,7 @@ void ForwardRenderer::BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIn
 
         pCMD->SetPipelineState(PipelineState);
         pCMD->SetGraphicsRootSignature(RootSignature);
+
         auto globalSRV = pEngine->GetGlobalSRVHeap()->HeapHandle();
         pCMD->SetDescriptorHeaps(1, &globalSRV);
 
@@ -158,6 +163,7 @@ void ForwardRenderer::Render(Mesh* pMesh)
 
         pCurrentFrameCommandList->IASetPrimitiveTopology(gpuData->GetTopology());
 
+        pCurrentFrameCommandList->SetGraphicsRootDescriptorTable(3, TestTexture->GetSRV());
         pCurrentFrameCommandList->DrawIndexedInstanced(gpuData->IndexCount(), 1, 0, 0, 0);
     }
     else

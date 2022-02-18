@@ -8,6 +8,8 @@ Texture2D::Texture2D(Game* pEngine)
 {
 	Engine = pEngine;
 	GPU = Engine->GetGPUResources()->GetD3DDevice();
+	hasSRV = false;
+	hasUAV = false;
 }
 
 Texture2D::~Texture2D()
@@ -63,7 +65,7 @@ HRESULT Texture2D::LoadFromDDS(std::wstring fileName, ID3D12CommandQueue* pQueue
 {
 	DirectX::ResourceUploadBatch tempUpload(GPU);
 
-	tempUpload.Begin(D3D12_COMMAND_LIST_TYPE_COPY);
+	tempUpload.Begin(D3D12_COMMAND_LIST_TYPE_DIRECT);
 	if (SUCCEEDED(DirectX::CreateDDSTextureFromFile(GPU, tempUpload, fileName.c_str(), &texture, true)))
 	{
 		auto uploadTask = tempUpload.End(pQueue);
@@ -131,6 +133,14 @@ void Texture2D::CreateSRV(GPUDescriptorHeap* pDescriptorHeap)
 		srv = pDescriptorHeap->GetUnusedDescriptor();
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc{}; //currently unused
+
+		viewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		viewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		viewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		viewDesc.Texture2D.MostDetailedMip = 0;
+		viewDesc.Texture2D.MipLevels = -1;
+		//TODO: improve SRV creation to not hardcore format and mip data
+
 		GPU->CreateShaderResourceView(texture, &viewDesc, srv.hCPU);
 		hasSRV = true;
 	}

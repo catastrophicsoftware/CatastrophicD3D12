@@ -77,8 +77,6 @@ private:
     // game
     Mesh* CubeModel;
     Camera mainCamera;
-
-    Texture2D* TestTexture;
     //------------------------------------------------------------------------------------------------------------------
 
     ForwardRenderer* Renderer;

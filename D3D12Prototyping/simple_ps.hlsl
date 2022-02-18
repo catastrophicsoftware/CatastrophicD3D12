@@ -24,10 +24,10 @@ float4 main(PixelInput input) : SV_TARGET
 	output += float4(1, 1, 1, 1) * 0.1f; //ambient light
 
 	output += diffuselight;
-	output.a = 1.0f;
 
 	float4 diffuseTexSample = diffuseTexture.Sample(samplerState, input.uv);
 	output += diffuseTexSample;
 
+	output.a = 1.0f;
 	return output;
 }
