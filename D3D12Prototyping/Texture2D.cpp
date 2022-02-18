@@ -1,10 +1,13 @@
 #include "pch.h"
 #include "Texture2D.h"
 #include "LoaderHelpers.h"
+#include "ResourceUploadBatch.h"
+#include "Game.h"
 
-Texture2D::Texture2D(ID3D12Device* pGPU)
+Texture2D::Texture2D(Game* pEngine)
 {
-	GPU = pGPU;
+	Engine = pEngine;
+	GPU = Engine->GetGPUResources()->GetD3DDevice();
 }
 
 Texture2D::~Texture2D()
@@ -54,6 +57,22 @@ HRESULT Texture2D::Create(uint32 width, uint32 height, DXGI_FORMAT format)
 	}
 	else
 		throw new std::runtime_error("failed to create texture2D!");
+}
+
+HRESULT Texture2D::LoadFromDDS(std::wstring fileName, ID3D12CommandQueue* pQueue)
+{
+	DirectX::ResourceUploadBatch tempUpload(GPU);
+
+	tempUpload.Begin(D3D12_COMMAND_LIST_TYPE_COPY);
+	if (SUCCEEDED(DirectX::CreateDDSTextureFromFile(GPU, tempUpload, fileName.c_str(), &texture, true)))
+	{
+		auto uploadTask = tempUpload.End(pQueue);
+		uploadTask.wait(); //wait for gpu upload command to complete
+
+		CreateSRV(Engine->GetGlobalSRVHeap());
+
+		return S_OK;
+	}
 }
 
 void Texture2D::Update(ID3D12GraphicsCommandList* pCopyCmdList, void* pTexData)

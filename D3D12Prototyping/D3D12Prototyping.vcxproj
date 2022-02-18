@@ -202,6 +202,7 @@
     <ClInclude Include="LinearConstantBuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="obj_loader.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="StaticGeometryBuffer.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="pch.h" />
@@ -271,6 +272,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Gaming.Desktop.x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="StaticGeometryBuffer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="thread_pool.cpp" />

@@ -55,6 +55,10 @@ public:
     std::mutex& GetCopyEngineLock();
 
     std::shared_ptr<DX::DeviceResources> GetGPUResources() const;
+
+    GPUDescriptorHeap* GetGlobalSRVHeap() const;
+    GPUDescriptorHeap* GetGlobalRTVHeap() const;
+    GPUDescriptorHeap* GetGlobalSamplerHeap() const;
 private:
     void Update(DX::StepTimer const& timer);
     void Render();
@@ -73,6 +77,8 @@ private:
     // game
     Mesh* CubeModel;
     Camera mainCamera;
+
+    Texture2D* TestTexture;
     //------------------------------------------------------------------------------------------------------------------
 
     ForwardRenderer* Renderer;

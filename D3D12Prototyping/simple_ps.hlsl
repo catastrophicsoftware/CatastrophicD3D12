@@ -10,6 +10,9 @@ struct PixelInput
 	float2 uv : TEXCOORD;
 };
 
+Texture2D    diffuseTexture : register(t0);
+SamplerState samplerState : register(s0);
+
 float4 main(PixelInput input) : SV_TARGET
 {
 	float4 output = float4(0,0,0,0);
@@ -22,5 +25,9 @@ float4 main(PixelInput input) : SV_TARGET
 
 	output += diffuselight;
 	output.a = 1.0f;
+
+	float4 diffuseTexSample = diffuseTexture.Sample(samplerState, input.uv);
+	output += diffuseTexSample;
+
 	return output;
 }

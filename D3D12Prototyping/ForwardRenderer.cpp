@@ -27,13 +27,18 @@ void ForwardRenderer::InitializeRenderer()
 
 void ForwardRenderer::CreatePipelineState()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[4];
 
     XMFLOAT4 magenta = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX); //view,projection
     rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX); //world
     rootParameters[2].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);  //material (CBMaterial struct)
+
+    CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+    ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+
+    rootParameters[3].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -42,8 +47,24 @@ void ForwardRenderer::CreatePipelineState()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 
+    globalDiffuseSampler = {};
+    globalDiffuseSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+    globalDiffuseSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    globalDiffuseSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    globalDiffuseSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    globalDiffuseSampler.MipLODBias = 0;
+    globalDiffuseSampler.MaxAnisotropy = 0;
+    globalDiffuseSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+    globalDiffuseSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+    globalDiffuseSampler.MinLOD = 0.0f;
+    globalDiffuseSampler.MaxLOD = D3D12_FLOAT32_MAX;
+    globalDiffuseSampler.ShaderRegister = 0;
+    globalDiffuseSampler.RegisterSpace = 0;
+    globalDiffuseSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1,&globalDiffuseSampler, rootSignatureFlags);
 
     ID3DBlob* signature;
     ID3DBlob* error;
@@ -97,7 +118,7 @@ void ForwardRenderer::BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIn
     SCOPED_PERFORMANCE_TIMER("ForwardRenderer::BeginFrame()");
 
     if ((frameCount % 100) == 0)
-        PerFrameConstants->Reset(); //kind of hacky, reset per frame buffer every 100 frames
+        PerFrameConstants->Reset(); //kind of hacky, reset per frame buffer every 100 frames, deal with this later
 
 
     if (!renderPassInProgress)
@@ -107,6 +128,8 @@ void ForwardRenderer::BeginFrame(ID3D12GraphicsCommandList* pCMD, uint32 frameIn
 
         pCMD->SetPipelineState(PipelineState);
         pCMD->SetGraphicsRootSignature(RootSignature);
+        auto globalSRV = pEngine->GetGlobalSRVHeap()->HeapHandle();
+        pCMD->SetDescriptorHeaps(1, &globalSRV);
 
         pCMD->SetGraphicsRootConstantBufferView(0, pCBViewProjection->GetGPUAddress());
         pCMD->SetGraphicsRootConstantBufferView(2, pCBMaterial->GetGPUAddress());

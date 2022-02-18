@@ -212,6 +212,7 @@
     <ClInclude Include="GPUMeshData.h">
       <Filter>Framework\GPU</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -389,6 +390,7 @@
     <ClCompile Include="GPUMeshData.cpp">
       <Filter>Framework\GPU</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MGCCompile Include="MicrosoftGame.Config" />

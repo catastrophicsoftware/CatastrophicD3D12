@@ -57,5 +57,9 @@ private:
 	bool renderPassInProgress;
 	uint32 currentFrameIndex;
 
+	D3D12_STATIC_SAMPLER_DESC globalDiffuseSampler;
+
+
+
 	UINT64 frameCount;
 };
