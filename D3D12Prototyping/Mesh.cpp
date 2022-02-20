@@ -32,9 +32,10 @@ void Mesh::Load(std::string meshFile, StaticGeometryBuffer* staticGeometry)
 		{
 			objl::Vertex currentVertex = meshLoader->LoadedVertices[i];
 
+			
 			Vertices.push_back(VertexPositionNormalTexture(XMFLOAT3(currentVertex.Position.X, currentVertex.Position.Y, currentVertex.Position.Z),
 				XMFLOAT3(currentVertex.Normal.X, currentVertex.Normal.Y, currentVertex.Normal.Z),
-				XMFLOAT2(currentVertex.Position.X, currentVertex.Position.Y)));
+				XMFLOAT2(currentVertex.TextureCoordinate.X, currentVertex.TextureCoordinate.Y)));
 
 		}
 
