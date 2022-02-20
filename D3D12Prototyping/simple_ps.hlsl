@@ -40,7 +40,6 @@ float4 main(PixelInput input) : SV_TARGET
 
 	output += diffuselight;
 
-	input.uv *= -1.0f; //invert UV
 	float4 diffuseTexSample = diffuseTexture.Sample(samplerState, input.uv);
 	output += diffuseTexSample;
 
